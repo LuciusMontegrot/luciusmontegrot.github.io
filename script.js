@@ -107,13 +107,14 @@ function spawnWizardEffect() {
   container.style.pointerEvents = "none";
   container.style.zIndex = "10000";
 
-  // 🔹 Create spiral glyph
+  // 💠 Glowing Spiral Glyph
   const spiral = document.createElementNS(svgNS, "path");
-  spiral.setAttribute("d", "M50,50 m-20,0 a20,20 0 1,1 40,0 a20,20 0 1,1 -40,0");
+  spiral.setAttribute("d", "M50,50 m-25,0 a25,25 0 1,1 50,0 a25,25 0 1,1 -50,0");
   spiral.setAttribute("stroke", "#00ccff");
-  spiral.setAttribute("stroke-width", "0.5");
+  spiral.setAttribute("stroke-width", "1");
   spiral.setAttribute("fill", "none");
-  spiral.setAttribute("opacity", "0.7");
+  spiral.setAttribute("opacity", "0.8");
+  spiral.setAttribute("filter", "url(#blur)");
 
   const spin = document.createElementNS(svgNS, "animateTransform");
   spin.setAttribute("attributeName", "transform");
@@ -125,44 +126,70 @@ function spawnWizardEffect() {
   spiral.appendChild(spin);
   container.appendChild(spiral);
 
-  // 💨 Add 3 smoke rings
-  for (let i = 0; i < 3; i++) {
+  // 🌀 Add smoke rings drifting upward
+  for (let i = 0; i < 4; i++) {
     const ring = document.createElementNS(svgNS, "circle");
-    const delay = i * 0.4;
+    const delay = i * 0.5;
+    const startY = 60 + Math.random() * 5;
+    const endY = startY - 15 - Math.random() * 10;
+    const rStart = 2 + Math.random() * 1.5;
+    const rEnd = rStart + 8;
 
     ring.setAttribute("cx", "50");
-    ring.setAttribute("cy", "65");
-    ring.setAttribute("r", "2");
-    ring.setAttribute("stroke", "rgba(200,200,200,0.3)");
+    ring.setAttribute("cy", startY.toString());
+    ring.setAttribute("r", rStart.toString());
+    ring.setAttribute("stroke", "rgba(200,200,200,0.4)");
     ring.setAttribute("stroke-width", "0.4");
     ring.setAttribute("fill", "none");
 
     const grow = document.createElementNS(svgNS, "animate");
     grow.setAttribute("attributeName", "r");
-    grow.setAttribute("from", "2");
-    grow.setAttribute("to", "10");
-    grow.setAttribute("dur", "2s");
+    grow.setAttribute("from", rStart.toString());
+    grow.setAttribute("to", rEnd.toString());
+    grow.setAttribute("dur", "3s");
     grow.setAttribute("begin", `${delay}s`);
     grow.setAttribute("fill", "freeze");
 
+    const rise = document.createElementNS(svgNS, "animate");
+    rise.setAttribute("attributeName", "cy");
+    rise.setAttribute("from", startY.toString());
+    rise.setAttribute("to", endY.toString());
+    rise.setAttribute("dur", "3s");
+    rise.setAttribute("begin", `${delay}s`);
+    rise.setAttribute("fill", "freeze");
+
     const fade = document.createElementNS(svgNS, "animate");
     fade.setAttribute("attributeName", "opacity");
-    fade.setAttribute("from", "0.5");
+    fade.setAttribute("from", "0.4");
     fade.setAttribute("to", "0");
-    fade.setAttribute("dur", "2s");
+    fade.setAttribute("dur", "3s");
     fade.setAttribute("begin", `${delay}s`);
     fade.setAttribute("fill", "freeze");
 
     ring.appendChild(grow);
+    ring.appendChild(rise);
     ring.appendChild(fade);
     container.appendChild(ring);
   }
-    document.getElementById("effect-layer").appendChild(container);
 
-    setTimeout(() => {
-      container.remove();
-    }, 3500);
-  }
+  // Optional blur filter (glow)
+  const defs = document.createElementNS(svgNS, "defs");
+  const filter = document.createElementNS(svgNS, "filter");
+  filter.setAttribute("id", "blur");
+  const gaussian = document.createElementNS(svgNS, "feGaussianBlur");
+  gaussian.setAttribute("in", "SourceGraphic");
+  gaussian.setAttribute("stdDeviation", "0.8");
+  filter.appendChild(gaussian);
+  defs.appendChild(filter);
+  container.appendChild(defs);
+
+  document.getElementById("effect-layer").appendChild(container);
+
+  setTimeout(() => {
+    container.remove();
+  }, 4000);
+}
+
 
   let lastIndex = 0;
   let isAnimating = false;
