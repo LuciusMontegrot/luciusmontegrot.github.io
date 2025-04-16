@@ -85,6 +85,77 @@ document.addEventListener('DOMContentLoaded', () => {
       g.appendChild(anim);
       container.appendChild(g);
     }
+function spawnWizardEffect() {
+  const svgNS = "http://www.w3.org/2000/svg";
+  const container = document.createElementNS(svgNS, "svg");
+  container.setAttribute("width", "100%");
+  container.setAttribute("height", "100%");
+  container.setAttribute("viewBox", "0 0 100 100");
+  container.style.position = "absolute";
+  container.style.top = "0";
+  container.style.left = "0";
+  container.style.width = "100%";
+  container.style.height = "100%";
+  container.style.pointerEvents = "none";
+  container.style.zIndex = "10000";
+
+  // 🔹 Create spiral glyph
+  const spiral = document.createElementNS(svgNS, "path");
+  spiral.setAttribute("d", "M50,50 m-20,0 a20,20 0 1,1 40,0 a20,20 0 1,1 -40,0");
+  spiral.setAttribute("stroke", "#00ccff");
+  spiral.setAttribute("stroke-width", "0.5");
+  spiral.setAttribute("fill", "none");
+  spiral.setAttribute("opacity", "0.7");
+
+  const spin = document.createElementNS(svgNS, "animateTransform");
+  spin.setAttribute("attributeName", "transform");
+  spin.setAttribute("type", "rotate");
+  spin.setAttribute("from", "0 50 50");
+  spin.setAttribute("to", "360 50 50");
+  spin.setAttribute("dur", "3s");
+  spin.setAttribute("repeatCount", "1");
+  spiral.appendChild(spin);
+  container.appendChild(spiral);
+
+  // 💨 Add 3 smoke rings
+  for (let i = 0; i < 3; i++) {
+    const ring = document.createElementNS(svgNS, "circle");
+    const delay = i * 0.4;
+
+    ring.setAttribute("cx", "50");
+    ring.setAttribute("cy", "65");
+    ring.setAttribute("r", "2");
+    ring.setAttribute("stroke", "rgba(200,200,200,0.3)");
+    ring.setAttribute("stroke-width", "0.4");
+    ring.setAttribute("fill", "none");
+
+    const grow = document.createElementNS(svgNS, "animate");
+    grow.setAttribute("attributeName", "r");
+    grow.setAttribute("from", "2");
+    grow.setAttribute("to", "10");
+    grow.setAttribute("dur", "2s");
+    grow.setAttribute("begin", `${delay}s`);
+    grow.setAttribute("fill", "freeze");
+
+    const fade = document.createElementNS(svgNS, "animate");
+    fade.setAttribute("attributeName", "opacity");
+    fade.setAttribute("from", "0.5");
+    fade.setAttribute("to", "0");
+    fade.setAttribute("dur", "2s");
+    fade.setAttribute("begin", `${delay}s`);
+    fade.setAttribute("fill", "freeze");
+
+    ring.appendChild(grow);
+    ring.appendChild(fade);
+    container.appendChild(ring);
+  }
+
+  document.getElementById("effect-layer").appendChild(container);
+
+  setTimeout(() => {
+    container.remove();
+  }, 3500);
+}
 
     document.getElementById("effect-layer").appendChild(container);
 
@@ -121,11 +192,13 @@ document.addEventListener('DOMContentLoaded', () => {
       titleEl.textContent = persona.title;
       descEl.textContent = persona.description;
 
-      if (persona.effect === "vampire-blood") {
-        spawnBloodRain();
-      } else {
-        effectLayer.classList.add(persona.effect);
-      }
+if (persona.effect === "vampire-blood") {
+  spawnBloodRain();
+} else if (persona.effect === "wizard-smoke") {
+  spawnWizardEffect();
+} else {
+  effectLayer.classList.add(persona.effect);
+}
 
       setTimeout(() => {
         effectLayer.className = "";
