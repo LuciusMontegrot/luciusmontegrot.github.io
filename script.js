@@ -94,8 +94,6 @@ function spawnBloodRain() {
   }, 3500);
 }
 
-}
-
   let lastIndex = 0;
   let isAnimating = false;
 
