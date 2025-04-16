@@ -59,34 +59,41 @@ function spawnBloodRain() {
   container.style.zIndex = "10000";
 
   for (let i = 0; i < 25; i++) {
-    const drop = document.createElementNS(svgNS, "circle");
+    const path = document.createElementNS(svgNS, "path");
     const cx = Math.random() * 100;
     const delay = Math.random() * 2;
-    const size = Math.random() * 1.5 + 0.5;
+    const scale = Math.random() * 0.6 + 0.3;
+    const rotate = Math.random() * 360;
 
-    drop.setAttribute("cx", cx);
-    drop.setAttribute("cy", -10);
-    drop.setAttribute("r", size);
-    drop.setAttribute("fill", "rgba(120, 0, 0, 0.7)");
+    // Teardrop shape
+    path.setAttribute("d", "M5 0 C0 10, 10 10, 5 0");
+    path.setAttribute("fill", "#8b0000"); // Deep red
 
-    const anim = document.createElementNS(svgNS, "animate");
-    anim.setAttribute("attributeName", "cy");
-    anim.setAttribute("from", "-10");
-    anim.setAttribute("to", "120");
+    // Group to handle transform
+    const g = document.createElementNS(svgNS, "g");
+    g.setAttribute("transform", `translate(${cx}, -10) scale(${scale}) rotate(${rotate})`);
+    g.appendChild(path);
+
+    const anim = document.createElementNS(svgNS, "animateTransform");
+    anim.setAttribute("attributeName", "transform");
+    anim.setAttribute("type", "translate");
+    anim.setAttribute("from", `${cx}, -10`);
+    anim.setAttribute("to", `${cx}, 120`);
     anim.setAttribute("dur", "2.5s");
     anim.setAttribute("begin", `${delay}s`);
     anim.setAttribute("fill", "freeze");
-    anim.setAttribute("repeatCount", "1");
 
-    drop.appendChild(anim);
-    container.appendChild(drop);
+    g.appendChild(anim);
+    container.appendChild(g);
   }
 
   document.getElementById("effect-layer").appendChild(container);
 
   setTimeout(() => {
     container.remove();
-  }, 3000);
+  }, 3500);
+}
+
 }
 
   let lastIndex = 0;
