@@ -44,55 +44,54 @@ document.addEventListener('DOMContentLoaded', () => {
   const button = document.getElementById('reroll');
   const effectLayer = document.getElementById('effect-layer');
   const card = document.getElementById('persona-display');
-function spawnBloodRain() {
-  const svgNS = "http://www.w3.org/2000/svg";
-  const container = document.createElementNS(svgNS, "svg");
-  container.setAttribute("width", "100%");
-  container.setAttribute("height", "100%");
-  container.setAttribute("viewBox", "0 0 100 100");
-  container.style.position = "absolute";
-  container.style.top = "0";
-  container.style.left = "0";
-  container.style.width = "100%";
-  container.style.height = "100%";
-  container.style.pointerEvents = "none";
-  container.style.zIndex = "10000";
 
-  for (let i = 0; i < 25; i++) {
-    const path = document.createElementNS(svgNS, "path");
-    const cx = Math.random() * 100;
-    const delay = Math.random() * 2;
-    const scale = Math.random() * 0.6 + 0.3;
-    const rotate = Math.random() * 360;
+  function spawnBloodRain() {
+    const svgNS = "http://www.w3.org/2000/svg";
+    const container = document.createElementNS(svgNS, "svg");
+    container.setAttribute("width", "100%");
+    container.setAttribute("height", "100%");
+    container.setAttribute("viewBox", "0 0 100 100");
+    container.style.position = "absolute";
+    container.style.top = "0";
+    container.style.left = "0";
+    container.style.width = "100%";
+    container.style.height = "100%";
+    container.style.pointerEvents = "none";
+    container.style.zIndex = "10000";
 
-    // Teardrop shape
-    path.setAttribute("d", "M5 0 C0 10, 10 10, 5 0");
-    path.setAttribute("fill", "#8b0000"); // Deep red
+    for (let i = 0; i < 25; i++) {
+      const path = document.createElementNS(svgNS, "path");
+      const cx = Math.random() * 100;
+      const delay = Math.random() * 2;
+      const scale = Math.random() * 0.6 + 0.3;
+      const rotate = Math.random() * 360;
 
-    // Group to handle transform
-    const g = document.createElementNS(svgNS, "g");
-    g.setAttribute("transform", `translate(${cx}, -10) scale(${scale}) rotate(${rotate})`);
-    g.appendChild(path);
+      path.setAttribute("d", "M5 0 C0 10, 10 10, 5 0");
+      path.setAttribute("fill", "#8b0000");
 
-    const anim = document.createElementNS(svgNS, "animateTransform");
-    anim.setAttribute("attributeName", "transform");
-    anim.setAttribute("type", "translate");
-    anim.setAttribute("from", `${cx}, -10`);
-    anim.setAttribute("to", `${cx}, 120`);
-    anim.setAttribute("dur", "2.5s");
-    anim.setAttribute("begin", `${delay}s`);
-    anim.setAttribute("fill", "freeze");
+      const g = document.createElementNS(svgNS, "g");
+      g.setAttribute("transform", `translate(${cx}, -10) scale(${scale}) rotate(${rotate})`);
+      g.appendChild(path);
 
-    g.appendChild(anim);
-    container.appendChild(g);
+      const anim = document.createElementNS(svgNS, "animateTransform");
+      anim.setAttribute("attributeName", "transform");
+      anim.setAttribute("type", "translate");
+      anim.setAttribute("from", `${cx}, -10`);
+      anim.setAttribute("to", `${cx}, 120`);
+      anim.setAttribute("dur", "2.5s");
+      anim.setAttribute("begin", `${delay}s`);
+      anim.setAttribute("fill", "freeze");
+
+      g.appendChild(anim);
+      container.appendChild(g);
+    }
+
+    document.getElementById("effect-layer").appendChild(container);
+
+    setTimeout(() => {
+      container.remove();
+    }, 3500);
   }
-
-  document.getElementById("effect-layer").appendChild(container);
-
-  setTimeout(() => {
-    container.remove();
-  }, 3500);
-}
 
   let lastIndex = 0;
   let isAnimating = false;
@@ -110,9 +109,8 @@ function spawnBloodRain() {
     const persona = personas[index];
     console.log(`Summoning: ${persona.title}`);
 
-    // Reset animations
     card.classList.remove('spin');
-    void card.offsetWidth; // Force reflow
+    void card.offsetWidth;
     card.classList.add('spin');
 
     effectLayer.className = "";
@@ -123,18 +121,17 @@ function spawnBloodRain() {
       titleEl.textContent = persona.title;
       descEl.textContent = persona.description;
 
-     if (persona.effect === "vampire-blood") {
-  spawnBloodRain();
-} else {
-  effectLayer.classList.add(persona.effect);
-}
-      
-      // Clear effect and re-enable button
+      if (persona.effect === "vampire-blood") {
+        spawnBloodRain();
+      } else {
+        effectLayer.classList.add(persona.effect);
+      }
+
       setTimeout(() => {
         effectLayer.className = "";
         isAnimating = false;
       }, 2500);
-    }, 1800); // Matches spin duration
+    }, 1800);
   }
 
   button.addEventListener('click', showRandomPersona);
