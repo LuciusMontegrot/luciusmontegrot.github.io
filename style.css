@@ -43,12 +43,6 @@ main {
   margin-bottom: 1em;
 }
 
-.persona-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2em;
-}
-
 .card {
   background: rgba(248, 245, 233, 0.95);
   padding: 1em;
@@ -56,6 +50,9 @@ main {
   border: 1px solid #c8b8a6;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
 }
 
 .card:hover {
@@ -79,6 +76,22 @@ main {
   line-height: 1.4em;
 }
 
+.card.spin {
+  animation: spinCard 0.6s ease-in-out;
+}
+
+@keyframes spinCard {
+  0% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(90deg);
+  }
+  100% {
+    transform: rotateY(0deg);
+  }
+}
+
 .book-cover {
   max-width: 200px;
   display: block;
@@ -93,3 +106,4 @@ footer {
   border-top: 2px solid #998a7e;
   color: #5e4d3f;
 }
+
