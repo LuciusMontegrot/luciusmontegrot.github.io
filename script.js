@@ -85,6 +85,14 @@ document.addEventListener('DOMContentLoaded', () => {
       g.appendChild(anim);
       container.appendChild(g);
     }
+
+
+  document.getElementById("effect-layer").appendChild(container);
+
+  setTimeout(() => {
+    container.remove();
+  }, 3500);
+}
 function spawnWizardEffect() {
   const svgNS = "http://www.w3.org/2000/svg";
   const container = document.createElementNS(svgNS, "svg");
@@ -149,14 +157,6 @@ function spawnWizardEffect() {
     ring.appendChild(fade);
     container.appendChild(ring);
   }
-
-  document.getElementById("effect-layer").appendChild(container);
-
-  setTimeout(() => {
-    container.remove();
-  }, 3500);
-}
-
     document.getElementById("effect-layer").appendChild(container);
 
     setTimeout(() => {
