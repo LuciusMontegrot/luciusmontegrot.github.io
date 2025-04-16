@@ -171,3 +171,11 @@ footer {
   border-top: 2px solid #998a7e;
   color: #5e4d3f;
 }
+/* TEMPORARY PLACEHOLDER EFFECTS */
+.mistelf-glow::before,
+.dm-dice::before,
+.seaelf-splash::before,
+.historian-scroll::before {
+  content: "";
+  display: none;
+}
