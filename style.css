@@ -186,3 +186,22 @@ footer {
   content: "";
   display: none;
 }
+#reroll {
+  margin-top: 1.5em;
+  padding: 1em 2em;
+  font-size: 1.2em;
+  font-family: 'Playfair Display', serif;
+  background-color: #dbc3a3;
+  color: #3c2d20;
+  border: 2px solid #998a7e;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.3s ease;
+  z-index: 2;
+  position: relative;
+}
+
+#reroll:hover {
+  background-color: #e8d7ba;
+  transform: scale(1.05);
+}
