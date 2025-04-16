@@ -18,6 +18,40 @@ body {
   z-index: 1;
 }
 
+/* Vampire blood rain - realistic particle style */
+.vampire-blood {
+  animation: none;
+}
+
+.vampire-blood::before,
+.vampire-blood::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  background-image: radial-gradient(circle, rgba(153, 0, 0, 0.6) 3px, transparent 4px),
+                    radial-gradient(circle, rgba(153, 0, 0, 0.6) 2px, transparent 3px),
+                    radial-gradient(circle, rgba(153, 0, 0, 0.6) 4px, transparent 5px);
+  background-repeat: repeat;
+  background-size: 100px 100px;
+  animation: bloodDrip 2.5s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes bloodDrip {
+  0% {
+    opacity: 1;
+    transform: translateY(-20%);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
 /* Wizard smoke rings */
 .wizard-smoke::before {
   content: "";
@@ -44,34 +78,6 @@ body {
     transform: translate(-50%, -50%) scale(3.5);
     opacity: 0;
   }
-}
-
-/* Vampire blood rain */
-.vampire-blood::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    rgba(153, 0, 0, 0.8) 0px,
-    rgba(153, 0, 0, 0.8) 3px,
-    transparent 3px,
-    transparent 12px
-  );
-  background-size: 100% 20px;
-  animation: bloodRain 2.5s ease-out forwards;
-  z-index: 2;
-  pointer-events: none;
-}
-
-
-
-@keyframes bloodRain {
-  0% { opacity: 1; transform: translateY(-100%); }
-  100% { opacity: 0; transform: translateY(100%); }
 }
 
 /* Card styles */
@@ -178,6 +184,7 @@ footer {
   border-top: 2px solid #998a7e;
   color: #5e4d3f;
 }
+
 /* TEMPORARY PLACEHOLDER EFFECTS */
 .mistelf-glow::before,
 .dm-dice::before,
@@ -186,6 +193,7 @@ footer {
   content: "";
   display: none;
 }
+
 /* Reroll button styling */
 #reroll {
   margin-top: 2em;
