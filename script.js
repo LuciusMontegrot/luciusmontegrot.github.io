@@ -44,6 +44,50 @@ document.addEventListener('DOMContentLoaded', () => {
   const button = document.getElementById('reroll');
   const effectLayer = document.getElementById('effect-layer');
   const card = document.getElementById('persona-display');
+function spawnBloodRain() {
+  const svgNS = "http://www.w3.org/2000/svg";
+  const container = document.createElementNS(svgNS, "svg");
+  container.setAttribute("width", "100%");
+  container.setAttribute("height", "100%");
+  container.setAttribute("viewBox", "0 0 100 100");
+  container.style.position = "absolute";
+  container.style.top = "0";
+  container.style.left = "0";
+  container.style.width = "100%";
+  container.style.height = "100%";
+  container.style.pointerEvents = "none";
+  container.style.zIndex = "10000";
+
+  for (let i = 0; i < 25; i++) {
+    const drop = document.createElementNS(svgNS, "circle");
+    const cx = Math.random() * 100;
+    const delay = Math.random() * 2;
+    const size = Math.random() * 1.5 + 0.5;
+
+    drop.setAttribute("cx", cx);
+    drop.setAttribute("cy", -10);
+    drop.setAttribute("r", size);
+    drop.setAttribute("fill", "rgba(120, 0, 0, 0.7)");
+
+    const anim = document.createElementNS(svgNS, "animate");
+    anim.setAttribute("attributeName", "cy");
+    anim.setAttribute("from", "-10");
+    anim.setAttribute("to", "120");
+    anim.setAttribute("dur", "2.5s");
+    anim.setAttribute("begin", `${delay}s`);
+    anim.setAttribute("fill", "freeze");
+    anim.setAttribute("repeatCount", "1");
+
+    drop.appendChild(anim);
+    container.appendChild(drop);
+  }
+
+  document.getElementById("effect-layer").appendChild(container);
+
+  setTimeout(() => {
+    container.remove();
+  }, 3000);
+}
 
   let lastIndex = 0;
   let isAnimating = false;
