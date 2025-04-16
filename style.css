@@ -77,7 +77,7 @@ main {
 }
 
 .card.spin {
-  animation: spinCard 0.6s ease-in-out;
+  animation: spinCard 1.8s ease-in-out;
 }
 
 @keyframes spinCard {
@@ -85,10 +85,10 @@ main {
     transform: rotateY(0deg);
   }
   50% {
-    transform: rotateY(90deg);
+    transform: rotateY(540deg);
   }
   100% {
-    transform: rotateY(0deg);
+    transform: rotateY(1080deg);
   }
 }
 
