@@ -118,8 +118,12 @@ function spawnBloodRain() {
       titleEl.textContent = persona.title;
       descEl.textContent = persona.description;
 
-      effectLayer.classList.add(persona.effect);
-
+     if (persona.effect === "vampire-blood") {
+  spawnBloodRain();
+} else {
+  effectLayer.classList.add(persona.effect);
+}
+      
       // Clear effect and re-enable button
       setTimeout(() => {
         effectLayer.className = "";
