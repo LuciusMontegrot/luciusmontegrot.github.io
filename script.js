@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
   const personas = [
-document.addEventListener('DOMContentLoaded', () => {
-  const personas = [
     {
       title: "The Humble Historian",
       image: "images/historian.jpg",
@@ -62,9 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
       description: "Clad in black plate and burdened with silent judgement, Lucius Montegrot stalks the land as one of the Peacemaker’s own. He carries a silver maul and a rope coiled into a noose — not for others, but for the sins that trail him like a shadow. He rarely speaks, but when he does, cities kneel.",
       effect: "paladin-smite"
     }
-  ];
-});
-
   ];
 
   const imageEl = document.getElementById('persona-image');
