@@ -128,6 +128,7 @@ function spawnWizardEffect() {
     star.setAttribute("fill", "none");
     star.setAttribute("stroke", "#00ccff");
     star.setAttribute("stroke-width", "0.3");
+    star.setAttribute("stroke-linejoin", "round"); 
     star.setAttribute("opacity", "0.9");
 
     const move = document.createElementNS(svgNS, "animateTransform");
