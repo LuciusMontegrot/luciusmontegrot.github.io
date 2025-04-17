@@ -181,3 +181,21 @@ footer {
   background-color: #e8d7ba;
   transform: scale(1.05);
 }
+.book-cover{
+  width: 220px;           /* default size on phones  */
+  max-width: 90%;         /* never overflow the section */
+  display: block;         /* so margin: auto centres it */
+  margin: 0.5rem auto 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,.25);
+  transition: transform .25s;
+}
+.book-cover-link:hover .book-cover{
+  transform: scale(1.05);
+}
+/* bump it up on wider screens */
+@media (min-width: 600px){
+  .book-cover{ width: 300px; }
+}
+@media (min-width: 900px){
+  .book-cover{ width: 380px; }
+}
