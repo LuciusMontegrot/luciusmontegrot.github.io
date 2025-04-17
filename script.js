@@ -49,15 +49,33 @@ document.addEventListener('DOMContentLoaded', () => {
       effect: "muscle-flex"
     },
         {
-      title: "The Gym-Forged Ghost Writer",
+      title: "The Gym-Forged Writer",
       image: "images/bodybuilder2.jpg",
-      description: "Some say Lucius cannot even read and write. They say he is obsessed with physical strength and wrote an entire book dictating one single prompt into some yet unknown artificial intelligence. Those who speak with him say he communicates mostly in grunts, so it is a wonder how he did it. Oops. Did we just show you his REAL picture? No, we didn't. This isn't Lucius Montegrot. This picture isn't real. Nothing to see here.",
+      description: "Some say Lucius cannot even read and write. They say he is obsessed with physical strength and wrote an entire book dictating one single prompt into some yet unknown artificial intelligence. Those who speak with him say he communicates mostly in grunts, so it is a wonder how he did it. Oops. Did we just accidentally show you his REAL picture? No. We didn't, and if we did, it was an accident. This isn't Lucius Montegrot. This picture isn't real. Nothing to see here.",
       effect: "muscle-flex2"
+    },
+            {
+      title: "The Dwarven Priest of Fire",
+      image: "images/firepriest.jpg",
+      description: "Some say Lucius is a Dwarven priest of fire who witnessed first-hand the the events his book narrates. Sometime, he can be found in a tavern in Steelforge and for a goblet of mead, he'll tell you a juicy secret he hasn't recorded in the scrolls...",
+      effect: "fire-roar"
+    },
+            {
+      title: "The Dark Elven Assassin",
+      image: "images/assassin.jpg",
+      description: "It is rumoured that Lucius Montegrot did not write his book at all. Instead, he murdered the author in a dark alley in Umbra'El and stole the manuscript, then published it under his own name...",
+      effect: "dagger-rain"
+    },
+                {
+      title: "The Gnomish Necromancer",
+      image: "images/necromancer.jpg",
+      description: "Some say Lucius is a Gnomish Necromancer in service to the Equalizer goddess of Death. Like many gnomish necromancers, he spends his time mastering the secrets of death so as to keep it at bay and heal the sick and wounded in Steelforge's hospitals.",
+      effect: "necromancer-wisp"
     },
     {
       title: "The Peacemaker's Paladin",
       image: "images/paladin.jpg",
-      description: "They whisper that Lucius Montegrot once took holy vows before an altar the Peacemaker. Clad in onyx plate and wielding a maul the size of a tombstone, he roams the Varthian Empire's paved roads delivering “peace” one shattered bone at a time. His justice is swift as a thunderclap and final as the gallows‑knot that dangles from his belt. Some claim there is no man beneath the helm at all — only a spirit of cold, unblinking judgment. Others insist you can hear soft humming inside the armor, as though the Peacemaker himself were singing through Lucius’s ribs. Either way, if the black‑steel paladin blocks your path, pray your sins are few… and your neck unworthy of his rope.",
+      description: "They whisper that Lucius Montegrot once took holy vows before an altar the Peacemaker. Clad in onyx plate and wielding a maul the size of a tombstone, he roams the Varthian Empire's paved roads delivering “peace” one shattered victim at a time. His justice is as swift as a thunderclap and as final as the gallows‑knot that dangles from his belt. Some claim there is no man beneath the helm at all — only a spirit of cold, unblinking judgment. Others insist you can hear soft humming inside the armor, as though the Peacemaker himself were singing through Lucius’s ribs. Either way, if the black‑steel paladin blocks your path, pray your sins are few… and your neck unworthy of his rope.",
       effect: "paladin-smite"
     }
   ];
