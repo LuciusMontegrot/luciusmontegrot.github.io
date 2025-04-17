@@ -15,19 +15,19 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       title: "The Vampire-Adjacent Noble",
       image: "images/vampire.jpg",
-      description: "Lucius Montegrot is rumoured to be a minor baron in an obscure Transylvarthian province. He is seldom seen during daylight, but his correspondence is extensive, usually delivered by midnight couriers who dissolve into mist if tipped improperly. He claims to be 'only nocturnally inclined' and has a suspicious fondness for red wine served warm.",
+      description: "Lucius Montegrot is rumoured to be a minor baron in a tiny Transylvashlinian province. He is seldom seen during daylight, but his correspondence is extensive, usually delivered by midnight couriers who dissolve into mist if tipped improperly. He claims to be 'only nocturnally inclined' and has a suspicious fondness for red wine served warm.",
       effect: "vampire-blood"
     },
     {
       title: "The Mist-Elven Exile",
       image: "images/mistelf.jpg",
-      description: "It is whispered that Lucius is the only Mist Elf to have fled the demiplane of Sha’ar-Tel and retained his madness. His illusions are so convincing, he once sold a dream to a dragon. He spends his days disguised as a mortal author, but his prose smells faintly of starlight and betrayal.",
+      description: "It is whispered that Lucius is the only Mist Elf to have fled the demiplane of Mist and retained his madness. His illusions are so convincing, he once sold a dream to a dragon. He spends his days disguised as a mortal author, but his prose smells faintly of starlight and betrayal.",
       effect: "mistelf-glow"
     },
     {
       title: "The Disgruntled Dungeon Master",
       image: "images/dungeonmaster.jpg",
-      description: "Lucius Montegrot is what happens when a Dungeon Master spends thirty years building a world so intricate that the gods themselves are asking for the rulebook. Tired of players licking dungeon walls and seducing mimics, he turned his notes into novels. He still wakes up at night muttering, 'You can't polymorph into a chair, Dave.'",
+      description: "Lucius Montegrot is what happens when a Dungeon Master spends thirty years building a world so intricate that the gods themselves are asking for the rulebook. Tired of players licking dungeon walls and seducing mimics, he turned his notes into novels. He still wakes up at night muttering, 'You can't polymorph into a chair, Varius!'",
       effect: "dm-dice"
     },
     {
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       title: "The Peacemaker's Paladin",
       image: "images/paladin.jpg",
-      description: "Clad in black plate and burdened with silent judgement, Lucius Montegrot stalks the land as one of the Peacemaker’s own. He carries a silver maul and a rope coiled into a noose — not for others, but for the sins that trail him like a shadow. He rarely speaks, but when he does, cities kneel.",
+      description: "They whisper that Lucius Montegrot once took holy vows before an altar the Peacemaker. Clad in onyx plate and wielding a maul the size of a tombstone, he roams the Varthian Empire's paved roads delivering “peace” one shattered bone at a time. His justice is swift as a thunderclap and final as the gallows‑knot that dangles from his belt. Some claim there is no man beneath the helm at all — only a spirit of cold, unblinking judgment. Others insist you can hear soft humming inside the armor, as though the Peacemaker himself were singing through Lucius’s ribs. Either way, if the black‑steel paladin blocks your path, pray your sins are few… and your neck unworthy of his rope.",
       effect: "paladin-smite"
     }
   ];
