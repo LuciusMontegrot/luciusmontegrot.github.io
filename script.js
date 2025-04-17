@@ -477,6 +477,66 @@ function spawnDaggerRain() {
   }, 4000);
 }
 
+function spawnPaladinSmite() {
+  const svgNS = "http://www.w3.org/2000/svg";
+  const container = document.createElementNS(svgNS, "svg");
+  container.setAttribute("width", "100%");
+  container.setAttribute("height", "100%");
+  container.setAttribute("viewBox", "0 0 100 100");
+  container.style.position = "absolute";
+  container.style.top = "0";
+  container.style.left = "0";
+  container.style.pointerEvents = "none";
+  container.style.zIndex = "10000";
+
+  // Rope Line
+  const line = document.createElementNS(svgNS, "line");
+  line.setAttribute("x1", "50");
+  line.setAttribute("y1", "0");
+  line.setAttribute("x2", "50");
+  line.setAttribute("y2", "40");
+  line.setAttribute("stroke", "#aaa");
+  line.setAttribute("stroke-width", "0.6");
+  container.appendChild(line);
+
+  // Noose Path (a rough teardrop loop)
+  const noose = document.createElementNS(svgNS, "path");
+  noose.setAttribute("d", "M50 40 Q45 55 50 70 Q55 55 50 40 Z");
+  noose.setAttribute("stroke", "#888");
+  noose.setAttribute("fill", "none");
+  noose.setAttribute("stroke-width", "0.7");
+  noose.setAttribute("opacity", "1");
+
+  // Tightening animation
+  const tighten = document.createElementNS(svgNS, "animateTransform");
+  tighten.setAttribute("attributeName", "transform");
+  tighten.setAttribute("type", "scale");
+  tighten.setAttribute("from", "1 1");
+  tighten.setAttribute("to", "1 0.7");
+  tighten.setAttribute("begin", "0.4s");
+  tighten.setAttribute("dur", "0.6s");
+  tighten.setAttribute("additive", "sum");
+  tighten.setAttribute("fill", "freeze");
+
+  // Fade out
+  const fade = document.createElementNS(svgNS, "animate");
+  fade.setAttribute("attributeName", "opacity");
+  fade.setAttribute("from", "1");
+  fade.setAttribute("to", "0");
+  fade.setAttribute("begin", "2.2s");
+  fade.setAttribute("dur", "1.2s");
+  fade.setAttribute("fill", "freeze");
+
+  noose.appendChild(tighten);
+  noose.appendChild(fade);
+  container.appendChild(noose);
+
+  document.getElementById("effect-layer").appendChild(container);
+
+  setTimeout(() => {
+    container.remove();
+  }, 4000);
+}
 
 
 
@@ -624,7 +684,9 @@ if (persona.effect === "muscle-flex2") {
       case 'hacker-glitch': spawnHackerGlitch(); break;
       case 'dagger-rain': spawnDaggerRain(); break;
       case 'fire-roar': spawnFireRoar(); break;
-      case 'necromancer-wisp': spawnNecromancerWisp(); break;
+      case 'necromancer-wisp': spawnNecromancerWisp(); break
+      case 'paladin-smite': spawnPaladinSmite(); break;
+
 
       default: effectLayer.classList.add(persona.effect);
     }
