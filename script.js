@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
       title: "The Gym-Forged Ghost Writer",
       image: "images/bodybuilder2.jpg",
       description: "Some say Lucius cannot even read and write. They say he is obsessed with physical strength and wrote an entire book dictating one single prompt into some yet unknown artificial intelligence. Those who speak with him say he communicates mostly in grunts, so it is a wonder how he did it. Oops. Did we just show you his REAL picture? No, we didn't. This isn't Lucius Montegrot. This picture isn't real. Nothing to see here.",
-      effect: "muscle-flex"
+      effect: "muscle-flex2"
     },
     {
       title: "The Peacemaker's Paladin",
