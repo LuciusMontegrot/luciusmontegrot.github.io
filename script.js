@@ -609,6 +609,9 @@ while (idx === lastIndex);
 
   lastIndex = idx;
   const persona = personas[idx];
+if (persona.effect === "muscle-flex2") {
+  console.warn("🔥 RARE: Gym-Lucius (possibly real) revealed.");
+}
 
   card.classList.remove('spin');
   void card.offsetWidth;
