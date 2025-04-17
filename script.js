@@ -243,65 +243,80 @@ const pentagramPath = `M${points[0][0]},${points[0][1]}
     container.remove();
   }, 4000);
 }
-function spawnNecromancerWisp() {
+function spawnNecromancerWispPixi() {
+  const container = document.createElement("div");
+  container.style.position = "absolute";
+  container.style.top = "0";
+  container.style.left = "0";
+  container.style.width = "100%";
+  container.style.height = "100%";
+  container.style.pointerEvents = "none";
+  container.style.zIndex = "10000";
+  document.getElementById("effect-layer").appendChild(container);
+
   const app = new PIXI.Application({
     width: window.innerWidth,
     height: window.innerHeight,
     transparent: true,
   });
-
-  app.view.style.position = "absolute";
-  app.view.style.top = "0";
-  app.view.style.left = "0";
-  app.view.style.pointerEvents = "none";
-  app.view.style.zIndex = "10000";
-  app.view.id = "necromancer-wisps";
-
-  document.getElementById("effect-layer").appendChild(app.view);
+  container.appendChild(app.view);
 
   const wisps = [];
 
   for (let i = 0; i < 20; i++) {
-    const gfx = new PIXI.Graphics();
-    gfx.beginFill(0x6fef94, 0.5);
-    gfx.moveTo(0, 0);
-    gfx.bezierCurveTo(8, -15, 10, -35, 0, -55);
-    gfx.bezierCurveTo(-10, -35, -8, -15, 0, 0);
-    gfx.endFill();
+    const wisp = new PIXI.Graphics();
+    const x = Math.random() * app.screen.width;
+    const y = app.screen.height + Math.random() * 100;
+    const size = 10 + Math.random() * 15;
 
-    const sprite = new PIXI.Sprite(app.renderer.generateTexture(gfx));
-    sprite.x = Math.random() * app.screen.width;
-    sprite.y = app.screen.height + Math.random() * 100;
-    sprite.scale.set(0.2 + Math.random() * 0.3);
-    sprite.rotation = Math.random() * Math.PI * 2;
-    sprite.alpha = 0.6;
+    wisp.beginFill(0x66ff99, 0.6);
+    wisp.drawEllipse(0, 0, size * 0.6, size);
+    wisp.endFill();
 
-    const driftX = (Math.random() - 0.5) * 100;
-    const endY = sprite.y - (150 + Math.random() * 100);
-    const rotationSpeed = (Math.random() - 0.5) * 0.01;
+    wisp.x = x;
+    wisp.y = y;
+    wisp.alpha = 0;
 
-    wisps.push({ sprite, driftX, startX: sprite.x, startY: sprite.y, endY, rotationSpeed });
-    app.stage.addChild(sprite);
+    app.stage.addChild(wisp);
+
+    wisps.push({
+      sprite: wisp,
+      startY: y,
+      targetY: y - (100 + Math.random() * 100),
+      speed: 0.5 + Math.random(),
+      drift: (Math.random() - 0.5) * 2,
+      fadeIn: true,
+    });
   }
 
-  let elapsed = 0;
+  const ticker = new PIXI.Ticker();
+  ticker.add(() => {
+    wisps.forEach(w => {
+      w.sprite.y -= w.speed;
+      w.sprite.x += w.drift;
 
-  app.ticker.add((delta) => {
-    elapsed += delta;
+      // Fade in first
+      if (w.fadeIn && w.sprite.alpha < 1) {
+        w.sprite.alpha += 0.02;
+      } else {
+        w.fadeIn = false;
+        w.sprite.alpha -= 0.01;
+      }
 
-    wisps.forEach((wisp, i) => {
-      const t = elapsed / 120; // Normalize over time
-      wisp.sprite.y = wisp.startY + (wisp.endY - wisp.startY) * t;
-      wisp.sprite.x = wisp.startX + wisp.driftX * Math.sin(t * Math.PI);
-      wisp.sprite.rotation += wisp.rotationSpeed;
-      wisp.sprite.alpha = 0.6 * (1 - t);
+      // Cleanup if faded
+      if (w.sprite.alpha <= 0) {
+        app.stage.removeChild(w.sprite);
+      }
     });
-
-    if (elapsed >= 120) {
-      app.destroy(true, { children: true });
-      document.getElementById("necromancer-wisps")?.remove();
-    }
   });
+  ticker.start();
+
+  // Remove everything after 4s
+  setTimeout(() => {
+    ticker.stop();
+    app.destroy(true, { children: true });
+    container.remove();
+  }, 4000);
 }
 
 
@@ -684,7 +699,7 @@ if (persona.effect === "muscle-flex2") {
       case 'hacker-glitch': spawnHackerGlitch(); break;
       case 'dagger-rain': spawnDaggerRain(); break;
       case 'fire-roar': spawnFireRoar(); break;
-      case 'necromancer-wisp': spawnNecromancerWisp(); break;
+      case 'necromancer-wisp': spawnNecromancerWispPixi(); break;
       case 'paladin-smite': spawnPaladinSmite(); break;
 
 
