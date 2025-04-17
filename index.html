@@ -3,40 +3,62 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Who Is Lucius Montegrot?</title>
+  <title>Who Is Lucius Montegrot?</title>
+
+  <!-- site CSS / fonts -->
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+
+  <!-- behaviour -->
   <script defer src="script.js"></script>
 </head>
 <body>
+
+  <!--‑‑‑‑‑‑‑‑‑‑ HEADER ‑‑‑‑‑‑‑‑‑‑-->
   <header>
     <h1>Who Is Lucius Montegrot?</h1>
     <p class="tagline">Frankly, no one's entirely sure. Including Lucius.</p>
   </header>
 
+
   <main>
-  <div id="effect-layer"></div>
+
+    <!-- special‑effects layer -->
+    <div id="effect-layer"></div>
+
+    <!--‑‑‑‑‑‑‑‑‑‑ INTRO ‑‑‑‑‑‑‑‑‑‑-->
     <section class="intro">
-      <p>Welcome, wanderer. This is no ordinary author site. Here, reality sways gently in the breeze of Elven wine and questionable visions brought by Halfling Pipe Herb.</p>
+      <p>Welcome, wanderer. This is no ordinary author site. Here, reality sways gently in the breeze of Elven wine and questionable visions brought by Halfling pipe‑herb.</p>
     </section>
 
+    <!--‑‑‑‑‑‑‑‑‑‑ PERSONAS ‑‑‑‑‑‑‑‑‑‑-->
     <section class="personas">
       <h2>The Many Faces of Lucius</h2>
+
       <div id="persona-display" class="card">
-        <img id="persona-image" src="images/historian.jpg" alt="Lucius the Historian">
+        <img id="persona-image" src="images/historian.jpg" alt="Lucius the Historian">
         <h3 id="persona-title">The Humble Historian</h3>
-        <p id="persona-description">Lucius Montegrot is merely the humble scribe of the events he claims to have witnessed in a vision, probably induced by too much Elven wine and pipe herb. He insists that any resemblances to real persons, gods, or liches is purely coincidental and that he’s never even heard of a phoenix the size of a cathedral roof.</p>
+        <p id="persona-description">
+          Lucius Montegrot is merely the humble scribe of the events he claims to have
+          witnessed in a vision, probably induced by too much Elven wine and pipe‑herb.
+          He insists that any resemblances to real persons, gods, or liches are purely coincidental
+          and that he’s never even heard of a phoenix the size of a cathedral roof.
+        </p>
       </div>
-      <div style="text-align:center; margin-top: 2em;">
-        <button id="reroll">I don't believe this. Tell me who REALLY is Lucius Montegrot!</button>
+
+      <div style="text-align:center;margin-top:2rem;">
+        <button id="reroll">
+          I don't believe this. Tell me who REALLY is Lucius Montegrot!
+        </button>
       </div>
     </section>
 
-     <!--‑‑‑‑‑‑‑‑‑‑  BOOK  ‑‑‑‑‑‑‑‑‑‑-->
+
+    <!--‑‑‑‑‑‑‑‑‑‑  BOOK  ‑‑‑‑‑‑‑‑‑‑-->
     <section class="book">
       <h2>The Book</h2>
 
-      <!-- large clickable cover -->
+      <!-- clickable cover – opens Amazon in new tab -->
       <a href="https://www.amazon.co.uk/Union-Impossible-Part-Twilight-Exiled-ebook/dp/B0F4YM618B/"
          target="_blank" rel="noopener noreferrer">
         <img src="images/book-cover.jpg"
@@ -45,9 +67,8 @@
       </a>
 
       <p>
-        <strong>The Union Impossible – Part 1: The Twilight Exiled</strong>
-        is now available on Kindle. Exiled, hunted, and haunted by gods both mad
-        and fading, Aluriel must survive a world that fears what she is becoming.
+        <strong>The Union Impossible – Part 1: The Twilight Exiled</strong> is now available on Kindle.
+        Exiled, hunted, and haunted by gods both mad and fading, Aluriel must survive a world that fears what she is becoming.
         But power never comes without a price&hellip;
         <a href="https://www.amazon.co.uk/Union-Impossible-Part-Twilight-Exiled-ebook/dp/B0F4YM618B/"
            target="_blank" rel="noopener noreferrer">
@@ -56,39 +77,51 @@
       </p>
     </section>
 
-    <!--‑‑‑‑‑‑‑‑‑‑ Ko‑fi floating button  ‑‑‑‑‑‑‑‑‑‑-->
-    <a href="https://ko-fi.com/luciusmontegrot"
-       target="_blank"
-       class="kofi-btn"
-       aria-label="Support Lucius on Ko‑fi">☕ Buy Lucius a Potion</a>
 
-
-
+    <!--‑‑‑‑‑‑‑‑‑‑ SECRETS ‑‑‑‑‑‑‑‑‑‑-->
     <section class="secrets">
       <h2>Hidden Lore</h2>
       <p>Somewhere on this page lies a secret. Can you find it?</p>
     </section>
+
   </main>
 
-<style>
-.kofi-btn{
-  position:fixed; right:1.2rem; bottom:1.2rem;
-  background:#29abe0; color:#fff;
-  font:700 0.9rem/1 'Inter',sans-serif;
-  padding:0.55rem 0.9rem; border-radius:6px;
-  box-shadow:0 2px 6px rgba(0,0,0,.25);
-  transition:transform .2s;
-  z-index:11000;          /* <- bump */
-}
-.kofi-btn:hover{transform:scale(1.07);}
-@media(max-width:500px){.kofi-btn{display:none;}}
-/* optional: keep effect‑layer safely underneath */
-#effect-layer{pointer-events:none; z-index:9980;}
-</style>
+
+  <!--‑‑‑‑‑‑‑‑‑‑ Ko‑fi floating button  ‑‑‑‑‑‑‑‑‑‑-->
+  <a href="https://ko-fi.com/luciusmontegrot"
+     target="_blank" rel="noopener noreferrer"
+     class="kofi-btn"
+     aria-label="Support Lucius on Ko‑fi">☕ Buy Lucius a Potion</a>
 
 
+  <!--‑‑‑‑‑‑‑‑‑‑ LOCAL INLINE STYLES  (only Ko‑fi & effect‑layer extras) ‑‑‑‑‑‑‑‑‑‑-->
+  <style>
+    .kofi-btn{
+      position:fixed;
+      right:1.2rem;
+      bottom:1.2rem;
+      background:#29abe0;
+      color:#fff;
+      font:700 0.9rem/1 'Inter',sans-serif;
+      padding:0.55rem 0.9rem;
+      border-radius:6px;
+      box-shadow:0 2px 6px rgba(0,0,0,.25);
+      transition:transform .2s;
+      z-index:11000;
+      text-decoration:none;
+    }
+    .kofi-btn:hover{transform:scale(1.07);}
+    @media(max-width:500px){.kofi-btn{display:none;}}
+
+    /* effect layer stays underneath floating UI */
+    #effect-layer{pointer-events:none; z-index:9980;}
+  </style>
+
+
+  <!--‑‑‑‑‑‑‑‑‑‑ FOOTER ‑‑‑‑‑‑‑‑‑‑-->
   <footer>
-    <p>&copy; 2025 Lucius Montegrot. All rights reserved. Except by necromancers.</p>
+    <p>&copy; 2025 Lucius Montegrot. All rights reserved. Except by necromancers.</p>
   </footer>
+
 </body>
 </html>
