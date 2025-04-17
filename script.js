@@ -244,6 +244,7 @@ const pentagramPath = `M${points[0][0]},${points[0][1]}
   }, 4000);
 }
 function spawnNecromancerWisp() {
+  const wispPath = "M0,0 C2,-5 3,-12 0,-20 C-3,-12 -2,-5 0,0 Z";
   const svgNS = "http://www.w3.org/2000/svg";
   const container = document.createElementNS(svgNS, "svg");
   container.setAttribute("width", "100%");
@@ -256,45 +257,47 @@ function spawnNecromancerWisp() {
   container.style.zIndex = "10000";
 
   for (let i = 0; i < 20; i++) {
-    const circle = document.createElementNS(svgNS, "circle");
-    const cx = Math.random() * 100;
-    const cy = 100 + Math.random() * 20;
-    const r = 1 + Math.random() * 2;
-    const delay = Math.random();
-    const driftX = (Math.random() - 0.5) * 20;
-    const endY = 70 + Math.random() * 30;
+  const path = document.createElementNS(svgNS, "path");
 
-    circle.setAttribute("cx", cx);
-    circle.setAttribute("cy", cy);
-    circle.setAttribute("r", r);
-    circle.setAttribute("fill", "#6fef94");
-    circle.setAttribute("opacity", "0.6");
-    circle.setAttribute("filter", "url(#softglow)");
+  const cx = Math.random() * 100;
+  const cy = 100 + Math.random() * 20;
+  const scale = 0.4 + Math.random() * 0.6;
+  const delay = Math.random();
+  const driftX = (Math.random() - 0.5) * 20;
+  const endY = 70 + Math.random() * 30;
+  const rotate = Math.floor(Math.random() * 360);
 
-    const g = document.createElementNS(svgNS, "g");
-    g.appendChild(circle);
+  path.setAttribute("d", "M0,0 C2,-5 3,-12 0,-20 C-3,-12 -2,-5 0,0 Z");
+  path.setAttribute("fill", "#6fef94");
+  path.setAttribute("opacity", "0.6");
+  path.setAttribute("filter", "url(#softglow)");
 
-    const move = document.createElementNS(svgNS, "animateTransform");
-    move.setAttribute("attributeName", "transform");
-    move.setAttribute("type", "translate");
-    move.setAttribute("from", `0 0`);
-    move.setAttribute("to", `${driftX} -${endY}`);
-    move.setAttribute("dur", "3.5s");
-    move.setAttribute("begin", `${delay}s`);
-    move.setAttribute("fill", "freeze");
+  const g = document.createElementNS(svgNS, "g");
+  g.setAttribute("transform", `translate(${cx}, ${cy}) scale(${scale}) rotate(${rotate})`);
+  g.appendChild(path);
 
-    const fade = document.createElementNS(svgNS, "animate");
-    fade.setAttribute("attributeName", "opacity");
-    fade.setAttribute("from", "0.6");
-    fade.setAttribute("to", "0");
-    fade.setAttribute("dur", "2s");
-    fade.setAttribute("begin", `${delay + 1}s`);
-    fade.setAttribute("fill", "freeze");
+  const move = document.createElementNS(svgNS, "animateTransform");
+  move.setAttribute("attributeName", "transform");
+  move.setAttribute("type", "translate");
+  move.setAttribute("from", "0 0");
+  move.setAttribute("to", `${driftX} -${endY}`);
+  move.setAttribute("dur", "3.5s");
+  move.setAttribute("begin", `${delay}s`);
+  move.setAttribute("fill", "freeze");
 
-    g.appendChild(move);
-    g.appendChild(fade);
-    container.appendChild(g);
-  }
+  const fade = document.createElementNS(svgNS, "animate");
+  fade.setAttribute("attributeName", "opacity");
+  fade.setAttribute("from", "0.6");
+  fade.setAttribute("to", "0");
+  fade.setAttribute("dur", "2s");
+  fade.setAttribute("begin", `${delay + 1}s`);
+  fade.setAttribute("fill", "freeze");
+
+  g.appendChild(move);
+  g.appendChild(fade);
+  container.appendChild(g);
+}
+
 
   document.getElementById("effect-layer").appendChild(container);
 
