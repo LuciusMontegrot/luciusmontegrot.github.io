@@ -131,16 +131,24 @@ function spawnWizardEffect() {
     const rotateStart = Math.floor(Math.random() * 360);
     const rotateEnd = rotateStart + 360;
 
-    // Pentagram path (centered at 0,0)
-    const R = 5;
-    const coords = [];
-    for (let j = 0; j < 5; j++) {
-      const angle = ((j * 144) - 90) * Math.PI / 180;
-      const x = R * Math.cos(angle);
-      const y = R * Math.sin(angle);
-      coords.push(`${x},${y}`);
-    }
-    pentagram.setAttribute("d", `M${coords.join(' L')} Z`);
+    // Proper pentagram path (drawn by skipping every 2nd point)
+const R = 5;
+const points = [];
+for (let j = 0; j < 5; j++) {
+  const angle = ((j * 72) - 90) * Math.PI / 180;
+  const x = R * Math.cos(angle);
+  const y = R * Math.sin(angle);
+  points.push([x, y]);
+}
+
+// Order: 0 → 2 → 4 → 1 → 3 → 0
+const pentagramPath = `M${points[0][0]},${points[0][1]} 
+                       L${points[2][0]},${points[2][1]} 
+                       L${points[4][0]},${points[4][1]} 
+                       L${points[1][0]},${points[1][1]} 
+                       L${points[3][0]},${points[3][1]} Z`;
+
+pentagram.setAttribute("d", pentagramPath);
     pentagram.setAttribute("stroke", "#00ccff");
     pentagram.setAttribute("stroke-width", "0.4");
     pentagram.setAttribute("fill", "none");
