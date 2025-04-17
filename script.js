@@ -244,6 +244,82 @@ pentagram.setAttribute("d", pentagramPath);
   }, 4000);
 }
 
+function spawnDaggerRain() {
+  const svgNS = "http://www.w3.org/2000/svg";
+  const container = document.createElementNS(svgNS, "svg");
+  container.setAttribute("width", "100%");
+  container.setAttribute("height", "100%");
+  container.setAttribute("viewBox", "0 0 100 100");
+  container.style.position = "absolute";
+  container.style.top = "0";
+  container.style.left = "0";
+  container.style.width = "100%";
+  container.style.height = "100%";
+  container.style.pointerEvents = "none";
+  container.style.zIndex = "10000";
+
+  const daggerPath = "M0,-5 L1,0 L0.5,0.5 L0,5 L-0.5,0.5 L-1,0 Z";
+
+  for (let i = 0; i < 10; i++) {
+    const dagger = document.createElementNS(svgNS, "path");
+
+    const startX = Math.random() * 100;
+    const startY = -10;
+    const endX = startX + (Math.random() * 20 - 10); // some sideways motion
+    const endY = 120;
+    const delay = Math.random() * 1;
+    const rotate = Math.random() * 360;
+    const scale = 0.7 + Math.random() * 0.6;
+
+    dagger.setAttribute("d", daggerPath);
+    dagger.setAttribute("fill", "#a00");
+    dagger.setAttribute("stroke", "#333");
+    dagger.setAttribute("stroke-width", "0.2");
+    dagger.setAttribute("opacity", "0.9");
+
+    const g = document.createElementNS(svgNS, "g");
+    g.setAttribute("transform", `translate(${startX}, ${startY}) scale(${scale}) rotate(${rotate})`);
+    g.appendChild(dagger);
+
+    const move = document.createElementNS(svgNS, "animateTransform");
+    move.setAttribute("attributeName", "transform");
+    move.setAttribute("type", "translate");
+    move.setAttribute("from", `${startX} ${startY}`);
+    move.setAttribute("to", `${endX} ${endY}`);
+    move.setAttribute("dur", "2.5s");
+    move.setAttribute("begin", `${delay}s`);
+    move.setAttribute("fill", "freeze");
+
+    const spin = document.createElementNS(svgNS, "animateTransform");
+    spin.setAttribute("attributeName", "transform");
+    spin.setAttribute("type", "rotate");
+    spin.setAttribute("from", `0 ${startX} ${startY}`);
+    spin.setAttribute("to", `720 ${startX} ${startY}`);
+    spin.setAttribute("dur", "2.5s");
+    spin.setAttribute("begin", `${delay}s`);
+    spin.setAttribute("additive", "sum");
+    spin.setAttribute("fill", "freeze");
+
+    const fade = document.createElementNS(svgNS, "animate");
+    fade.setAttribute("attributeName", "opacity");
+    fade.setAttribute("from", "0.9");
+    fade.setAttribute("to", "0");
+    fade.setAttribute("dur", "2.5s");
+    fade.setAttribute("begin", `${delay + 0.5}s`);
+    fade.setAttribute("fill", "freeze");
+
+    g.appendChild(move);
+    g.appendChild(spin);
+    g.appendChild(fade);
+    container.appendChild(g);
+  }
+
+  document.getElementById("effect-layer").appendChild(container);
+
+  setTimeout(() => {
+    container.remove();
+  }, 4000);
+}
 
 
 
@@ -358,7 +434,7 @@ function showRandomPersona () {
       case 'vampire-blood': spawnBloodRain(); break;
       case 'wizard-smoke': spawnWizardEffect(); break;
       case 'hacker-glitch': spawnHackerGlitch(); break;
-
+      case 'dagger-rain': spawnDaggerRain(); break;
       default: effectLayer.classList.add(persona.effect);
     }
 
