@@ -244,67 +244,66 @@ const pentagramPath = `M${points[0][0]},${points[0][1]}
   }, 4000);
 }
 function spawnNecromancerWisp() {
-  const wispPath = "M0,0 C2,-5 3,-12 0,-20 C-3,-12 -2,-5 0,0 Z";
-  const svgNS = "http://www.w3.org/2000/svg";
-  const container = document.createElementNS(svgNS, "svg");
-  container.setAttribute("width", "100%");
-  container.setAttribute("height", "100%");
-  container.setAttribute("viewBox", "0 0 100 100");
-  container.style.position = "absolute";
-  container.style.top = "0";
-  container.style.left = "0";
-  container.style.pointerEvents = "none";
-  container.style.zIndex = "10000";
+  const app = new PIXI.Application({
+    width: window.innerWidth,
+    height: window.innerHeight,
+    transparent: true,
+  });
+
+  app.view.style.position = "absolute";
+  app.view.style.top = "0";
+  app.view.style.left = "0";
+  app.view.style.pointerEvents = "none";
+  app.view.style.zIndex = "10000";
+  app.view.id = "necromancer-wisps";
+
+  document.getElementById("effect-layer").appendChild(app.view);
+
+  const wisps = [];
 
   for (let i = 0; i < 20; i++) {
-  const path = document.createElementNS(svgNS, "path");
+    const gfx = new PIXI.Graphics();
+    gfx.beginFill(0x6fef94, 0.5);
+    gfx.moveTo(0, 0);
+    gfx.bezierCurveTo(8, -15, 10, -35, 0, -55);
+    gfx.bezierCurveTo(-10, -35, -8, -15, 0, 0);
+    gfx.endFill();
 
-  const cx = Math.random() * 100;
-  const cy = 100 + Math.random() * 20;
-  const scale = 0.4 + Math.random() * 0.6;
-  const delay = Math.random();
-  const driftX = (Math.random() - 0.5) * 20;
-  const endY = 70 + Math.random() * 30;
-  const rotate = Math.floor(Math.random() * 360);
+    const sprite = new PIXI.Sprite(app.renderer.generateTexture(gfx));
+    sprite.x = Math.random() * app.screen.width;
+    sprite.y = app.screen.height + Math.random() * 100;
+    sprite.scale.set(0.2 + Math.random() * 0.3);
+    sprite.rotation = Math.random() * Math.PI * 2;
+    sprite.alpha = 0.6;
 
-  path.setAttribute("d", "M0,0 C2,-5 3,-12 0,-20 C-3,-12 -2,-5 0,0 Z");
-  path.setAttribute("fill", "#6fef94");
-  path.setAttribute("opacity", "0.6");
-  path.setAttribute("filter", "url(#softglow)");
+    const driftX = (Math.random() - 0.5) * 100;
+    const endY = sprite.y - (150 + Math.random() * 100);
+    const rotationSpeed = (Math.random() - 0.5) * 0.01;
 
-  const g = document.createElementNS(svgNS, "g");
-  g.setAttribute("transform", `translate(${cx}, ${cy}) scale(${scale}) rotate(${rotate})`);
-  g.appendChild(path);
+    wisps.push({ sprite, driftX, startX: sprite.x, startY: sprite.y, endY, rotationSpeed });
+    app.stage.addChild(sprite);
+  }
 
-  const move = document.createElementNS(svgNS, "animateTransform");
-  move.setAttribute("attributeName", "transform");
-  move.setAttribute("type", "translate");
-  move.setAttribute("from", "0 0");
-  move.setAttribute("to", `${driftX} -${endY}`);
-  move.setAttribute("dur", "3.5s");
-  move.setAttribute("begin", `${delay}s`);
-  move.setAttribute("fill", "freeze");
+  let elapsed = 0;
 
-  const fade = document.createElementNS(svgNS, "animate");
-  fade.setAttribute("attributeName", "opacity");
-  fade.setAttribute("from", "0.6");
-  fade.setAttribute("to", "0");
-  fade.setAttribute("dur", "2s");
-  fade.setAttribute("begin", `${delay + 1}s`);
-  fade.setAttribute("fill", "freeze");
+  app.ticker.add((delta) => {
+    elapsed += delta;
 
-  g.appendChild(move);
-  g.appendChild(fade);
-  container.appendChild(g);
+    wisps.forEach((wisp, i) => {
+      const t = elapsed / 120; // Normalize over time
+      wisp.sprite.y = wisp.startY + (wisp.endY - wisp.startY) * t;
+      wisp.sprite.x = wisp.startX + wisp.driftX * Math.sin(t * Math.PI);
+      wisp.sprite.rotation += wisp.rotationSpeed;
+      wisp.sprite.alpha = 0.6 * (1 - t);
+    });
+
+    if (elapsed >= 120) {
+      app.destroy(true, { children: true });
+      document.getElementById("necromancer-wisps")?.remove();
+    }
+  });
 }
 
-
-  document.getElementById("effect-layer").appendChild(container);
-
-  setTimeout(() => {
-    container.remove();
-  }, 4000);
-}
 
 
 
