@@ -262,12 +262,12 @@ function spawnNecromancerWisp() {
     const r = 1 + Math.random() * 2;
     const delay = Math.random();
     const driftX = (Math.random() - 0.5) * 20;
-    const endY = Math.random() * 50;
+    const endY = 70 + Math.random() * 30;
 
     circle.setAttribute("cx", cx);
     circle.setAttribute("cy", cy);
     circle.setAttribute("r", r);
-    circle.setAttribute("fill", "limegreen");
+    circle.setAttribute("fill", "#6fef94");
     circle.setAttribute("opacity", "0.6");
     circle.setAttribute("filter", "url(#softglow)");
 
