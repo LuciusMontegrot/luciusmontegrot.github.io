@@ -255,21 +255,11 @@ function spawnNecromancerWisp() {
   container.style.pointerEvents = "none";
   container.style.zIndex = "10000";
 
-  const defs = document.createElementNS(svgNS, "defs");
-  const filter = document.createElementNS(svgNS, "filter");
-  filter.setAttribute("id", "softglow");
-  const blur = document.createElementNS(svgNS, "feGaussianBlur");
-  blur.setAttribute("stdDeviation", "1.5");
-  blur.setAttribute("in", "SourceGraphic");
-  filter.appendChild(blur);
-  defs.appendChild(filter);
-  container.appendChild(defs); // ← move this to the top
-
   for (let i = 0; i < 12; i++) {
     const circle = document.createElementNS(svgNS, "circle");
     const cx = Math.random() * 100;
     const cy = 100 + Math.random() * 20;
-    const r = 2 + Math.random() * 2;
+    const r = 1 + Math.random() * 2;
     const delay = Math.random();
     const driftX = (Math.random() - 0.5) * 20;
     const endY = Math.random() * 50;
@@ -278,7 +268,7 @@ function spawnNecromancerWisp() {
     circle.setAttribute("cy", cy);
     circle.setAttribute("r", r);
     circle.setAttribute("fill", "limegreen");
-    circle.setAttribute("opacity", "1");
+    circle.setAttribute("opacity", "0.6");
     circle.setAttribute("filter", "url(#softglow)");
 
     const g = document.createElementNS(svgNS, "g");
@@ -295,7 +285,7 @@ function spawnNecromancerWisp() {
 
     const fade = document.createElementNS(svgNS, "animate");
     fade.setAttribute("attributeName", "opacity");
-    fade.setAttribute("from", "1");
+    fade.setAttribute("from", "0.6");
     fade.setAttribute("to", "0");
     fade.setAttribute("dur", "2s");
     fade.setAttribute("begin", `${delay + 1}s`);
@@ -312,6 +302,7 @@ function spawnNecromancerWisp() {
     container.remove();
   }, 4000);
 }
+
 
 
 
