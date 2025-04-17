@@ -198,42 +198,38 @@ function showRandomPersona () {
   if (isAnimating) return;
   isAnimating = true;
 
-  /* pick a new persona (not the current one) */
   let idx;
   do { idx = Math.floor(Math.random() * personas.length); }
   while (idx === lastIndex);
   lastIndex = idx;
   const persona = personas[idx];
 
-  /* restart the CSS 1.8 s spin */
   card.classList.remove('spin');
-  void card.offsetWidth;      // forces re‑flow
+  void card.offsetWidth;
   card.classList.add('spin');
 
-  /* clear any previous VFX */
-  effectLayer.className = '';
+  // TEMPORARY blackout effect
+  card.classList.add('flipping');
 
-  /* ‑‑‑ swap at the halfway mark (0.9 s) ‑‑‑ */
   setTimeout(() => {
-    imageEl.src         = persona.image;
-    imageEl.alt         = persona.title;
+    imageEl.src = persona.image;
+    imageEl.alt = persona.title;
     titleEl.textContent = persona.title;
-    descEl.textContent  = persona.description;
+    descEl.textContent = persona.description;
 
-    /* trigger the persona’s visual effect */
+    effectLayer.className = '';
     switch (persona.effect) {
-      case 'vampire-blood': spawnBloodRain();   break;
-      case 'wizard-smoke' : spawnWizardEffect(); break;
-      default            : effectLayer.classList.add(persona.effect);
+      case 'vampire-blood': spawnBloodRain(); break;
+      case 'wizard-smoke': spawnWizardEffect(); break;
+      default: effectLayer.classList.add(persona.effect);
     }
 
-    /* remove CSS‑only effects a little later */
-    setTimeout(() => { effectLayer.className = ''; }, 2500);
-  }, 900);   // 900 ms == 50 % of 1.8 s
+    card.classList.remove('flipping'); // fade back in
+  }, 900);
 
-  /* unlock the button after the full spin */
   setTimeout(() => { isAnimating = false; }, 1800);
 }
+
 
 /* hook up the button */
 button.addEventListener('click', showRandomPersona);
