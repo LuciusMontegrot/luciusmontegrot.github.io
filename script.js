@@ -255,7 +255,7 @@ function spawnNecromancerWisp() {
   container.style.pointerEvents = "none";
   container.style.zIndex = "10000";
 
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < 20; i++) {
     const circle = document.createElementNS(svgNS, "circle");
     const cx = Math.random() * 100;
     const cy = 100 + Math.random() * 20;
