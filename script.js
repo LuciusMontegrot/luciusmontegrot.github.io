@@ -243,7 +243,7 @@ const pentagramPath = `M${points[0][0]},${points[0][1]}
     container.remove();
   }, 4000);
 }
-  function spawnNecromancerWisp() {
+ function spawnNecromancerWisp() {
   const svgNS = "http://www.w3.org/2000/svg";
   const container = document.createElementNS(svgNS, "svg");
   container.setAttribute("width", "100%");
@@ -254,6 +254,20 @@ const pentagramPath = `M${points[0][0]},${points[0][1]}
   container.style.left = "0";
   container.style.pointerEvents = "none";
   container.style.zIndex = "10000";
+
+  // Add the filter only once
+  const existing = document.getElementById("softglow");
+  if (!existing) {
+    const defs = document.createElementNS(svgNS, "defs");
+    const filter = document.createElementNS(svgNS, "filter");
+    filter.setAttribute("id", "softglow");
+    const blur = document.createElementNS(svgNS, "feGaussianBlur");
+    blur.setAttribute("stdDeviation", "1.5");
+    blur.setAttribute("in", "SourceGraphic");
+    filter.appendChild(blur);
+    defs.appendChild(filter);
+    container.appendChild(defs);
+  }
 
   for (let i = 0; i < 12; i++) {
     const circle = document.createElementNS(svgNS, "circle");
@@ -296,23 +310,13 @@ const pentagramPath = `M${points[0][0]},${points[0][1]}
     container.appendChild(g);
   }
 
-  // Soft glow filter
-  const defs = document.createElementNS(svgNS, "defs");
-  const filter = document.createElementNS(svgNS, "filter");
-  filter.setAttribute("id", "softglow");
-  const blur = document.createElementNS(svgNS, "feGaussianBlur");
-  blur.setAttribute("stdDeviation", "1.5");
-  blur.setAttribute("in", "SourceGraphic");
-  filter.appendChild(blur);
-  defs.appendChild(filter);
-  container.appendChild(defs);
-
   document.getElementById("effect-layer").appendChild(container);
 
   setTimeout(() => {
     container.remove();
   }, 4000);
 }
+
 
 function spawnFireRoar() {
   const svgNS = "http://www.w3.org/2000/svg";
