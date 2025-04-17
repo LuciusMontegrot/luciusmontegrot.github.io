@@ -576,9 +576,37 @@ function showRandomPersona () {
   if (isAnimating) return;
   isAnimating = true;
 
-  let idx;
-  do { idx = Math.floor(Math.random() * personas.length); }
-  while (idx === lastIndex);
+function weightedRandomIndex(weights) {
+  const total = weights.reduce((a, b) => a + b, 0);
+  let r = Math.random() * total;
+  for (let i = 0; i < weights.length; i++) {
+    r -= weights[i];
+    if (r <= 0) return i;
+  }
+  return weights.length - 1;
+}
+
+// Weights for each persona, must match order in `personas`
+const personaWeights = [
+  1, // historian
+  1, // wizard
+  1, // vampire
+  1, // mist elf
+  1, // dungeon master
+  1, // sea elf
+  1, // hacker
+  1, // gym-forged ghostwriter
+  0.05, // 🧠🔥 GYM-FORGED WRITER (RARE)
+  1, // fire priest
+  1, // assassin
+  1, // necromancer
+  1  // paladin
+];
+
+let idx;
+do { idx = weightedRandomIndex(personaWeights); }
+while (idx === lastIndex);
+
   lastIndex = idx;
   const persona = personas[idx];
 
