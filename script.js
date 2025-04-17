@@ -243,7 +243,77 @@ const pentagramPath = `M${points[0][0]},${points[0][1]}
     container.remove();
   }, 4000);
 }
-  
+  function spawnNecromancerWisp() {
+  const svgNS = "http://www.w3.org/2000/svg";
+  const container = document.createElementNS(svgNS, "svg");
+  container.setAttribute("width", "100%");
+  container.setAttribute("height", "100%");
+  container.setAttribute("viewBox", "0 0 100 100");
+  container.style.position = "absolute";
+  container.style.top = "0";
+  container.style.left = "0";
+  container.style.pointerEvents = "none";
+  container.style.zIndex = "10000";
+
+  for (let i = 0; i < 12; i++) {
+    const circle = document.createElementNS(svgNS, "circle");
+    const cx = Math.random() * 100;
+    const cy = 100 + Math.random() * 20;
+    const r = 1 + Math.random() * 2;
+    const delay = Math.random();
+    const driftX = (Math.random() - 0.5) * 20;
+    const endY = Math.random() * 50;
+
+    circle.setAttribute("cx", cx);
+    circle.setAttribute("cy", cy);
+    circle.setAttribute("r", r);
+    circle.setAttribute("fill", "limegreen");
+    circle.setAttribute("opacity", "0.6");
+    circle.setAttribute("filter", "url(#softglow)");
+
+    const g = document.createElementNS(svgNS, "g");
+    g.appendChild(circle);
+
+    const move = document.createElementNS(svgNS, "animateTransform");
+    move.setAttribute("attributeName", "transform");
+    move.setAttribute("type", "translate");
+    move.setAttribute("from", `0 0`);
+    move.setAttribute("to", `${driftX} -${endY}`);
+    move.setAttribute("dur", "3.5s");
+    move.setAttribute("begin", `${delay}s`);
+    move.setAttribute("fill", "freeze");
+
+    const fade = document.createElementNS(svgNS, "animate");
+    fade.setAttribute("attributeName", "opacity");
+    fade.setAttribute("from", "0.6");
+    fade.setAttribute("to", "0");
+    fade.setAttribute("dur", "2s");
+    fade.setAttribute("begin", `${delay + 1}s`);
+    fade.setAttribute("fill", "freeze");
+
+    g.appendChild(move);
+    g.appendChild(fade);
+    container.appendChild(g);
+  }
+
+  // Soft glow filter
+  const defs = document.createElementNS(svgNS, "defs");
+  const filter = document.createElementNS(svgNS, "filter");
+  filter.setAttribute("id", "softglow");
+  const blur = document.createElementNS(svgNS, "feGaussianBlur");
+  blur.setAttribute("stdDeviation", "1.5");
+  blur.setAttribute("in", "SourceGraphic");
+  filter.appendChild(blur);
+  defs.appendChild(filter);
+  container.appendChild(defs);
+
+  document.getElementById("effect-layer").appendChild(container);
+
+  setTimeout(() => {
+    container.remove();
+  }, 4000);
+}
+
 function spawnFireRoar() {
   const svgNS = "http://www.w3.org/2000/svg";
   const container = document.createElementNS(svgNS, "svg");
@@ -528,6 +598,7 @@ function showRandomPersona () {
       case 'hacker-glitch': spawnHackerGlitch(); break;
       case 'dagger-rain': spawnDaggerRain(); break;
       case 'fire-roar': spawnFireRoar(); break;
+      case 'necromancer-wisp': spawnNecromancerWisp(); break;
 
       default: effectLayer.classList.add(persona.effect);
     }
