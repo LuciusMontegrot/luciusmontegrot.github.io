@@ -684,7 +684,7 @@ if (persona.effect === "muscle-flex2") {
       case 'hacker-glitch': spawnHackerGlitch(); break;
       case 'dagger-rain': spawnDaggerRain(); break;
       case 'fire-roar': spawnFireRoar(); break;
-      case 'necromancer-wisp': spawnNecromancerWisp(); break
+      case 'necromancer-wisp': spawnNecromancerWisp(); break;
       case 'paladin-smite': spawnPaladinSmite(); break;
 
 
