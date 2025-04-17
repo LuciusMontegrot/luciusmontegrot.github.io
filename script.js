@@ -258,60 +258,52 @@ function spawnDaggerRain() {
   container.style.pointerEvents = "none";
   container.style.zIndex = "10000";
 
-  const daggerPath = "M0,-5 L1,0 L0.5,0.5 L0,5 L-0.5,0.5 L-1,0 Z";
+  const daggerPath = "M5,0 L6,4 L5.5,5 L5,10 L4.5,5 L4,4 Z";
 
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 12; i++) {
     const dagger = document.createElementNS(svgNS, "path");
-
     const startX = Math.random() * 100;
-    const startY = -10;
-    const endX = startX + (Math.random() * 20 - 10); // some sideways motion
-    const endY = 120;
-    const delay = Math.random() * 1;
-    const rotate = Math.random() * 360;
-    const scale = 0.7 + Math.random() * 0.6;
+    const endX = startX + (Math.random() * 20 - 10);
+    const delay = Math.random() * 0.6;
 
     dagger.setAttribute("d", daggerPath);
-    dagger.setAttribute("fill", "#a00");
-    dagger.setAttribute("stroke", "#333");
-    dagger.setAttribute("stroke-width", "0.2");
-    dagger.setAttribute("opacity", "0.9");
+    dagger.setAttribute("fill", "#c00");
+    dagger.setAttribute("stroke", "#300");
+    dagger.setAttribute("stroke-width", "0.3");
+    dagger.setAttribute("opacity", "0.8");
+    dagger.setAttribute("transform", `translate(${startX}, -10) rotate(0)`);
 
-    const g = document.createElementNS(svgNS, "g");
-    g.setAttribute("transform", `translate(${startX}, ${startY}) scale(${scale}) rotate(${rotate})`);
-    g.appendChild(dagger);
+    const animateFall = document.createElementNS(svgNS, "animateTransform");
+    animateFall.setAttribute("attributeName", "transform");
+    animateFall.setAttribute("type", "translate");
+    animateFall.setAttribute("from", `${startX}, -10`);
+    animateFall.setAttribute("to", `${endX}, 120`);
+    animateFall.setAttribute("dur", "2.5s");
+    animateFall.setAttribute("begin", `${delay}s`);
+    animateFall.setAttribute("fill", "freeze");
 
-    const move = document.createElementNS(svgNS, "animateTransform");
-    move.setAttribute("attributeName", "transform");
-    move.setAttribute("type", "translate");
-    move.setAttribute("from", `${startX} ${startY}`);
-    move.setAttribute("to", `${endX} ${endY}`);
-    move.setAttribute("dur", "2.5s");
-    move.setAttribute("begin", `${delay}s`);
-    move.setAttribute("fill", "freeze");
+    const animateSpin = document.createElementNS(svgNS, "animateTransform");
+    animateSpin.setAttribute("attributeName", "transform");
+    animateSpin.setAttribute("type", "rotate");
+    animateSpin.setAttribute("from", `0 ${startX} -10`);
+    animateSpin.setAttribute("to", `720 ${startX} -10`);
+    animateSpin.setAttribute("dur", "2.5s");
+    animateSpin.setAttribute("begin", `${delay}s`);
+    animateSpin.setAttribute("additive", "sum");
+    animateSpin.setAttribute("fill", "freeze");
 
-    const spin = document.createElementNS(svgNS, "animateTransform");
-    spin.setAttribute("attributeName", "transform");
-    spin.setAttribute("type", "rotate");
-    spin.setAttribute("from", `0 ${startX} ${startY}`);
-    spin.setAttribute("to", `720 ${startX} ${startY}`);
-    spin.setAttribute("dur", "2.5s");
-    spin.setAttribute("begin", `${delay}s`);
-    spin.setAttribute("additive", "sum");
-    spin.setAttribute("fill", "freeze");
+    const fadeOut = document.createElementNS(svgNS, "animate");
+    fadeOut.setAttribute("attributeName", "opacity");
+    fadeOut.setAttribute("from", "0.8");
+    fadeOut.setAttribute("to", "0");
+    fadeOut.setAttribute("dur", "2.5s");
+    fadeOut.setAttribute("begin", `${delay + 0.5}s`);
+    fadeOut.setAttribute("fill", "freeze");
 
-    const fade = document.createElementNS(svgNS, "animate");
-    fade.setAttribute("attributeName", "opacity");
-    fade.setAttribute("from", "0.9");
-    fade.setAttribute("to", "0");
-    fade.setAttribute("dur", "2.5s");
-    fade.setAttribute("begin", `${delay + 0.5}s`);
-    fade.setAttribute("fill", "freeze");
-
-    g.appendChild(move);
-    g.appendChild(spin);
-    g.appendChild(fade);
-    container.appendChild(g);
+    dagger.appendChild(animateFall);
+    dagger.appendChild(animateSpin);
+    dagger.appendChild(fadeOut);
+    container.appendChild(dagger);
   }
 
   document.getElementById("effect-layer").appendChild(container);
@@ -320,6 +312,7 @@ function spawnDaggerRain() {
     container.remove();
   }, 4000);
 }
+
 
 
 
