@@ -107,50 +107,84 @@ function spawnWizardEffect() {
   container.style.pointerEvents = "none";
   container.style.zIndex = "10000";
 
-  for (let i = 0; i < 6; i++) {
-    const star = document.createElementNS(svgNS, "polygon");
+  // Optional glow filter
+  const defs = document.createElementNS(svgNS, "defs");
+  const filter = document.createElementNS(svgNS, "filter");
+  filter.setAttribute("id", "glow");
+  const blur = document.createElementNS(svgNS, "feGaussianBlur");
+  blur.setAttribute("in", "SourceGraphic");
+  blur.setAttribute("stdDeviation", "0.8");
+  filter.appendChild(blur);
+  defs.appendChild(filter);
+  container.appendChild(defs);
 
-    // Random positions and drift
+  for (let i = 0; i < 6; i++) {
+    const pentagram = document.createElementNS(svgNS, "path");
+
+    // Location & movement
     const cx = Math.random() * 100;
     const cy = Math.random() * 100;
-    const dx = cx + (Math.random() * 10 - 5);
-    const dy = cy + (Math.random() * 10 - 5);
-    const scale = 0.8 + Math.random() * 0.6;
+    const driftX = (Math.random() - 0.5) * 10;
+    const driftY = (Math.random() - 0.5) * 10;
     const delay = Math.random() * 0.5;
+    const scale = 0.4 + Math.random() * 0.5;
+    const rotateStart = Math.floor(Math.random() * 360);
+    const rotateEnd = rotateStart + 360;
 
-    // Basic pentagram points
-    const points = [
-      [0, -5], [4.75, 1.54], [2.94, 4.05],
-      [-2.94, 4.05], [-4.75, 1.54]
-    ].map(([x, y]) => `${x * scale + cx},${y * scale + cy}`).join(" ");
+    // Pentagram path (centered at 0,0)
+    const R = 5;
+    const coords = [];
+    for (let j = 0; j < 5; j++) {
+      const angle = ((j * 144) - 90) * Math.PI / 180;
+      const x = R * Math.cos(angle);
+      const y = R * Math.sin(angle);
+      coords.push(`${x},${y}`);
+    }
+    pentagram.setAttribute("d", `M${coords.join(' L')} Z`);
+    pentagram.setAttribute("stroke", "#00ccff");
+    pentagram.setAttribute("stroke-width", "0.4");
+    pentagram.setAttribute("fill", "none");
+    pentagram.setAttribute("opacity", "0.85");
+    pentagram.setAttribute("filter", "url(#glow)");
 
-    star.setAttribute("points", points);
-    star.setAttribute("fill", "none");
-    star.setAttribute("stroke", "#00ccff");
-    star.setAttribute("stroke-width", "0.3");
-    star.setAttribute("stroke-linejoin", "round"); 
-    star.setAttribute("opacity", "0.9");
+    const g = document.createElementNS(svgNS, "g");
+    g.setAttribute("transform", `translate(${cx}, ${cy}) scale(${scale})`);
+    g.appendChild(pentagram);
 
+    // Movement animation
     const move = document.createElementNS(svgNS, "animateTransform");
     move.setAttribute("attributeName", "transform");
     move.setAttribute("type", "translate");
-    move.setAttribute("from", "0 0");
-    move.setAttribute("to", `${dx - cx} ${dy - cy}`);
+    move.setAttribute("from", `${cx} ${cy}`);
+    move.setAttribute("to", `${cx + driftX} ${cy + driftY}`);
     move.setAttribute("dur", "3s");
     move.setAttribute("begin", `${delay}s`);
     move.setAttribute("fill", "freeze");
 
+    // Rotation animation
+    const spin = document.createElementNS(svgNS, "animateTransform");
+    spin.setAttribute("attributeName", "transform");
+    spin.setAttribute("type", "rotate");
+    spin.setAttribute("from", `${rotateStart} ${cx} ${cy}`);
+    spin.setAttribute("to", `${rotateEnd} ${cx} ${cy}`);
+    spin.setAttribute("dur", "3s");
+    spin.setAttribute("begin", `${delay}s`);
+    spin.setAttribute("additive", "sum");
+    spin.setAttribute("fill", "freeze");
+
+    // Fade out
     const fade = document.createElementNS(svgNS, "animate");
     fade.setAttribute("attributeName", "opacity");
-    fade.setAttribute("from", "0.9");
+    fade.setAttribute("from", "0.85");
     fade.setAttribute("to", "0");
     fade.setAttribute("dur", "2.5s");
     fade.setAttribute("begin", `${delay + 0.5}s`);
     fade.setAttribute("fill", "freeze");
 
-    star.appendChild(move);
-    star.appendChild(fade);
-    container.appendChild(star);
+    g.appendChild(move);
+    g.appendChild(spin);
+    g.appendChild(fade);
+    container.appendChild(g);
   }
 
   document.getElementById("effect-layer").appendChild(container);
@@ -159,6 +193,7 @@ function spawnWizardEffect() {
     container.remove();
   }, 4000);
 }
+
 
 
 
