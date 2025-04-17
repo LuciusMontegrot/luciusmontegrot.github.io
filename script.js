@@ -194,45 +194,48 @@ function spawnWizardEffect() {
   let lastIndex = 0;
   let isAnimating = false;
 
-  function showRandomPersona() {
-    if (isAnimating) return;
-    isAnimating = true;
+function showRandomPersona () {
+  if (isAnimating) return;
+  isAnimating = true;
 
-    let index;
-    do {
-      index = Math.floor(Math.random() * personas.length);
-    } while (index === lastIndex);
-    lastIndex = index;
+  /* pick a new persona (not the current one) */
+  let idx;
+  do { idx = Math.floor(Math.random() * personas.length); }
+  while (idx === lastIndex);
+  lastIndex = idx;
+  const persona = personas[idx];
 
-    const persona = personas[index];
-    console.log(`Summoning: ${persona.title}`);
+  /* restart the CSS 1.8 s spin */
+  card.classList.remove('spin');
+  void card.offsetWidth;      // forces re‑flow
+  card.classList.add('spin');
 
-    card.classList.remove('spin');
-    void card.offsetWidth;
-    card.classList.add('spin');
+  /* clear any previous VFX */
+  effectLayer.className = '';
 
-    effectLayer.className = "";
+  /* ‑‑‑ swap at the halfway mark (0.9 s) ‑‑‑ */
+  setTimeout(() => {
+    imageEl.src         = persona.image;
+    imageEl.alt         = persona.title;
+    titleEl.textContent = persona.title;
+    descEl.textContent  = persona.description;
 
-    setTimeout(() => {
-      imageEl.src = persona.image;
-      imageEl.alt = persona.title;
-      titleEl.textContent = persona.title;
-      descEl.textContent = persona.description;
+    /* trigger the persona’s visual effect */
+    switch (persona.effect) {
+      case 'vampire-blood': spawnBloodRain();   break;
+      case 'wizard-smoke' : spawnWizardEffect(); break;
+      default            : effectLayer.classList.add(persona.effect);
+    }
 
-if (persona.effect === "vampire-blood") {
-  spawnBloodRain();
-} else if (persona.effect === "wizard-smoke") {
-  spawnWizardEffect();
-} else {
-  effectLayer.classList.add(persona.effect);
+    /* remove CSS‑only effects a little later */
+    setTimeout(() => { effectLayer.className = ''; }, 2500);
+  }, 900);   // 900 ms == 50 % of 1.8 s
+
+  /* unlock the button after the full spin */
+  setTimeout(() => { isAnimating = false; }, 1800);
 }
 
-      setTimeout(() => {
-        effectLayer.className = "";
-        isAnimating = false;
-      }, 2500);
-    }, 1800);
-  }
+/* hook up the button */
+button.addEventListener('click', showRandomPersona);
 
-  button.addEventListener('click', showRandomPersona);
 });
