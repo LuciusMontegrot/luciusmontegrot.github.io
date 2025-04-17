@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     {
       title: "The Mist-Elven Exile",
-      image: "images/mistelf.jpg",
+      image: "images/mistelf2.jpg",
       description: "It is whispered that Lucius is the only Mist Elf to have fled the demiplane of Mist and retained his madness. His illusions are so convincing, he once sold a dream to a dragon. He spends his days disguised as a mortal author, but his prose smells faintly of starlight and betrayal.",
       effect: "mistelf-glow"
     },
