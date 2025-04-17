@@ -155,7 +155,7 @@ function spawnWizardEffect() {
   filter.setAttribute("id", "glow");
   const blur = document.createElementNS(svgNS, "feGaussianBlur");
   blur.setAttribute("in", "SourceGraphic");
-  blur.setAttribute("stdDeviation", "0.8");
+  blur.setAttribute("stdDeviation", "0.3");
   filter.appendChild(blur);
   defs.appendChild(filter);
   container.appendChild(defs);
@@ -190,11 +190,11 @@ const pentagramPath = `M${points[0][0]},${points[0][1]}
                        L${points[1][0]},${points[1][1]} 
                        L${points[3][0]},${points[3][1]} Z`;
 
-pentagram.setAttribute("d", pentagramPath);
+    pentagram.setAttribute("d", pentagramPath);
     pentagram.setAttribute("stroke", "#00ccff");
-    pentagram.setAttribute("stroke-width", "0.4");
-    pentagram.setAttribute("fill", "none");
-    pentagram.setAttribute("opacity", "0.85");
+    pentagram.setAttribute("stroke-width", "0.8");
+    pentagram.setAttribute("fill", "rgba(0, 0, 0, 0.15)");
+    pentagram.setAttribute("opacity", "1");
     pentagram.setAttribute("filter", "url(#glow)");
 
     const g = document.createElementNS(svgNS, "g");
