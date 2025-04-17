@@ -489,42 +489,42 @@ function spawnPaladinSmite() {
   container.style.pointerEvents = "none";
   container.style.zIndex = "10000";
 
-  // Rope Line
-  const line = document.createElementNS(svgNS, "line");
-  line.setAttribute("x1", "50");
-  line.setAttribute("y1", "0");
-  line.setAttribute("x2", "50");
-  line.setAttribute("y2", "40");
-  line.setAttribute("stroke", "#aaa");
-  line.setAttribute("stroke-width", "0.6");
-  container.appendChild(line);
+  // Rope
+  const rope = document.createElementNS(svgNS, "line");
+  rope.setAttribute("x1", "50");
+  rope.setAttribute("y1", "0");
+  rope.setAttribute("x2", "50");
+  rope.setAttribute("y2", "35");
+  rope.setAttribute("stroke", "#aaa");
+  rope.setAttribute("stroke-width", "0.6");
+  container.appendChild(rope);
 
-  // Noose Path (a rough teardrop loop)
+  // Noose path – a loop with a bulge at the bottom, like a tied knot
   const noose = document.createElementNS(svgNS, "path");
-  noose.setAttribute("d", "M50 40 Q45 55 50 70 Q55 55 50 40 Z");
+  noose.setAttribute("d", "M50 35 C45 50, 55 50, 50 65 C47 60, 53 60, 50 35 Z");
   noose.setAttribute("stroke", "#888");
   noose.setAttribute("fill", "none");
-  noose.setAttribute("stroke-width", "0.7");
+  noose.setAttribute("stroke-width", "0.6");
   noose.setAttribute("opacity", "1");
 
-  // Tightening animation
+  // Tighten animation – vertically squeeze the loop
   const tighten = document.createElementNS(svgNS, "animateTransform");
   tighten.setAttribute("attributeName", "transform");
   tighten.setAttribute("type", "scale");
   tighten.setAttribute("from", "1 1");
-  tighten.setAttribute("to", "1 0.7");
-  tighten.setAttribute("begin", "0.4s");
-  tighten.setAttribute("dur", "0.6s");
+  tighten.setAttribute("to", "1 0.5");
+  tighten.setAttribute("begin", "0.5s");
+  tighten.setAttribute("dur", "0.8s");
   tighten.setAttribute("additive", "sum");
   tighten.setAttribute("fill", "freeze");
 
-  // Fade out
+  // Fade out animation
   const fade = document.createElementNS(svgNS, "animate");
   fade.setAttribute("attributeName", "opacity");
   fade.setAttribute("from", "1");
   fade.setAttribute("to", "0");
-  fade.setAttribute("begin", "2.2s");
-  fade.setAttribute("dur", "1.2s");
+  fade.setAttribute("begin", "2.4s");
+  fade.setAttribute("dur", "1s");
   fade.setAttribute("fill", "freeze");
 
   noose.appendChild(tighten);
@@ -537,6 +537,7 @@ function spawnPaladinSmite() {
     container.remove();
   }, 4000);
 }
+
 
 
 
