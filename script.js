@@ -249,6 +249,86 @@ pentagram.setAttribute("d", pentagramPath);
 
   let lastIndex = 0;
   let isAnimating = false;
+function spawnHackerGlitch() {
+  const ns = "http://www.w3.org/2000/svg";
+  const container = document.createElementNS(ns, "svg");
+  container.setAttribute("width", "100%");
+  container.setAttribute("height", "100%");
+  container.setAttribute("viewBox", "0 0 100 100");
+  container.style.position = "absolute";
+  container.style.top = "0";
+  container.style.left = "0";
+  container.style.pointerEvents = "none";
+  container.style.zIndex = "9999";
+
+  // Add 100 glyphs falling down the screen
+  const chars = "!@#$%^&*()_+-=[]{};:<>?/|\\ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const glyphs = [];
+
+  for (let i = 0; i < 100; i++) {
+    const text = document.createElementNS(ns, "text");
+    const x = Math.random() * 100;
+    const y = -Math.random() * 100;
+    text.setAttribute("x", x.toFixed(2));
+    text.setAttribute("y", y.toFixed(2));
+    text.setAttribute("font-size", "3");
+    text.setAttribute("fill", "red");
+    text.setAttribute("opacity", "0.5");
+    text.setAttribute("font-family", "monospace");
+    text.textContent = chars[Math.floor(Math.random() * chars.length)];
+    container.appendChild(text);
+    glyphs.push({ el: text, x, y });
+  }
+
+  document.getElementById("effect-layer").appendChild(container);
+
+  let ticks = 0;
+  const interval = setInterval(() => {
+    ticks++;
+    glyphs.forEach(g => {
+      g.y += 1 + Math.random() * 0.5;
+      if (g.y > 110) g.y = -10;
+      g.el.setAttribute("y", g.y.toFixed(2));
+      g.el.textContent = chars[Math.floor(Math.random() * chars.length)];
+    });
+
+    // At ~2.5 seconds, overlay phoenix
+    if (ticks === 45) {
+      const phoenix = document.createElementNS(ns, "path");
+      phoenix.setAttribute("d",
+        "M50 60 Q48 50 40 48 Q35 47 38 43 Q42 40 44 44 Q45 38 50 42 Q55 38 56 44 Q58 40 62 43 Q65 47 60 48 Q52 50 50 60 Z"
+      );
+      phoenix.setAttribute("fill", "rgba(255,0,0,0.8)");
+      phoenix.setAttribute("stroke", "#ff4444");
+      phoenix.setAttribute("stroke-width", "0.3");
+      phoenix.setAttribute("opacity", "0");
+      container.appendChild(phoenix);
+
+      const fadeIn = document.createElementNS(ns, "animate");
+      fadeIn.setAttribute("attributeName", "opacity");
+      fadeIn.setAttribute("from", "0");
+      fadeIn.setAttribute("to", "1");
+      fadeIn.setAttribute("dur", "0.4s");
+      fadeIn.setAttribute("fill", "freeze");
+
+      const fadeOut = document.createElementNS(ns, "animate");
+      fadeOut.setAttribute("attributeName", "opacity");
+      fadeOut.setAttribute("from", "1");
+      fadeOut.setAttribute("to", "0");
+      fadeOut.setAttribute("begin", "0.8s");
+      fadeOut.setAttribute("dur", "0.4s");
+      fadeOut.setAttribute("fill", "freeze");
+
+      phoenix.appendChild(fadeIn);
+      phoenix.appendChild(fadeOut);
+    }
+  }, 50);
+
+  setTimeout(() => {
+    clearInterval(interval);
+    container.remove();
+  }, 4000);
+}
 
 function showRandomPersona () {
   if (isAnimating) return;
@@ -277,6 +357,8 @@ function showRandomPersona () {
     switch (persona.effect) {
       case 'vampire-blood': spawnBloodRain(); break;
       case 'wizard-smoke': spawnWizardEffect(); break;
+      case 'hacker-glitch': spawnHackerGlitch(); break;
+
       default: effectLayer.classList.add(persona.effect);
     }
 
