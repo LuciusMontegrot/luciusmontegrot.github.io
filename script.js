@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const personas = [
+document.addEventListener('DOMContentLoaded', () => {
+  const personas = [
     {
       title: "The Humble Historian",
       image: "images/historian.jpg",
@@ -21,13 +23,13 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       title: "The Mist-Elven Exile",
       image: "images/mistelf.jpg",
-      description: "It is whispered that Lucius is the only Mist Elf to have fled the demiplane of Mist and retained his madness. His illusions are so convincing, he once sold a dream to a dragon. He spends his days disguised as a mortal author, but his prose smells faintly of starlight and betrayal.",
+      description: "It is whispered that Lucius is the only Mist Elf to have fled the demiplane of Sha’ar-Tel and retained his madness. His illusions are so convincing, he once sold a dream to a dragon. He spends his days disguised as a mortal author, but his prose smells faintly of starlight and betrayal.",
       effect: "mistelf-glow"
     },
     {
       title: "The Disgruntled Dungeon Master",
       image: "images/dungeonmaster.jpg",
-      description: "They whisper Lucius Montegrot is what happens when a Dungeon Master spends thirty years building a world so intricate that the gods themselves are asking for the rulebook. Tired of players licking dungeon walls and seducing mimics, he turned his notes into novels. He still wakes up at night muttering, 'You can't polymorph into a chair, Dave.'",
+      description: "Lucius Montegrot is what happens when a Dungeon Master spends thirty years building a world so intricate that the gods themselves are asking for the rulebook. Tired of players licking dungeon walls and seducing mimics, he turned his notes into novels. He still wakes up at night muttering, 'You can't polymorph into a chair, Dave.'",
       effect: "dm-dice"
     },
     {
@@ -35,7 +37,34 @@ document.addEventListener('DOMContentLoaded', () => {
       image: "images/seaelf.jpg",
       description: "They say Lucius Montegrot is a Sea Elf, though there is no record of his birth and he once confused a dolphin for a shark. Nevertheless, he’s been spotted slipping through misty coves at midnight, selling contraband scrolls and illegal potions to pirates, witches, and the occasional bureaucrat. He speaks seven dialects of Elvish, five of which he made up. Do not let him near your alchemy supplies.",
       effect: "seaelf-splash"
+    },
+    {
+      title: "The Mysterious Hacker",
+      image: "images/hacker.jpg",
+      description: "It is said Lucius Montegrot is a hacker with his hair half pink and half green. No one knows when he joined GitHub, only that his repositories compile themselves and his README files update during thunderstorms. He writes code in dead languages, forks his own thoughts, and claims to be debugging reality itself. Rumour has it he’s trying to restore the soul of the phoenix, one painstaking line of code after another, into a hidden branch named /ascend. If your screen flickers at midnight, it’s not coincidence. It’s Lucius.",
+      effect: "hacker-glitch"
+    },
+    {
+      title: "The Gym-Forged Ghostwriter",
+      image: "images/bodybuilder.jpg",
+      description: "Some say Lucius cannot even read and write. They say he is obsessed with physical strength and wrote an entire book dictating one single prompt into some yet unknown artificial intelligence. Those who speak with him say he communicates mostly in grunts, so it is a wonder how he did it.",
+      effect: "muscle-flex"
+    },
+        {
+      title: "The Gym-Forged Ghost Writer",
+      image: "images/bodybuilder2.jpg",
+      description: "Some say Lucius cannot even read and write. They say he is obsessed with physical strength and wrote an entire book dictating one single prompt into some yet unknown artificial intelligence. Those who speak with him say he communicates mostly in grunts, so it is a wonder how he did it. Oops. Did we just show you his REAL picture? No, we didn't. This isn't Lucius Montegrot. This picture isn't real. Nothing to see here.",
+      effect: "muscle-flex"
+    },
+    {
+      title: "The Peacemaker's Paladin",
+      image: "images/paladin.jpg",
+      description: "Clad in black plate and burdened with silent judgement, Lucius Montegrot stalks the land as one of the Peacemaker’s own. He carries a silver maul and a rope coiled into a noose — not for others, but for the sins that trail him like a shadow. He rarely speaks, but when he does, cities kneel.",
+      effect: "paladin-smite"
     }
+  ];
+});
+
   ];
 
   const imageEl = document.getElementById('persona-image');
