@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     {
       title: "The Disgruntled Dungeon Master",
-      image: "images/dungeonmaster.jpg",
+      image: "images/dungeonmaster3.jpg",
       description: "Lucius Montegrot is what happens when a Dungeon Master spends thirty years building a world so intricate that the gods themselves are asking for the rulebook. Tired of players licking dungeon walls and seducing mimics, he turned his notes into novels. He still wakes up at night muttering, 'You can't polymorph into a chair, Varius!'",
       effect: "dm-dice"
     },
