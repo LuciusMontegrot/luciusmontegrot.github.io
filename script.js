@@ -21,13 +21,13 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       title: "The Mist-Elven Exile",
       image: "images/mistelf.jpg",
-      description: "It is whispered that Lucius is the only Mist Elf to have fled the demiplane of Sha’ar-Tel and retained his madness. His illusions are so convincing, he once sold a dream to a dragon. He spends his days disguised as a mortal author, but his prose smells faintly of starlight and betrayal.",
+      description: "It is whispered that Lucius is the only Mist Elf to have fled the demiplane of Mist and retained his madness. His illusions are so convincing, he once sold a dream to a dragon. He spends his days disguised as a mortal author, but his prose smells faintly of starlight and betrayal.",
       effect: "mistelf-glow"
     },
     {
       title: "The Disgruntled Dungeon Master",
       image: "images/dungeonmaster.jpg",
-      description: "Lucius Montegrot is what happens when a Dungeon Master spends thirty years building a world so intricate that the gods themselves are asking for the rulebook. Tired of players licking dungeon walls and seducing mimics, he turned his notes into novels. He still wakes up at night muttering, 'You can't polymorph into a chair, Dave.'",
+      description: "They whisper Lucius Montegrot is what happens when a Dungeon Master spends thirty years building a world so intricate that the gods themselves are asking for the rulebook. Tired of players licking dungeon walls and seducing mimics, he turned his notes into novels. He still wakes up at night muttering, 'You can't polymorph into a chair, Dave.'",
       effect: "dm-dice"
     },
     {
