@@ -559,30 +559,26 @@ function spawnPaladinSmite() {
 }
 
 /* ------------------------------------------------------------------
-   AELIANA GRAND DRUIDESS ✨
-   ------------------------------------------------------------------ */
+   AELIANA GRAND DRUIDESS ✨  — Pixi effect helper
+------------------------------------------------------------------ */
 function spawnAelianaVision() {
-  // container that sits on top of everything
   const wrapper = document.createElement("div");
   Object.assign(wrapper.style, {
-    position: "absolute",
-    inset: 0,
-    pointerEvents: "none",
-    zIndex: 10000,
+    position: "absolute", inset: 0,
+    pointerEvents: "none", zIndex: 10000
   });
   document.getElementById("effect-layer").appendChild(wrapper);
 
-  // PIXI app
   const app = new PIXI.Application({
     width: wrapper.clientWidth,
     height: wrapper.clientHeight,
     transparent: true,
     antialias: true,
-    powerPreference: "high-performance",
+    powerPreference: "high-performance"
   });
   wrapper.appendChild(app.view);
 
-  /* ========= BACK‑GLOW ========= */
+  // 1) Emerald pulse
   const pulse = new PIXI.Graphics()
     .beginFill(0x3bb75e, 0.35)
     .drawCircle(0, 0, 120)
@@ -590,24 +586,28 @@ function spawnAelianaVision() {
   pulse.x = app.screen.width / 2;
   pulse.y = app.screen.height / 2;
   app.stage.addChild(pulse);
-
   app.ticker.add(() => {
-    pulse.alpha = 0.35 + 0.15 * Math.sin(app.ticker.lastTime * 0.003);
+    const t = app.ticker.lastTime;
+    pulse.alpha = 0.35 + 0.15 * Math.sin(t * 0.003);
     pulse.scale.x = pulse.scale.y =
-      0.85 + 0.15 * Math.sin(app.ticker.lastTime * 0.004);
+      0.85 + 0.15 * Math.sin(t * 0.004);
   });
 
-  /* ========= FALLING LEAVES ========= */
+  // 2) Falling leaves
   const leaves = [];
-  const leafTex = PIXI.Texture.from(
-    "data:image/svg+xml;base64," +
-      btoa(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48">
-           <path d='M24 4 C8 12 12 40 24 44 C36 40 40 12 24 4 Z' fill='#855e3a'/>
-         </svg>`
-      )
-  );
-
+  const leafSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48">
+    <path d="M24 4 C8 12 12 40 24 44 C36 40 40 12 24 4 Z" fill="#855e3a"/>
+  </svg>`;
+  const leafTex = PIXI.Texture.from("data:image/svg+xml;base64," + btoa(leafSVG));
+  function resetLeaf(s, first = false) {
+    s.x = Math.random() * app.screen.width;
+    s.y = first
+      ? Math.random() * app.screen.height
+      : -20 - Math.random() * 80;
+    s.rotation = Math.random() * Math.PI * 2;
+    s.scale.set(0.35 + Math.random() * 0.4);
+    s.tint = 0x855e3a;
+  }
   for (let i = 0; i < 16; i++) {
     const s = new PIXI.Sprite(leafTex);
     s.anchor.set(0.5);
@@ -615,19 +615,17 @@ function spawnAelianaVision() {
     app.stage.addChild(s);
     leaves.push(s);
   }
-  function resetLeaf(sprite, first = false) {
-    sprite.x = Math.random() * app.screen.width;
-    sprite.y = first
-      ? Math.random() * app.screen.height
-      : -20 - Math.random() * 80;
-    sprite.rotation = Math.random() * Math.PI * 2;
-    sprite.scale.set(0.35 + Math.random() * 0.4);
-    sprite.tint = 0x855e3a;
-  }
 
-  /* ========= SPARKLES ========= */
-  const sparkTex = PIXI.Texture.WHITE;
-  const sparkles = [];
+  // 3) Upward sparkles
+  const sparkles = [], sparkTex = PIXI.Texture.WHITE;
+  function resetSpark(s, first = false) {
+    s.x = Math.random() * app.screen.width;
+    s.y = first
+      ? Math.random() * app.screen.height
+      : app.screen.height + 20 + Math.random() * 80;
+    s.alpha = 0.2 + Math.random() * 0.4;
+    s.scale.set(0.6 + Math.random() * 0.6);
+  }
   for (let i = 0; i < 40; i++) {
     const s = new PIXI.Sprite(sparkTex);
     s.anchor.set(0.5);
@@ -637,35 +635,28 @@ function spawnAelianaVision() {
     app.stage.addChild(s);
     sparkles.push(s);
   }
-  function resetSpark(sprite, first = false) {
-    sprite.x = Math.random() * app.screen.width;
-    sprite.y = first
-      ? Math.random() * app.screen.height
-      : app.screen.height + 20 + Math.random() * 80;
-    sprite.alpha = 0.2 + Math.random() * 0.4;
-    sprite.scale.set(0.6 + Math.random() * 0.6);
-  }
 
-  /* ========= TICKER ========= */
+  // 4) Animation loop
   app.ticker.add(() => {
-    leaves.forEach((l) => {
+    leaves.forEach(l => {
       l.y += 0.7 + l.scale.x * 1.2;
       l.rotation += 0.01 * l.scale.x;
       if (l.y > app.screen.height + 40) resetLeaf(l);
     });
-    sparkles.forEach((s) => {
+    sparkles.forEach(s => {
       s.y -= 0.5 + s.scale.x;
       s.alpha -= 0.003;
       if (s.alpha <= 0) resetSpark(s);
     });
   });
 
-  // clean up after 5 s
+  // Cleanup after 5 s
   setTimeout(() => {
     app.destroy(true, { children: true });
     wrapper.remove();
   }, 5000);
 }
+
 
 
 
