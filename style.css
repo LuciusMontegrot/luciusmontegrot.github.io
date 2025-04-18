@@ -137,7 +137,9 @@ main {
 
 .card.spin {
   animation: spinCard 1.8s ease-in-out;
+  transition: none !important;
 }
+
 
 @keyframes spinCard {
   0% {
