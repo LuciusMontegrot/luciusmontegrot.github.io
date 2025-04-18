@@ -560,103 +560,74 @@ function spawnPaladinSmite() {
   }, 4000);
 }
 
-/* ------------------------------------------------------------------
-   AELIANA GRAND DRUIDESS ✨  — Pixi effect helper
------------------------------------------------------------------- */
-function spawnAelianaVision() {
-  if (!_hasPixi) {
-    console.error("Pixi.js not loaded — skipping Aeliana effect");
-    return;
-    }
-  const wrapper = document.createElement("div");
-  Object.assign(wrapper.style, {
-    position: "absolute", inset: 0,
-    pointerEvents: "none", zIndex: 10000
-  });
-  document.getElementById("effect-layer").appendChild(wrapper);
+/**
+ * Aeliana’s theatrical Pixi effect:
+ * Swirling emerald motes that emanate from the card center.
+ */
+function spawnAelianaMagicPixi() {
+  if (typeof PIXI === 'undefined') return;
 
+  // Confine to the card and sit it behind the content
+  card.style.position = 'relative';
+  const wrapper = document.createElement('div');
+  Object.assign(wrapper.style, {
+    position: 'absolute',
+    inset: '0',
+    pointerEvents: 'none',
+    zIndex: '-1'
+  });
+  card.appendChild(wrapper);
+
+  // Create the Pixi app sized to the card
   const app = new PIXI.Application({
     width: wrapper.clientWidth,
     height: wrapper.clientHeight,
     transparent: true,
-    antialias: true,
-    powerPreference: "high-performance"
+    antialias: true
   });
   wrapper.appendChild(app.view);
 
-  // 1) Emerald pulse
-  const pulse = new PIXI.Graphics()
-    .beginFill(0x3bb75e, 0.35)
-    .drawCircle(0, 0, 120)
-    .endFill();
-  pulse.x = app.screen.width / 2;
-  pulse.y = app.screen.height / 2;
-  app.stage.addChild(pulse);
-  app.ticker.add(() => {
-    const t = app.ticker.lastTime;
-    pulse.alpha = 0.35 + 0.15 * Math.sin(t * 0.003);
-    pulse.scale.x = pulse.scale.y =
-      0.85 + 0.15 * Math.sin(t * 0.004);
-  });
+  const centerX = app.screen.width / 2;
+  const centerY = app.screen.height / 2;
+  const particles = [];
 
-  // 2) Falling leaves
-  const leaves = [];
-  const leafSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48">
-    <path d="M24 4 C8 12 12 40 24 44 C36 40 40 12 24 4 Z" fill="#855e3a"/>
-  </svg>`;
-  const leafTex = PIXI.Texture.from("data:image/svg+xml;base64," + btoa(leafSVG));
-  function resetLeaf(s, first = false) {
-    s.x = Math.random() * app.screen.width;
-    s.y = first
-      ? Math.random() * app.screen.height
-      : -20 - Math.random() * 80;
-    s.rotation = Math.random() * Math.PI * 2;
-    s.scale.set(0.35 + Math.random() * 0.4);
-    s.tint = 0x855e3a;
-  }
-  for (let i = 0; i < 16; i++) {
-    const s = new PIXI.Sprite(leafTex);
-    s.anchor.set(0.5);
-    resetLeaf(s, true);
-    app.stage.addChild(s);
-    leaves.push(s);
-  }
-
-  // 3) Upward sparkles
-  const sparkles = [], sparkTex = PIXI.Texture.WHITE;
-  function resetSpark(s, first = false) {
-    s.x = Math.random() * app.screen.width;
-    s.y = first
-      ? Math.random() * app.screen.height
-      : app.screen.height + 20 + Math.random() * 80;
-    s.alpha = 0.2 + Math.random() * 0.4;
-    s.scale.set(0.6 + Math.random() * 0.6);
-  }
+  // Create 40 motes
   for (let i = 0; i < 40; i++) {
-    const s = new PIXI.Sprite(sparkTex);
-    s.anchor.set(0.5);
-    s.tint = 0xffffcc;
-    s.width = s.height = 1.5 + Math.random() * 2;
-    resetSpark(s, true);
-    app.stage.addChild(s);
-    sparkles.push(s);
+    const g = new PIXI.Graphics()
+      .beginFill(0x3bb75e, 0.8)
+      .drawCircle(0, 0, 4)
+      .endFill();
+    g.x = centerX;
+    g.y = centerY;
+    // random initial velocity
+    g.vx = (Math.random() - 0.5) * 4;
+    g.vy = (Math.random() - 0.5) * 4;
+    app.stage.addChild(g);
+    particles.push(g);
   }
 
-  // 4) Animation loop
   app.ticker.add(() => {
-    leaves.forEach(l => {
-      l.y += 0.7 + l.scale.x * 1.2;
-      l.rotation += 0.01 * l.scale.x;
-      if (l.y > app.screen.height + 40) resetLeaf(l);
-    });
-    sparkles.forEach(s => {
-      s.y -= 0.5 + s.scale.x;
-      s.alpha -= 0.003;
-      if (s.alpha <= 0) resetSpark(s);
+    particles.forEach(p => {
+      // move
+      p.x += p.vx;
+      p.y += p.vy;
+      // pull back gently to center for swirl
+      p.vx += (centerX - p.x) * 0.005;
+      p.vy += (centerY - p.y) * 0.005;
+      // fade out
+      p.alpha -= 0.01;
+      // respawn when gone
+      if (p.alpha <= 0) {
+        p.x = centerX;
+        p.y = centerY;
+        p.alpha = 1;
+        p.vx = (Math.random() - 0.5) * 4;
+        p.vy = (Math.random() - 0.5) * 4;
+      }
     });
   });
 
-  // Cleanup after 5 s
+  // Clean up after 5 s
   setTimeout(() => {
     app.destroy(true, { children: true });
     wrapper.remove();
