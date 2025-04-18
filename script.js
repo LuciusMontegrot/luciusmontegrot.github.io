@@ -765,7 +765,7 @@ if (persona.effect === "muscle-flex2") {
 if (persona.title === "The Grand Druidess") {
   console.warn("🌿✨ AELIANA HAS APPEARED! The veil thins. The phoenix watches.");
   try {
-    spawnAelianaVision();
+    spawnAelianaMagicPixi();
   } catch (err) {
     console.error("Error in Aeliana effect:", err);
   }
