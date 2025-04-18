@@ -214,3 +214,14 @@ footer {
 @media (min-width: 900px){
   .book-cover{ width: 380px; }
 }
+.aeliana-sighting {
+  animation: shimmerveil 2s ease-out;
+}
+
+@keyframes shimmerveil {
+  0% { box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, 0); }
+  25% { box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, 0.2); }
+  50% { box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, 0.4); }
+  75% { box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, 0.2); }
+  100% { box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, 0); }
+}
