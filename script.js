@@ -558,6 +558,114 @@ function spawnPaladinSmite() {
   }, 4000);
 }
 
+/* ------------------------------------------------------------------
+   AELIANA GRAND DRUIDESS ✨
+   ------------------------------------------------------------------ */
+function spawnAelianaVision() {
+  // container that sits on top of everything
+  const wrapper = document.createElement("div");
+  Object.assign(wrapper.style, {
+    position: "absolute",
+    inset: 0,
+    pointerEvents: "none",
+    zIndex: 10000,
+  });
+  document.getElementById("effect-layer").appendChild(wrapper);
+
+  // PIXI app
+  const app = new PIXI.Application({
+    width: wrapper.clientWidth,
+    height: wrapper.clientHeight,
+    transparent: true,
+    antialias: true,
+    powerPreference: "high-performance",
+  });
+  wrapper.appendChild(app.view);
+
+  /* ========= BACK‑GLOW ========= */
+  const pulse = new PIXI.Graphics()
+    .beginFill(0x3bb75e, 0.35)
+    .drawCircle(0, 0, 120)
+    .endFill();
+  pulse.x = app.screen.width / 2;
+  pulse.y = app.screen.height / 2;
+  app.stage.addChild(pulse);
+
+  app.ticker.add(() => {
+    pulse.alpha = 0.35 + 0.15 * Math.sin(app.ticker.lastTime * 0.003);
+    pulse.scale.x = pulse.scale.y =
+      0.85 + 0.15 * Math.sin(app.ticker.lastTime * 0.004);
+  });
+
+  /* ========= FALLING LEAVES ========= */
+  const leaves = [];
+  const leafTex = PIXI.Texture.from(
+    "data:image/svg+xml;base64," +
+      btoa(
+        `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48">
+           <path d='M24 4 C8 12 12 40 24 44 C36 40 40 12 24 4 Z' fill='#855e3a'/>
+         </svg>`
+      )
+  );
+
+  for (let i = 0; i < 16; i++) {
+    const s = new PIXI.Sprite(leafTex);
+    s.anchor.set(0.5);
+    resetLeaf(s, true);
+    app.stage.addChild(s);
+    leaves.push(s);
+  }
+  function resetLeaf(sprite, first = false) {
+    sprite.x = Math.random() * app.screen.width;
+    sprite.y = first
+      ? Math.random() * app.screen.height
+      : -20 - Math.random() * 80;
+    sprite.rotation = Math.random() * Math.PI * 2;
+    sprite.scale.set(0.35 + Math.random() * 0.4);
+    sprite.tint = 0x855e3a;
+  }
+
+  /* ========= SPARKLES ========= */
+  const sparkTex = PIXI.Texture.WHITE;
+  const sparkles = [];
+  for (let i = 0; i < 40; i++) {
+    const s = new PIXI.Sprite(sparkTex);
+    s.anchor.set(0.5);
+    s.tint = 0xffffcc;
+    s.width = s.height = 1.5 + Math.random() * 2;
+    resetSpark(s, true);
+    app.stage.addChild(s);
+    sparkles.push(s);
+  }
+  function resetSpark(sprite, first = false) {
+    sprite.x = Math.random() * app.screen.width;
+    sprite.y = first
+      ? Math.random() * app.screen.height
+      : app.screen.height + 20 + Math.random() * 80;
+    sprite.alpha = 0.2 + Math.random() * 0.4;
+    sprite.scale.set(0.6 + Math.random() * 0.6);
+  }
+
+  /* ========= TICKER ========= */
+  app.ticker.add(() => {
+    leaves.forEach((l) => {
+      l.y += 0.7 + l.scale.x * 1.2;
+      l.rotation += 0.01 * l.scale.x;
+      if (l.y > app.screen.height + 40) resetLeaf(l);
+    });
+    sparkles.forEach((s) => {
+      s.y -= 0.5 + s.scale.x;
+      s.alpha -= 0.003;
+      if (s.alpha <= 0) resetSpark(s);
+    });
+  });
+
+  // clean up after 5 s
+  setTimeout(() => {
+    app.destroy(true, { children: true });
+    wrapper.remove();
+  }, 5000);
+}
 
 
 
@@ -683,16 +791,12 @@ while (idx === lastIndex);
   lastIndex = idx;
   const persona = personas[idx];
 if (persona.effect === "muscle-flex2") {
-  console.warn("🔥 RARE: Gym-Lucius (possibly real) revealed.");
+  console.warn("🔥 RARE: Lucius (possibly real) revealed.");
 }
 
 if (persona.title === "The Grand Druidess") {
   console.warn("🌿✨ AELIANA HAS APPEARED! The veil thins. The phoenix watches.");
-
-  document.body.classList.add("aeliana-sighting");
-  setTimeout(() => {
-    document.body.classList.remove("aeliana-sighting");
-  }, 2000);
+  spawnAelianaVision();
 }
 
 
