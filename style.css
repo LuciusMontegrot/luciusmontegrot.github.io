@@ -215,7 +215,7 @@ footer {
   .book-cover{ width: 380px; }
 }
 .aeliana-sighting {
-  animation: shimmerveil 2s ease-out;
+  animation: shimmerveil 2.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes shimmerveil {
