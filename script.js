@@ -696,8 +696,6 @@ if (persona.title === "The Grand Druidess") {
 }
 
 
-}
-
   card.classList.remove('spin');
   void card.offsetWidth;
   card.classList.add('spin');
