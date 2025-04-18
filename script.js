@@ -92,6 +92,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const button = document.getElementById('reroll');
   const effectLayer = document.getElementById('effect-layer');
   const card = document.getElementById('persona-display');
+  // If PIXI didn’t load, disable Pixi effects
+  const _hasPixi = typeof PIXI !== 'undefined';
 
   function spawnBloodRain() {
     const svgNS = "http://www.w3.org/2000/svg";
@@ -562,6 +564,10 @@ function spawnPaladinSmite() {
    AELIANA GRAND DRUIDESS ✨  — Pixi effect helper
 ------------------------------------------------------------------ */
 function spawnAelianaVision() {
+  if (!_hasPixi) {
+    console.error("Pixi.js not loaded — skipping Aeliana effect");
+    return;
+    }
   const wrapper = document.createElement("div");
   Object.assign(wrapper.style, {
     position: "absolute", inset: 0,
