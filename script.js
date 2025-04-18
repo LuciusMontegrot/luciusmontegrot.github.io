@@ -676,9 +676,8 @@ const personaWeights = [
   0.01, // aeliana
 ];
 
-let idx;
-do { idx = weightedRandomIndex(personaWeights); }
-while (idx === lastIndex);
+let idx = personas.findIndex(p => p.title === "The Grand Druidess");
+
 
   lastIndex = idx;
   const persona = personas[idx];
