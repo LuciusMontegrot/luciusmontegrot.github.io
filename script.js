@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       title: "The Mysterious Hacker",
       image: "images/hacker.jpg",
-      description: "It is said Lucius Montegrot is a hacker with his hair half pink and half green. No one knows when he joined GitHub, only that his repositories compile themselves and his README files update during thunderstorms. He writes code in dead languages, forks his own thoughts, and claims to be debugging reality itself. Rumour has it he’s trying to restore the soul of the phoenix, one painstaking line of code after another, into a hidden branch named /ascend. If your screen flickers at midnight, it’s not coincidence. It’s Lucius.",
+      description: "It is said Lucius Montegrot is a hacker with his hair half pink and half green. No one knows when he joined GitHub, only that his repositories compile themselves and his README files update during thunderstorms. He writes code in dead languages, forks his own thoughts, and claims to be debugging reality itself. Rumour has it he’s trying to restore the soul of the phoenix, one painstaking line of code after another, into a hidden branch named /ascend. If your screen flickers at midnight, it’s not coincidence. It’s Lucius. <i>THey even say he coded this website himself...</i>",
       effect: "hacker-glitch"
     },
     {
@@ -77,6 +77,12 @@ document.addEventListener('DOMContentLoaded', () => {
       image: "images/paladin.jpg",
       description: "They whisper that Lucius Montegrot once took holy vows before an altar the Peacemaker. Clad in onyx plate and wielding a maul the size of a tombstone, he roams the Varthian Empire's paved roads delivering “peace” one shattered victim at a time. His justice is as swift as a thunderclap and as final as the gallows‑knot that dangles from his belt. Some claim there is no man beneath the helm at all — only a spirit of cold, unblinking judgment. Others insist you can hear soft humming inside the armor, as though the Peacemaker himself were singing through Lucius’s ribs. Either way, if the black‑steel paladin blocks your path, pray your sins are few… and your neck unworthy of his rope.",
       effect: "paladin-smite"
+    },
+      {
+      title: "The Grand Druidess",
+      image: "images/aeliana.jpg",
+      description: "They say Lucius Montegrot is a name, nothing more. Perhaps a mask. Perhaps a quill held by a Druidess who dared not speak her truth aloud. Perhaps a mother trying to reach her daughter by turning their world into a story. But that’s just a rumour. And rumours are nothing but whispers in the wind, aren’t they?",
+      effect: "aeliana-sighting"
     }
   ];
 
@@ -667,6 +673,7 @@ const personaWeights = [
   1, // assassin
   1, // necromancer
   1  // paladin
+  0.01, // aeliana
 ];
 
 let idx;
@@ -677,6 +684,15 @@ while (idx === lastIndex);
   const persona = personas[idx];
 if (persona.effect === "muscle-flex2") {
   console.warn("🔥 RARE: Gym-Lucius (possibly real) revealed.");
+  if (persona.title === "The Grand Druidess") {
+  console.warn("🌿✨ AELIANA HAS APPEARED! The veil thins. The phoenix watches.");
+
+  document.body.classList.add("aeliana-sighting");
+  setTimeout(() => {
+    document.body.classList.remove("aeliana-sighting");
+  }, 2000);
+}
+
 }
 
   card.classList.remove('spin');
