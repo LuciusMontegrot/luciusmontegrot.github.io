@@ -672,7 +672,7 @@ const personaWeights = [
   1, // fire priest
   1, // assassin
   1, // necromancer
-  1  // paladin
+  1,  // paladin
   0.01, // aeliana
 ];
 
@@ -684,7 +684,9 @@ while (idx === lastIndex);
   const persona = personas[idx];
 if (persona.effect === "muscle-flex2") {
   console.warn("🔥 RARE: Gym-Lucius (possibly real) revealed.");
-  if (persona.title === "The Grand Druidess") {
+}
+
+if (persona.title === "The Grand Druidess") {
   console.warn("🌿✨ AELIANA HAS APPEARED! The veil thins. The phoenix watches.");
 
   document.body.classList.add("aeliana-sighting");
@@ -692,6 +694,7 @@ if (persona.effect === "muscle-flex2") {
     document.body.classList.remove("aeliana-sighting");
   }, 2000);
 }
+
 
 }
 
