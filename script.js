@@ -724,60 +724,44 @@ function showRandomPersona () {
   if (isAnimating) return;
   isAnimating = true;
 
-function weightedRandomIndex(weights) {
-  const total = weights.reduce((a, b) => a + b, 0);
-  let r = Math.random() * total;
-  for (let i = 0; i < weights.length; i++) {
-    r -= weights[i];
-    if (r <= 0) return i;
+  function weightedRandomIndex(weights) {
+    const total = weights.reduce((a, b) => a + b, 0);
+    let r = Math.random() * total;
+    for (let i = 0; i < weights.length; i++) {
+      r -= weights[i];
+      if (r <= 0) return i;
+    }
+    return weights.length - 1;
   }
-  return weights.length - 1;
-}
 
-// Weights for each persona, must match order in `personas`
-const personaWeights = [
-  1, // historian
-  1, // wizard
-  1, // vampire
-  1, // mist elf
-  1, // dungeon master
-  1, // sea elf
-  1, // hacker
-  1, // gym-forged ghostwriter
-  0.05, // 🧠🔥 GYM-FORGED WRITER (RARE)
-  1, // fire priest
-  1, // assassin
-  1, // necromancer
-  1,  // paladin
-  1000, // aeliana
-];
+  const personaWeights = [
+    1, 1, 1, 1, 1, 1, 1, 1,
+    0.05, // Gym-Forged WRITER (rare)
+    1, 1, 1, 1,
+    1000 // Aeliana
+  ];
 
-let idx;
-do {
-  idx = weightedRandomIndex(personaWeights);
-} while (idx === lastIndex);
-
-
+  let idx;
+  do {
+    idx = weightedRandomIndex(personaWeights);
+  } while (idx === lastIndex);
 
   lastIndex = idx;
   const persona = personas[idx];
-if (persona.effect === "muscle-flex2") {
-  console.warn("🔥 RARE: Gym-Lucius (possibly real) revealed.");
-}
 
-if (persona.title === "The Grand Druidess") {
-  console.warn("🌿✨ AELIANA HAS APPEARED! The veil thins. The phoenix watches.");
-  revealAeliana();
-}
+  if (persona.effect === "muscle-flex2") {
+    console.warn("🔥 RARE: Gym-Lucius (possibly real) revealed.");
+  }
 
-  }, 2000);
-}
+  if (persona.title === "The Grand Druidess") {
+    console.warn("🌿✨ AELIANA HAS APPEARED! The veil thins. The phoenix watches.");
+    revealAeliana();
+  }
 
   card.classList.remove('spin');
   void card.offsetWidth;
   card.classList.add('spin');
 
-  // TEMPORARY blackout effect
   card.classList.add('flipping');
 
   setTimeout(() => {
@@ -795,16 +779,15 @@ if (persona.title === "The Grand Druidess") {
       case 'fire-roar': spawnFireRoar(); break;
       case 'necromancer-wisp': spawnNecromancerWispPixi(); break;
       case 'paladin-smite': spawnPaladinSmite(); break;
-
-
       default: effectLayer.classList.add(persona.effect);
     }
 
-    card.classList.remove('flipping'); // fade back in
+    card.classList.remove('flipping');
   }, 900);
 
   setTimeout(() => { isAnimating = false; }, 1800);
 }
+
 
 
 /* hook up the button */
