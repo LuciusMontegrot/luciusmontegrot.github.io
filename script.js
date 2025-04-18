@@ -1,4 +1,80 @@
 document.addEventListener('DOMContentLoaded', () => {
+  function revealAeliana() {
+  const container = document.createElement("div");
+  container.style.position = "fixed";
+  container.style.top = "0";
+  container.style.left = "0";
+  container.style.width = "100vw";
+  container.style.height = "100vh";
+  container.style.zIndex = "10001";
+  container.style.pointerEvents = "none";
+  document.body.appendChild(container);
+
+  const app = new PIXI.Application({
+    width: window.innerWidth,
+    height: window.innerHeight,
+    transparent: true,
+    antialias: true
+  });
+  container.appendChild(app.view);
+
+  // Load Aeliana image
+  const texture = PIXI.Texture.from("images/aeliana.jpg");
+  const sprite = new PIXI.Sprite(texture);
+  sprite.anchor.set(0.5);
+  sprite.x = app.screen.width / 2;
+  sprite.y = app.screen.height / 2;
+  sprite.alpha = 0;
+  sprite.scale.set(0.6);
+  app.stage.addChild(sprite);
+
+  // Swaying + glow
+  let tick = 0;
+  app.ticker.add(() => {
+    tick += 0.02;
+    sprite.rotation = 0.02 * Math.sin(tick);
+  });
+
+  // Fade in
+  const fadeTicker = new PIXI.Ticker();
+  fadeTicker.add(() => {
+    if (sprite.alpha < 1) sprite.alpha += 0.01;
+    else fadeTicker.stop();
+  });
+  fadeTicker.start();
+
+  // Sparkle particles
+  const leafTextures = [];
+  for (let i = 0; i < 10; i++) {
+    const g = new PIXI.Graphics();
+    g.beginFill(0xffffff, 0.2 + Math.random() * 0.3);
+    g.drawStar(0, 0, 5, 6 + Math.random() * 3);
+    g.endFill();
+    leafTextures.push(app.renderer.generateTexture(g));
+  }
+
+  for (let i = 0; i < 40; i++) {
+    const sparkle = new PIXI.Sprite(leafTextures[Math.floor(Math.random() * leafTextures.length)]);
+    sparkle.anchor.set(0.5);
+    sparkle.x = sprite.x + (Math.random() - 0.5) * 300;
+    sparkle.y = sprite.y + (Math.random() - 0.5) * 300;
+    sparkle.scale.set(0.2 + Math.random() * 0.4);
+    sparkle.alpha = 0.3 + Math.random() * 0.3;
+    app.stage.addChild(sparkle);
+
+    app.ticker.add(() => {
+      sparkle.rotation += 0.01;
+      sparkle.y -= 0.2;
+      sparkle.alpha *= 0.999;
+    });
+  }
+
+  // Optional: let user click to remove Aeliana
+  container.addEventListener("click", () => {
+    app.destroy(true, { children: true });
+    container.remove();
+  });
+}
   const personas = [
     {
       title: "The Humble Historian",
@@ -691,10 +767,9 @@ if (persona.effect === "muscle-flex2") {
 
 if (persona.title === "The Grand Druidess") {
   console.warn("🌿✨ AELIANA HAS APPEARED! The veil thins. The phoenix watches.");
+  revealAeliana();
+}
 
-  document.body.classList.add("aeliana-sighting");
-  setTimeout(() => {
-    document.body.classList.remove("aeliana-sighting");
   }, 2000);
 }
 
