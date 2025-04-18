@@ -677,8 +677,10 @@ const personaWeights = [
 ];
 
 let idx;
-do { idx = weightedRandomIndex(personaWeights); }
-while (idx === lastIndex);
+do {
+  idx = weightedRandomIndex(personaWeights);
+} while (idx === lastIndex);
+
 
 
   lastIndex = idx;
