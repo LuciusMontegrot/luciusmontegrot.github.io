@@ -756,7 +756,7 @@ function showRandomPersona () {
   if (persona.title === "The Grand Druidess") {
     console.warn("🌿✨ AELIANA HAS APPEARED! The veil thins. The phoenix watches.");
     revealAeliana();
-  
+  }
 
   card.classList.remove('spin');
   void card.offsetWidth;
