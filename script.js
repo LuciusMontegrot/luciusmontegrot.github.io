@@ -498,69 +498,69 @@ function spawnPaladinSmitePixi() {
   console.warn("🌑 spawnPaladinSmitePixi() fired");
   if (typeof PIXI === 'undefined') return;
 
-  // 1) Confine it to the card, behind other card content
-  card.style.position = 'relative';
-  const wrapper = document.createElement('div');
-  Object.assign(wrapper.style, {
-    position:      'absolute',
-    inset:         '0',
-    pointerEvents: 'none',
-    zIndex:        '1'    // <- changed from '-1'
-  });
-  card.appendChild(wrapper);
+  // catch any error so it can't freeze showRandomPersona
+  try {
+    // 1) Confine it to the card, behind other card content
+    card.style.position = 'relative';
+    const wrapper = document.createElement('div');
+    Object.assign(wrapper.style, {
+      position:      'absolute',
+      top:           '0',
+      right:         '0',
+      bottom:        '0',
+      left:          '0',
+      pointerEvents: 'none',
+      zIndex:        '1'    // above card background (card itself is z-index:2)
+    });
+    card.appendChild(wrapper);
 
-  // ... rest of your Pixi setup unchanged ...
+    // 2) Pixi app sized to the card
+    const app = new PIXI.Application({
+      width:       wrapper.clientWidth,
+      height:      wrapper.clientHeight,
+      transparent: true,
+      antialias:   true
+    });
+    wrapper.appendChild(app.view);
+
+    // 3) draw rope & noose
+    const cx = app.screen.width / 2;
+    const cy = app.screen.height / 4;
+    const rope = new PIXI.Graphics()
+      .lineStyle(4, 0xAAAAAA)
+      .moveTo(cx, 0)
+      .lineTo(cx, cy);
+    app.stage.addChild(rope);
+
+    const noose = new PIXI.Graphics()
+      .lineStyle(4, 0x888888)
+      .moveTo(cx, cy)
+      .arcTo(cx + 20, cy + 20, cx, cy + 40, 20)
+      .arcTo(cx - 20, cy + 20, cx, cy, 20);
+    app.stage.addChild(noose);
+
+    // 4) animate tighten + fade
+    let t = 0;
+    app.ticker.add((delta) => {
+      t += delta;
+      if (t < 30) {                        // ~0.5s at 60fps
+        const p = t/30;
+        noose.scale.y = 1 - 0.5 * p;
+        noose.y       = cy + 10 * p;
+      } else if (t < 60) {                 // next ~0.5s fade
+        const a = 1 - (t-30)/30;
+        rope.alpha   = a;
+        noose.alpha  = a;
+      } else {
+        app.destroy(true, { children: true });
+        wrapper.remove();
+      }
+    });
+  } catch (err) {
+    console.error("Error in spawnPaladinSmitePixi:", err);
+  }
 }
 
-
-  // 2) Pixi app sized to the card
-  const app = new PIXI.Application({
-    width:       wrapper.clientWidth,
-    height:      wrapper.clientHeight,
-    transparent: true,
-    antialias:   true
-  });
-  wrapper.appendChild(app.view);
-
-  // Shortcut to center coordinates
-  const cx = app.screen.width  / 2;
-  const cy = app.screen.height / 4;  // hang 1/4 down from top
-
-  // 3) Draw the rope (a straight line) and the noose loop
-  const rope = new PIXI.Graphics()
-    .lineStyle(4, 0xAAAAAA, 1)
-    .moveTo(cx, 0)
-    .lineTo(cx, cy);
-  app.stage.addChild(rope);
-
-  const noose = new PIXI.Graphics()
-    .lineStyle(4, 0x888888, 1)
-    .moveTo(cx, cy)
-    // simple loop: two semicircles
-    .arcTo(cx + 20, cy + 20, cx, cy + 40, 20)
-    .arcTo(cx - 20, cy + 20, cx, cy, 20);
-  app.stage.addChild(noose);
-
-  // 4) Animate: tighten the loop, then fade everything out
-  let tightenProgress = 0;
-  app.ticker.add((delta) => {
-    if (tightenProgress < 1) {
-      tightenProgress += 0.02 * delta;  // about 0.5s to tighten
-      // scale the noose loop vertically
-      noose.scale.y = 1 - 0.5 * tightenProgress;
-      noose.y = cy + 10 * tightenProgress; 
-    } else if (tightenProgress < 1.5) {
-      tightenProgress += 0.01 * delta;  // then fade out
-      const alpha = Math.max(0, 1 - (tightenProgress - 1) * 2);
-      rope.alpha = alpha;
-      noose.alpha = alpha;
-    } else {
-      // cleanup once animation is done
-      app.destroy(true, { children: true });
-      wrapper.remove();
-    }
-  });
-}
 
 
 /**
