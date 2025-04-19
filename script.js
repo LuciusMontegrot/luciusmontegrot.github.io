@@ -745,8 +745,8 @@ const personaWeights = [
   0.05, // 🧠🔥 GYM-FORGED WRITER (RARE)
   1, // fire priest
   1, // assassin
-  1000, // necromancer
-  1,  // paladin
+  1, // necromancer
+  1000,  // paladin
   0.01, // aeliana
 ];
 
