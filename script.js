@@ -748,7 +748,7 @@ const personaWeights = [
   1, // assassin
   1, // necromancer
   1,  // paladin
-  1000, // aeliana
+  0.01, // aeliana
 ];
 
 let idx;
