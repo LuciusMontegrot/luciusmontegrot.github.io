@@ -254,7 +254,7 @@ const pentagramPath = `M${points[0][0]},${points[0][1]}
 function spawnNecromancerWispPixi() {
   if (typeof PIXI === 'undefined') return;  // guard
 
-  // 1) make a full‑screen fixed container behind all static content
+  // ── 1) full‑screen fixed container behind all content ──
   const container = document.createElement('div');
   Object.assign(container.style, {
     position: 'fixed',
@@ -263,67 +263,60 @@ function spawnNecromancerWispPixi() {
     width: '100vw',
     height: '100vh',
     pointerEvents: 'none',
-    zIndex: '-1'            // negative puts it behind all page elements
+    zIndex: '0',     // sits above the background (body) but below your card (z-index 2)
   });
   document.body.appendChild(container);
 
-  // 2) create the Pixi app in that container
+  // ── 2) Pixi app that auto‑resizes to that container ──
   const app = new PIXI.Application({
-    width:  container.clientWidth,
-    height: container.clientHeight,
-    transparent: true
+    resizeTo: container,
+    transparent: true,
+    antialias: true,
   });
   container.appendChild(app.view);
 
-  // 3) spawn 20 wisps at random bottom positions
+  // ── 3) spawn wisps with fade in & drift ──
   const wisps = [];
   for (let i = 0; i < 20; i++) {
-    const w = new PIXI.Graphics()
-      .beginFill(0x66ff99, 0.6)
+    const g = new PIXI.Graphics()
+      .beginFill(0x66ff99, 0)   // start fully transparent
       .drawEllipse(0, 0, 10 + Math.random() * 15, 5 + Math.random() * 8)
       .endFill();
-    w.x = Math.random() * app.screen.width;
-    w.y = app.screen.height + Math.random() * 50;
-    app.stage.addChild(w);
-    wisps.push({
-      sprite: w,
-      speed: 0.5 + Math.random() * 0.7,
-      drift: (Math.random() - 0.5) * 1.5,
-      fadeIn: true
-    });
+
+    g.x = Math.random() * app.screen.width;
+    g.y = app.screen.height + Math.random() * 50;
+    g.vx = (Math.random() - 0.5) * 1.5;
+    g.vy = 0.5 + Math.random() * 0.7;
+    app.stage.addChild(g);
+    wisps.push(g);
   }
 
-  // 4) animate them upward, fade, and remove
-  const ticker = new PIXI.Ticker();
-  ticker.add(() => {
-    wisps.forEach((w, idx) => {
-      w.sprite.y -= w.speed;
-      w.sprite.x += w.drift;
+  // ── 4) animate: fade in, float up, reset ──
+  app.ticker.add(() => {
+    wisps.forEach(g => {
+      // fade in
+      if (g.alpha < 1) g.alpha = Math.min(1, g.alpha + 0.02);
 
-      // fade in/out
-      if (w.fadeIn) {
-        w.sprite.alpha = Math.min(1, (w.sprite.alpha || 0) + 0.02);
-        if (w.sprite.alpha >= 1) w.fadeIn = false;
-      } else {
-        w.sprite.alpha -= 0.01;
-      }
+      // move
+      g.y -= g.vy;
+      g.x += g.vx;
 
-      // once fully faded, kill the sprite
-      if (w.sprite.alpha <= 0) {
-        app.stage.removeChild(w.sprite);
-        wisps.splice(idx, 1);
+      // if off top or fully invisible, reset to bottom
+      if (g.y < -20 || g.alpha <= 0) {
+        g.x = Math.random() * app.screen.width;
+        g.y = app.screen.height + Math.random() * 50;
+        g.alpha = 0;
       }
     });
   });
-  ticker.start();
 
-  // 5) clean up after 4 s
+  // ── 5) cleanup after 4 s ──
   setTimeout(() => {
-    ticker.stop();
     app.destroy(true, { children: true });
     container.remove();
   }, 4000);
 }
+
 
 
 
