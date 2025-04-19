@@ -284,16 +284,17 @@ function spawnNecromancerWispPixi() {
   const wisps = [];
   for (let i = 0; i < 20; i++) {
     const g = new PIXI.Graphics()
-      .beginFill(0x66ff99, 0)  // start invisible
-      .drawEllipse(0, 0, 10 + Math.random()*15, 5 + Math.random()*8)
-      .endFill();
+  .beginFill(0x66ff99, 1)   // draw fully opaque shape
+  .drawEllipse(0, 0, 10 + Math.random() * 15, 5 + Math.random() * 8)
+  .endFill();
 
-    g.x = Math.random() * app.screen.width;
-    g.y = app.screen.height + Math.random() * 50;
-    g.vx = (Math.random() - 0.5) * 1.5;
-    g.vy = 0.5 + Math.random() * 0.7;
-    app.stage.addChild(g);
-    wisps.push(g);
+g.alpha = 0;               // start fully transparent
+g.x = Math.random() * app.screen.width;
+g.y = app.screen.height + Math.random() * 50;
+g.vx = (Math.random() - 0.5) * 1.5;
+g.vy = 0.5 + Math.random() * 0.7;
+app.stage.addChild(g);
+wisps.push(g);
   }
 
   // 4) animate: fade in, float up, reset
