@@ -292,7 +292,7 @@ function spawnNecromancerWispPixi() {
 g.x = Math.random() * app.screen.width;
 g.y = app.screen.height + Math.random() * 50;
 g.vx = (Math.random() - 0.5) * 1.5;
-g.vy = 2 + Math.random() * 1;  // vertical speed between 2 and 3 px/tick
+g.vy = 3 + Math.random() * 2;  // now 3–5 px/tick
 app.stage.addChild(g);
 wisps.push(g);
   }
@@ -312,11 +312,11 @@ wisps.push(g);
 });
 
 
-  // 5) cleanup after 4 s
+  // 5) cleanup after 10 s
   setTimeout(() => {
     app.destroy(true, { children: true });
     container.remove();
-  }, 4000);
+  }, 10000);
 }
 
 
