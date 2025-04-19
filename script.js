@@ -292,24 +292,25 @@ g.alpha = 0;               // start fully transparent
 g.x = Math.random() * app.screen.width;
 g.y = app.screen.height + Math.random() * 50;
 g.vx = (Math.random() - 0.5) * 1.5;
-g.vy = 0.5 + Math.random() * 0.7;
+g.vy = 2 + Math.random() * 1;  // vertical speed between 2 and 3 px/tick
 app.stage.addChild(g);
 wisps.push(g);
   }
 
   // 4) animate: fade in, float up, reset
   app.ticker.add(() => {
-    wisps.forEach(g => {
-      if (g.alpha < 1) g.alpha = Math.min(1, g.alpha + 0.02);
-      g.y -= g.vy;
-      g.x += g.vx;
-      if (g.y < -20 || g.alpha <= 0) {
-        g.x = Math.random() * app.screen.width;
-        g.y = app.screen.height + Math.random() * 50;
-        g.alpha = 0;
-      }
-    });
+  wisps.forEach(g => {
+    // move fast
+    g.y -= g.vy;
+    g.x += g.vx;
+    // reset only when off the *top*
+    if (g.y < -20) {
+      g.x = Math.random() * app.screen.width;
+      g.y = app.screen.height + Math.random() * 50;
+    }
   });
+});
+
 
   // 5) cleanup after 4 s
   setTimeout(() => {
