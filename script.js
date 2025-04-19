@@ -496,18 +496,22 @@ function spawnDaggerRain() {
 
 function spawnPaladinSmitePixi() {
   console.warn("🌑 spawnPaladinSmitePixi() fired");
-  if (typeof PIXI === 'undefined') return;  // guard
+  if (typeof PIXI === 'undefined') return;
 
-  // 1) Confine it to the card, behind content
+  // 1) Confine it to the card, behind other card content
   card.style.position = 'relative';
   const wrapper = document.createElement('div');
   Object.assign(wrapper.style, {
     position:      'absolute',
     inset:         '0',
     pointerEvents: 'none',
-    zIndex:        '-1'
+    zIndex:        '1'    // <- changed from '-1'
   });
   card.appendChild(wrapper);
+
+  // ... rest of your Pixi setup unchanged ...
+}
+
 
   // 2) Pixi app sized to the card
   const app = new PIXI.Application({
