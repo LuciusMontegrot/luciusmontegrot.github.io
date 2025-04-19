@@ -312,11 +312,11 @@ wisps.push(g);
 });
 
 
-  // 5) cleanup after 10 s
+  // 5) cleanup after 7 s
   setTimeout(() => {
     app.destroy(true, { children: true });
     container.remove();
-  }, 10000);
+  }, 7000);
 }
 
 
