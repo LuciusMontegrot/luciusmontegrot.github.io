@@ -495,6 +495,7 @@ function spawnDaggerRain() {
 }
 
 function spawnPaladinSmitePixi() {
+  console.warn("🌑 spawnPaladinSmitePixi() fired");
   if (typeof PIXI === 'undefined') return;  // guard
 
   // 1) Confine it to the card, behind content
