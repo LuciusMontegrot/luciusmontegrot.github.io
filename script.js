@@ -288,7 +288,7 @@ function spawnNecromancerWispPixi() {
   .drawEllipse(0, 0, 10 + Math.random() * 15, 5 + Math.random() * 8)
   .endFill();
 
-g.alpha = 0;               // start fully transparent
+    g.alpha = 1;               // start fully visible
 g.x = Math.random() * app.screen.width;
 g.y = app.screen.height + Math.random() * 50;
 g.vx = (Math.random() - 0.5) * 1.5;
