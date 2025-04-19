@@ -791,7 +791,8 @@ if (persona.title === "The Grand Druidess") {
       case 'dagger-rain': spawnDaggerRain(); break;
       case 'fire-roar': spawnFireRoar(); break;
       case 'necromancer-wisp': spawnNecromancerWispPixi(); break;
-      case 'paladin-smite': spawnPaladinSmite(); break;
+      case 'paladin-smite': spawnPaladinSmitePixi(); break;
+
 
 
       default: effectLayer.classList.add(persona.effect);
