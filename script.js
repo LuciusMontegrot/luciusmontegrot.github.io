@@ -254,33 +254,38 @@ const pentagramPath = `M${points[0][0]},${points[0][1]}
 function spawnNecromancerWispPixi() {
   if (typeof PIXI === 'undefined') return;  // guard
 
-  // ── 1) full‑screen fixed container behind all content ──
+  // 1) full‑screen fixed container behind all content
   const container = document.createElement('div');
   Object.assign(container.style, {
-    position: 'fixed',
-    top: '0',
-    left: '0',
-    width: '100vw',
-    height: '100vh',
-    pointerEvents: 'none',
-    zIndex: '0',     // sits above the background (body) but below your card (z-index 2)
+    position:       'fixed',
+    top:            '0',
+    left:           '0',
+    width:          '100vw',
+    height:         '100vh',
+    pointerEvents:  'none',
+    zIndex:         '0',       // behind everything
+    backgroundColor:'transparent'
   });
   document.body.appendChild(container);
 
-  // ── 2) Pixi app that auto‑resizes to that container ──
+  // 2) Pixi app that auto‑resizes to that container
   const app = new PIXI.Application({
-    resizeTo: container,
-    transparent: true,
-    antialias: true,
+    resizeTo:        container,
+    transparent:     true,
+    antialias:       true,
+    backgroundAlpha: 0
   });
   container.appendChild(app.view);
 
-  // ── 3) spawn wisps with fade in & drift ──
+  // force the <canvas> itself to be clear
+  app.view.style.backgroundColor = 'transparent';
+
+  // 3) spawn wisps with fade‑in & drift
   const wisps = [];
   for (let i = 0; i < 20; i++) {
     const g = new PIXI.Graphics()
-      .beginFill(0x66ff99, 0)   // start fully transparent
-      .drawEllipse(0, 0, 10 + Math.random() * 15, 5 + Math.random() * 8)
+      .beginFill(0x66ff99, 0)  // start invisible
+      .drawEllipse(0, 0, 10 + Math.random()*15, 5 + Math.random()*8)
       .endFill();
 
     g.x = Math.random() * app.screen.width;
@@ -291,17 +296,12 @@ function spawnNecromancerWispPixi() {
     wisps.push(g);
   }
 
-  // ── 4) animate: fade in, float up, reset ──
+  // 4) animate: fade in, float up, reset
   app.ticker.add(() => {
     wisps.forEach(g => {
-      // fade in
       if (g.alpha < 1) g.alpha = Math.min(1, g.alpha + 0.02);
-
-      // move
       g.y -= g.vy;
       g.x += g.vx;
-
-      // if off top or fully invisible, reset to bottom
       if (g.y < -20 || g.alpha <= 0) {
         g.x = Math.random() * app.screen.width;
         g.y = app.screen.height + Math.random() * 50;
@@ -310,12 +310,13 @@ function spawnNecromancerWispPixi() {
     });
   });
 
-  // ── 5) cleanup after 4 s ──
+  // 5) cleanup after 4 s
   setTimeout(() => {
     app.destroy(true, { children: true });
     container.remove();
   }, 4000);
 }
+
 
 
 
