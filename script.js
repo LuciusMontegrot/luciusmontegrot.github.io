@@ -494,66 +494,69 @@ function spawnDaggerRain() {
   }, 4000);
 }
 
-function spawnPaladinSmite() {
-  const svgNS = "http://www.w3.org/2000/svg";
-  const container = document.createElementNS(svgNS, "svg");
-  container.setAttribute("width", "100%");
-  container.setAttribute("height", "100%");
-  container.setAttribute("viewBox", "0 0 100 100");
-  container.style.position = "absolute";
-  container.style.top = "0";
-  container.style.left = "0";
-  container.style.pointerEvents = "none";
-  container.style.zIndex = "10000";
+function spawnPaladinSmitePixi() {
+  if (typeof PIXI === 'undefined') return;  // guard
 
-  // Rope
-  const rope = document.createElementNS(svgNS, "line");
-  rope.setAttribute("x1", "50");
-  rope.setAttribute("y1", "0");
-  rope.setAttribute("x2", "50");
-  rope.setAttribute("y2", "35");
-  rope.setAttribute("stroke", "#aaa");
-  rope.setAttribute("stroke-width", "0.6");
-  container.appendChild(rope);
+  // 1) Confine it to the card, behind content
+  card.style.position = 'relative';
+  const wrapper = document.createElement('div');
+  Object.assign(wrapper.style, {
+    position:      'absolute',
+    inset:         '0',
+    pointerEvents: 'none',
+    zIndex:        '-1'
+  });
+  card.appendChild(wrapper);
 
-  // Noose path – a loop with a bulge at the bottom, like a tied knot
-  const noose = document.createElementNS(svgNS, "path");
-  noose.setAttribute("d", "M50 35 C45 50, 55 50, 50 65 C47 60, 53 60, 50 35 Z");
-  noose.setAttribute("stroke", "#888");
-  noose.setAttribute("fill", "none");
-  noose.setAttribute("stroke-width", "0.6");
-  noose.setAttribute("opacity", "1");
+  // 2) Pixi app sized to the card
+  const app = new PIXI.Application({
+    width:       wrapper.clientWidth,
+    height:      wrapper.clientHeight,
+    transparent: true,
+    antialias:   true
+  });
+  wrapper.appendChild(app.view);
 
-  // Tighten animation – vertically squeeze the loop
-  const tighten = document.createElementNS(svgNS, "animateTransform");
-  tighten.setAttribute("attributeName", "transform");
-  tighten.setAttribute("type", "scale");
-  tighten.setAttribute("from", "1 1");
-  tighten.setAttribute("to", "1 0.5");
-  tighten.setAttribute("begin", "0.5s");
-  tighten.setAttribute("dur", "0.8s");
-  tighten.setAttribute("additive", "sum");
-  tighten.setAttribute("fill", "freeze");
+  // Shortcut to center coordinates
+  const cx = app.screen.width  / 2;
+  const cy = app.screen.height / 4;  // hang 1/4 down from top
 
-  // Fade out animation
-  const fade = document.createElementNS(svgNS, "animate");
-  fade.setAttribute("attributeName", "opacity");
-  fade.setAttribute("from", "1");
-  fade.setAttribute("to", "0");
-  fade.setAttribute("begin", "2.4s");
-  fade.setAttribute("dur", "1s");
-  fade.setAttribute("fill", "freeze");
+  // 3) Draw the rope (a straight line) and the noose loop
+  const rope = new PIXI.Graphics()
+    .lineStyle(4, 0xAAAAAA, 1)
+    .moveTo(cx, 0)
+    .lineTo(cx, cy);
+  app.stage.addChild(rope);
 
-  noose.appendChild(tighten);
-  noose.appendChild(fade);
-  container.appendChild(noose);
+  const noose = new PIXI.Graphics()
+    .lineStyle(4, 0x888888, 1)
+    .moveTo(cx, cy)
+    // simple loop: two semicircles
+    .arcTo(cx + 20, cy + 20, cx, cy + 40, 20)
+    .arcTo(cx - 20, cy + 20, cx, cy, 20);
+  app.stage.addChild(noose);
 
-  document.getElementById("effect-layer").appendChild(container);
-
-  setTimeout(() => {
-    container.remove();
-  }, 4000);
+  // 4) Animate: tighten the loop, then fade everything out
+  let tightenProgress = 0;
+  app.ticker.add((delta) => {
+    if (tightenProgress < 1) {
+      tightenProgress += 0.02 * delta;  // about 0.5s to tighten
+      // scale the noose loop vertically
+      noose.scale.y = 1 - 0.5 * tightenProgress;
+      noose.y = cy + 10 * tightenProgress; 
+    } else if (tightenProgress < 1.5) {
+      tightenProgress += 0.01 * delta;  // then fade out
+      const alpha = Math.max(0, 1 - (tightenProgress - 1) * 2);
+      rope.alpha = alpha;
+      noose.alpha = alpha;
+    } else {
+      // cleanup once animation is done
+      app.destroy(true, { children: true });
+      wrapper.remove();
+    }
+  });
 }
+
 
 /**
  * Aeliana’s theatrical Pixi effect:
