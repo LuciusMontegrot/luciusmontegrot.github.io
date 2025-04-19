@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       title: "The Mysterious Hacker",
       image: "images/hacker.jpg",
-      description: "It is said Lucius Montegrot is a hacker with his hair half pink and half green. No one knows when he joined GitHub, only that his repositories compile themselves and his README files update during thunderstorms. He writes code in dead languages, forks his own thoughts, and claims to be debugging reality itself. Rumour has it he’s trying to restore the soul of the phoenix, one painstaking line of code after another, into a hidden branch named /ascend. If your screen flickers at midnight, it’s not coincidence. It’s Lucius. <i>THey even say he coded this website himself...</i>",
+      description: "It is said Lucius Montegrot is a hacker with his hair half pink and half green. No one knows when he joined GitHub, only that his repositories compile themselves and his README files update during thunderstorms. He writes code in dead languages, forks his own thoughts, and claims to be debugging reality itself. Rumour has it he’s trying to restore the soul of the phoenix, one painstaking line of code after another, into a hidden branch named /ascend. If your screen flickers at midnight, it’s not coincidence. It’s Lucius. *They even say he coded this website himself...*",
       effect: "hacker-glitch"
     },
     {
