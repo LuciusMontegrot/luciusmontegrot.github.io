@@ -398,64 +398,74 @@ function spawnMistElfFlamingSwordPixi() {
   app.view.style.background = 'none';
   wrapper.appendChild(app.view);
 
-  // 4) define blade endpoints
+  // 4) approximate blade line in screen coords
   const hilt = { x: app.screen.width * 0.6, y: app.screen.height * 0.5 };
   const tip  = { x: app.screen.width * 0.3, y: app.screen.height * 0.8 };
-  // normal vector (perp to blade)
-  const dx = tip.x - hilt.x;
-  const dy = tip.y - hilt.y;
-  const len = Math.hypot(dx, dy);
-  const nx = -dy / len;
-  const ny =  dx / len;
+  const dx = tip.x - hilt.x, dy = tip.y - hilt.y;
 
-  // 5) spawn particles
-  const particles = [];
+  // 5) create a pool of “flame” sprites
+  const flames = [];
   for (let i = 0; i < 30; i++) {
-    const p = new PIXI.Graphics()
-      .beginFill(0xFFAA00, 0.8)
-      .drawCircle(0, 0, 3 + Math.random() * 3)
-      .endFill();
-    reset(p);
-    app.stage.addChild(p);
-    particles.push(p);
+    const f = new PIXI.Graphics();
+
+    // outer orange shape
+    f.beginFill(0xFF6600, 0.7);
+    f.drawPolygon([
+       0, -6,
+       4,  2,
+       2,  4,
+       0,  3,
+      -2,  4,
+      -4,  2
+    ]);
+    f.endFill();
+
+    // inner yellow flicker
+    f.beginFill(0xFFFF66, 0.8);
+    f.drawPolygon([
+       0, -4,
+       2,  1,
+       0,  3,
+      -2,  1
+    ]);
+    f.endFill();
+
+    f.alpha = 0;
+    f.scale.set(0.6 + Math.random() * 0.8);
+    app.stage.addChild(f);
+    flames.push(f);
   }
 
-  // 6) reset routine
-  function reset(p) {
-    const t = Math.random();           // where along the blade
-    // base point on blade
-    let x = hilt.x + dx * t;
-    let y = hilt.y + dy * t;
-    // small jitter perpendicular
-    x += (Math.random() - 0.5) * 8;
-    y += (Math.random() - 0.5) * 8;
-    p.x = x;  p.y = y;
-    // velocity roughly away from blade
-    const speed = 1 + Math.random() * 1.5;
-    p.vx = nx * speed + (Math.random() - 0.5) * 0.3;
-    p.vy = ny * speed + (Math.random() - 0.5) * 0.3;
-    p.alpha = 1;
-    p.scale.set(0.6 + Math.random() * 0.8);
+  // 6) reset one particle onto the blade
+  function reset(f) {
+    const t = Math.random();
+    let x = hilt.x + dx * t + (Math.random() - 0.5) * 6;
+    let y = hilt.y + dy * t + (Math.random() - 0.5) * 6;
+    f.x = x;  f.y = y;
+    // drift straight up (screen coords), with a little wobble
+    f.vx = (Math.random() - 0.5) * 0.4;
+    f.vy = - (1 + Math.random() * 1.5);
+    f.alpha = 1;
   }
 
-  // 7) animate
+  // 7) initialise all
+  flames.forEach(reset);
+
+  // 8) animate
   app.ticker.add(() => {
-    particles.forEach(p => {
-      p.x     += p.vx;
-      p.y     += p.vy;
-      p.alpha -= 0.02;
-      // respawn when faded or moved too far
-      if (p.alpha <= 0 || p.y < -10 || p.y > app.screen.height + 10) {
-        reset(p);
-      }
+    flames.forEach(f => {
+      f.x     += f.vx;
+      f.y     += f.vy;
+      f.alpha -= 0.02;
+      if (f.alpha <= 0 || f.y < -10) reset(f);
     });
   });
 
-  // 8) cleanup
+  // 9) cleanup after 4s
   setTimeout(() => {
     app.destroy(true, { children: true });
     wrapper.remove();
-  }, 4000);
+  }, 5000);
 }
 
 
