@@ -500,12 +500,14 @@ function spawnDaggerRain() {
 function spawnShadowChainsPixi() {
   if (typeof PIXI === 'undefined') return;
 
-  // 1) compute chain line
-  const midY = window.innerHeight / 2;                // vertical center
-  const linkWidth = 48 * 0.5;                         // your sprite is 48px wide, scaled 0.5
-  const totalLinks = Math.ceil(window.innerWidth / linkWidth) + 2;
+  // 1) compute parameters
+  const linkOrigWidth = 48;        // your PNG is 48px wide
+  const scaleFactor   = 0.5;       // how big you want each link
+  const linkWidth     = linkOrigWidth * scaleFactor;
+  const count         = Math.ceil(window.innerWidth / linkWidth) + 2;
+  const midY          = window.innerHeight / 2;
 
-  // 2) full‑screen transparent wrapper
+  // 2) transparent full‑screen wrapper
   const wrapper = document.createElement('div');
   Object.assign(wrapper.style, {
     position:      'fixed',
@@ -519,47 +521,48 @@ function spawnShadowChainsPixi() {
   });
   document.body.appendChild(wrapper);
 
-  // 3) Pixi app with transparent bg
+  // 3) Pixi app
   const app = new PIXI.Application({
-    resizeTo:       wrapper,
-    transparent:    true,
-    backgroundAlpha: 0,
-    antialias:      true
+    resizeTo:        wrapper,
+    transparent:     true,
+    antialias:       true,
+    backgroundAlpha: 0
   });
   app.view.style.background = 'transparent';
   wrapper.appendChild(app.view);
 
-  // 4) place each link along a slight sag curve
-  const tex = PIXI.Texture.from('images/chain-link.png');
-  for (let i = 0; i < totalLinks; i++) {
-    const t = i / (totalLinks - 1);
-    // x from just off left (‑linkWidth) to just off right (+linkWidth)
+  // 4) create and place each link
+  const texture = PIXI.Texture.from('images/chain-link.png');
+  for (let i = 0; i < count; i++) {
+    const t = i / (count - 1);
+    // x goes from -linkWidth to window.innerWidth + linkWidth
     const x = -linkWidth + t * (window.innerWidth + linkWidth * 2);
-    // sag: a parabola peaking downward in centre
+    // sag formula: simple parabola dipping by up to 40px in center
     const sag = 40 * (1 - Math.pow(2 * (t - 0.5), 2));
     const y   = midY + sag;
 
-    const spr = new PIXI.Sprite(tex);
-    spr.anchor.set(0.5);
+    const spr = new PIXI.Sprite(texture);
+    spr.anchor.set(0, 0.5);      // left‑center anchor
+    spr.scale.set(scaleFactor);
     spr.x = x;
     spr.y = y;
-    spr.scale.set(0.5);
     app.stage.addChild(spr);
   }
 
-  // 5) fade in the whole chain
+  // 5) fade in with CSS animation
   wrapper.style.opacity = '0';
-  wrapper.animate([{ opacity: 0 }, { opacity: 1 }], {
+  wrapper.animate([{opacity:0}, {opacity:1}], {
     duration: 800,
-    fill:     'forwards'
+    fill: 'forwards'
   });
 
-  // 6) tear it down after 4s
+  // 6) clean up after 4s
   setTimeout(() => {
     app.destroy(true, { children: true });
     wrapper.remove();
   }, 4000);
 }
+
 
 
 
