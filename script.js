@@ -563,6 +563,7 @@ function spawnPaladinSmitePixi() {
 
 
 
+
 /**
  * Aeliana’s theatrical Pixi effect:
  * Swirling emerald motes that emanate from the card center.
