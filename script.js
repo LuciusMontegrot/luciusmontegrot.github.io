@@ -499,12 +499,15 @@ function spawnDaggerRain() {
 // ─────────────────────────────────────────────────────────────────────────────
 function spawnShadowChainsPixi() {
   if (typeof PIXI === 'undefined') return;
+
+  // 1) figure out where your card sits
   const cardEl = document.getElementById('persona-display');
-  const rect = cardEl.getBoundingClientRect();
-  const midY = rect.top + rect.height / 2;
-  const leftStart = -50;
-  const rightStart = window.innerWidth + 50;
-  // 1) wrapper
+  const rect   = cardEl.getBoundingClientRect();
+  const midY   = rect.top + rect.height / 2;
+  const leftX  = rect.left + 20;
+  const rightX = rect.right - 20;
+
+  // 2) full‑screen transparent wrapper
   const wrapper = document.createElement('div');
   Object.assign(wrapper.style, {
     position:      'fixed',
@@ -514,22 +517,27 @@ function spawnShadowChainsPixi() {
     height:        '100vh',
     pointerEvents: 'none',
     zIndex:        '9998',
+    background:    'transparent'      // make sure wrapper is transparent
   });
   document.body.appendChild(wrapper);
-  // 2) PIXI app
+
+  // 3) Pixi app with explicit transparency
   const app = new PIXI.Application({
-    resizeTo:    wrapper,
-    transparent: true,
-    antialias:   true
+    resizeTo:       wrapper,
+    transparent:    true,
+    backgroundAlpha: 0,                // critical: fully transparent
+    antialias:      true
   });
+  // ensure canvas itself is transparent
+  app.view.style.background = 'transparent';
   wrapper.appendChild(app.view);
-  // 3) two chain sprites
+
+  // 4) create two chain sprites
   const tex = PIXI.Texture.from('images/chain-link.png');
-  const sides = [
-    { x0: leftStart,  x1: rect.left + 20 },
-    { x0: rightStart, x1: rect.right - 20 }
-  ];
-  sides.forEach(({ x0, x1 }) => {
+  [
+    { x0: -50,       x1: leftX  },
+    { x0: window.innerWidth+50, x1: rightX }
+  ].forEach(({x0, x1}) => {
     const spr = new PIXI.Sprite(tex);
     spr.anchor.set(0.5);
     spr.x = x0;
@@ -537,20 +545,21 @@ function spawnShadowChainsPixi() {
     spr.alpha = 0;
     spr.scale.set(0.5);
     app.stage.addChild(spr);
-    // animate toward card
+
+    // slide in + fade in
     app.ticker.add(() => {
-      // slide in
       spr.x += (x1 - spr.x) * 0.05;
-      // fade in until fully opaque
       if (spr.alpha < 1) spr.alpha = Math.min(1, spr.alpha + 0.02);
     });
   });
-  // 4) teardown after 3s
+
+  // 5) tear it all down after 3s
   setTimeout(() => {
     app.destroy(true, { children: true });
     wrapper.remove();
-  }, 3000);
+  }, 4000);
 }
+
 
 
 
