@@ -369,21 +369,25 @@ function spawnInkBlotches() {
 }
 
 function spawnMistElfFlamingSwordPixi() {
+  console.log("✨ spawnMistElfFlamingSwordPixi() fired");
   if (typeof PIXI === 'undefined') return;
 
-  // 1) pin behind the card
+  // grab the card
   const card = document.getElementById('persona-display');
   card.style.position = 'relative';
+
+  // wrapper sits on top of the card
   const wrapper = document.createElement('div');
   Object.assign(wrapper.style, {
     position:      'absolute',
     inset:         '0',
     pointerEvents: 'none',
-    zIndex:        '-1'
+    zIndex:        '10000',  // make sure it's above everything
+    background:    'transparent'
   });
   card.appendChild(wrapper);
 
-  // 2) Pixi app sized to the card
+  // PIXI app
   const app = new PIXI.Application({
     width:       wrapper.clientWidth,
     height:      wrapper.clientHeight,
@@ -392,14 +396,16 @@ function spawnMistElfFlamingSwordPixi() {
   });
   wrapper.appendChild(app.view);
 
-  // 3) flame particles around sword
-  const cx = app.screen.width  * 0.5;    // sword roughly center‑x
-  const cy = app.screen.height * 0.6;    // a bit below center‑y
+  // center‑ish of sword
+  const cx = app.screen.width * 0.5;
+  const cy = app.screen.height * 0.6;
+
+  // spawn particles
   const particles = [];
-  for (let i = 0; i < 25; i++) {
+  for (let i = 0; i < 30; i++) {
     const p = new PIXI.Graphics()
-      .beginFill(0xFFAA00, 0.6)
-      .drawCircle(0, 0, 4 + Math.random()*4)
+      .beginFill(0xFFAA00, 0.8)
+      .drawCircle(0, 0, 3 + Math.random()*3)
       .endFill();
     reset(p);
     app.stage.addChild(p);
@@ -407,25 +413,24 @@ function spawnMistElfFlamingSwordPixi() {
   }
 
   function reset(p) {
-    p.x     = cx + (Math.random()-0.5)*20;
-    p.y     = cy + (Math.random()-0.5)*10;
-    p.vx    = (Math.random()-0.5)*0.5;
-    p.vy    = - (1 + Math.random()*1.5);
+    p.x     = cx + (Math.random()-0.5)*24;
+    p.y     = cy + (Math.random()-0.5)*12;
+    p.vx    = (Math.random()-0.5)*0.6;
+    p.vy    = - (1 + Math.random()*2);
     p.alpha = 1;
-    p.scale.set(0.5 + Math.random()*0.8);
+    p.scale.set(0.6 + Math.random()*0.8);
   }
 
-  // 4) animate: flicker & rise
   app.ticker.add(() => {
     particles.forEach(p => {
       p.x     += p.vx;
       p.y     += p.vy;
       p.alpha -= 0.02;
-      if (p.alpha <= 0 || p.y < cy - 80) reset(p);
+      if (p.alpha <= 0 || p.y < cy - 100) reset(p);
     });
   });
 
-  // 5) cleanup
+  // tear down after 4s
   setTimeout(() => {
     app.destroy(true, { children: true });
     wrapper.remove();
