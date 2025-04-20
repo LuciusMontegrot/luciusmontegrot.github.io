@@ -817,12 +817,12 @@ const interval = setInterval(() => {
   i++;
   if (i >= name.length) {
     clearInterval(interval);
-    // Fade out after a pause
-    setTimeout(() => {
-      signature.style.transition = 'opacity 1.5s ease';
-      signature.style.opacity = '0';
-      setTimeout(() => signature.remove(), 1600); // full cleanup
-    }, 1800);
+// Fade out after a longer pause
+setTimeout(() => {
+  signature.style.transition = 'opacity 4s ease';
+  signature.style.opacity = '0';
+  setTimeout(() => signature.remove(), 4200); // full cleanup
+}, 3000); // Delay before starting fade
   }
 }, 100);
 
