@@ -1156,134 +1156,124 @@ function showRandomPersona () {
   if (isAnimating) return;
   isAnimating = true;
 
-function weightedRandomIndex(weights) {
-  const total = weights.reduce((a, b) => a + b, 0);
-  let r = Math.random() * total;
-  for (let i = 0; i < weights.length; i++) {
-    r -= weights[i];
-    if (r <= 0) return i;
-  }
-  return weights.length - 1;
-}
-
-// Weights for each persona, must match order in `personas`
-const personaWeights = [
-  1, // historian
-  1, // wizard
-  1, // vampire
-  1, // mist elf
-  1, // dungeon master
-  1, // sea elf
-  1, // hacker
-  1, // gym-forged ghostwriter
-  0.05, // 🧠🔥 GYM-FORGED WRITER (RARE)
-  1, // fire priest
-  1, // assassin
-  1, // necromancer
-  1,  // paladin
-  0,01, // Aeliana - Rarest!
-];
-
-let idx;
-do { idx = weightedRandomIndex(personaWeights); }
-while (idx === lastIndex);
-
-  lastIndex = idx;
-  const persona = personas[idx];
-if (persona.effect === "muscle-flex2") {
-  console.warn("🔥 RARE: Lucius (possibly real) revealed.");
-}
-
-if (persona.title === "The Grand Druidess") {
-  console.warn("🌿✨ AELIANA HAS APPEARED! The veil thins. The phoenix watches.");
-  const card = document.getElementById('persona-display');
-  card.classList.add('aeliana-sighting');   // 🌟 Add the magical veil
   try {
-    spawnAelianaSignaturePixi();                // ✒️ The ethereal quill appears
-  } catch (err) {
-    console.error("Error in Aeliana effect:", err);
-  }
-  // Optional: remove veil after 5 seconds
-  setTimeout(() => {
-    card.classList.remove('aeliana-sighting');
-  }, 5000);
-}
-
-
-
-  card.classList.remove('spin');
-  void card.offsetWidth;
-  card.classList.add('spin');
-
-  // TEMPORARY blackout effect
-  card.classList.add('flipping');
-
-  setTimeout(() => {
-    imageEl.src = persona.image;
-    imageEl.alt = persona.title;
-    titleEl.textContent = persona.title;
-    descEl.innerHTML = persona.description;
-
-    effectLayer.className = '';
-    switch (persona.effect) {
-      case 'vampire-blood': spawnBloodRain(); break;
-      case 'wizard-smoke': spawnWizardEffect(); break;
-      case 'hacker-glitch': spawnHackerGlitch(); break;
-      case 'dagger-rain': spawnDaggerRain(); break;
-      case 'mistelf-glow': spawnMistElfFlamingSwordPixi(); break;
-      case 'fire-roar': spawnFireRoarPixi(); break;
-      case 'dm-dice':
-        try {
-            setTimeout(() => spawnDungeonMasterDicePixi(), 100); // 👈 small delay prevents WebGL issues
-        } catch (err) {
-        console.error("Dice effect error:", err);
-          }
-        break; 
-          case 'muscle-flex':
-          try {
-        spawnGymWeightsPixi();
-        } catch (err) {
-        console.error("Gym weights error:", err);
-        }
-        break;
-
-      case 'necromancer-wisp': spawnNecromancerWispPixi(); break;
-      case 'paladin-smite':
-        try {
-          spawnShadowChainsPixi();
-            } catch (err) {
-            console.error("ShadowChains error:", err);
-            }
-              break;
-        
-        case 'historian-scroll':
-        console.log("🖋️ Historian selected – spawning ink blotches…");
-           try{ spawnInkBlotches();
-              } catch (err) {
-              console.error("InkBlotches error:", err);
-              }
-            break;
-
-case 'seaelf-splash':
-  try {
-    spawnSeaElfCoinRainPixi();
-  } catch (err) {
-    console.error("💰 CoinRain error:", err);
-  }
-  break;
-
-
-      default: effectLayer.classList.add(persona.effect);
+    function weightedRandomIndex(weights) {
+      const total = weights.reduce((a, b) => a + b, 0);
+      let r = Math.random() * total;
+      for (let i = 0; i < weights.length; i++) {
+        r -= weights[i];
+        if (r <= 0) return i;
+      }
+      return weights.length - 1;
     }
 
-    card.classList.remove('flipping'); // fade back in
-  }, 900);
+    const personaWeights = [
+  1,      // historian
+  1,      // wizard
+  1,      // vampire
+  1,      // mist elf
+  1,      // dungeon master
+  1,      // sea elf
+  1,      // hacker
+  1,      // gym-forged ghostwriter
+  0.05,   // 🧠🔥 GYM-FORGED WRITER (RARE)
+  1,      // fire priest
+  1,      // assassin
+  1,      // necromancer
+  1,      // paladin
+  0.01    // Aeliana – Rarest!
+];
 
-  setTimeout(() => { isAnimating = false; }, 1800);
+
+    let idx;
+    do { idx = weightedRandomIndex(personaWeights); }
+    while (idx === lastIndex);
+    lastIndex = idx;
+
+    const persona = personas[idx];
+
+    if (persona.effect === "muscle-flex2") {
+      console.warn("🔥 RARE: Lucius (possibly real) revealed.");
+    }
+
+    if (persona.title === "The Grand Druidess") {
+      console.warn("🌿✨ AELIANA HAS APPEARED! The veil thins. The phoenix watches.");
+      const card = document.getElementById('persona-display');
+      card.classList.add('aeliana-sighting');
+      try {
+        spawnAelianaSignaturePixi();
+      } catch (err) {
+        console.error("Error in Aeliana effect:", err);
+      }
+      setTimeout(() => {
+        card.classList.remove('aeliana-sighting');
+      }, 5000);
+    }
+
+    card.classList.remove('spin');
+    void card.offsetWidth;
+    card.classList.add('spin', 'flipping');
+
+    setTimeout(() => {
+      imageEl.src = persona.image;
+      imageEl.alt = persona.title;
+      titleEl.textContent = persona.title;
+      descEl.innerHTML = persona.description;
+
+      effectLayer.className = '';
+      switch (persona.effect) {
+        case 'vampire-blood': spawnBloodRain(); break;
+        case 'wizard-smoke': spawnWizardEffect(); break;
+        case 'hacker-glitch': spawnHackerGlitch(); break;
+        case 'dagger-rain': spawnDaggerRain(); break;
+        case 'mistelf-glow': spawnMistElfFlamingSwordPixi(); break;
+        case 'fire-roar': spawnFireRoarPixi(); break;
+        case 'dm-dice':
+          try {
+            setTimeout(() => spawnDungeonMasterDicePixi(), 100);
+          } catch (err) {
+            console.error("Dice effect error:", err);
+          }
+          break;
+        case 'muscle-flex':
+          try {
+            spawnGymWeightsPixi();
+          } catch (err) {
+            console.error("Gym weights error:", err);
+          }
+          break;
+        case 'necromancer-wisp': spawnNecromancerWispPixi(); break;
+        case 'paladin-smite':
+          try {
+            spawnShadowChainsPixi();
+          } catch (err) {
+            console.error("ShadowChains error:", err);
+          }
+          break;
+        case 'historian-scroll':
+          try {
+            spawnInkBlotches();
+          } catch (err) {
+            console.error("InkBlotches error:", err);
+          }
+          break;
+        case 'seaelf-splash':
+          try {
+            spawnSeaElfCoinRainPixi();
+          } catch (err) {
+            console.error("CoinRain error:", err);
+          }
+          break;
+        default:
+          effectLayer.classList.add(persona.effect);
+      }
+
+      card.classList.remove('flipping');
+    }, 900);
+
+  } catch (err) {
+    console.error("❌ Error in showRandomPersona():", err);
+  } finally {
+    setTimeout(() => { isAnimating = false; }, 1800);
+  }
 }
-
-
-/* hook up the button */
-button.addEventListener('click', showRandomPersona);
-
-});
