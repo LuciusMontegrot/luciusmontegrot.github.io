@@ -326,104 +326,69 @@ wisps.push(g);
 
 
 
-function spawnFireRoar() {
-  const svgNS = "http://www.w3.org/2000/svg";
-  const container = document.createElementNS(svgNS, "svg");
-  container.setAttribute("width", "100%");
-  container.setAttribute("height", "100%");
-  container.setAttribute("viewBox", "0 0 100 100");
-  container.style.position = "absolute";
-  container.style.top = "0";
-  container.style.left = "0";
-  container.style.pointerEvents = "none";
-  container.style.zIndex = "10000";
+function spawnFireRoarPixi() {
+  if (typeof PIXI === 'undefined') return;
 
-  // 🔥 Main burst ring
-  const ring = document.createElementNS(svgNS, "circle");
-  ring.setAttribute("cx", "50");
-  ring.setAttribute("cy", "50");
-  ring.setAttribute("r", "2");
-  ring.setAttribute("stroke", "orangered");
-  ring.setAttribute("stroke-width", "0.6");
-  ring.setAttribute("fill", "none");
+  // 1) host it in your existing #effect-layer
+  const container = document.getElementById('effect-layer');
+  const app = new PIXI.Application({
+    resizeTo:       container,
+    transparent:    true,
+    antialias:      true,
+    backgroundAlpha: 0
+  });
+  container.appendChild(app.view);
+  app.view.style.position = 'absolute';
+  app.view.style.top      = '0';
+  app.view.style.left     = '0';
 
-  const ringAnim = document.createElementNS(svgNS, "animate");
-  ringAnim.setAttribute("attributeName", "r");
-  ringAnim.setAttribute("from", "2");
-  ringAnim.setAttribute("to", "60");
-  ringAnim.setAttribute("dur", "1s");
-  ringAnim.setAttribute("fill", "freeze");
+  // 2) create a glow filter for embers
+  const glow = new PIXI.filters.GlowFilter({ distance: 15, outerStrength: 2, innerStrength: 1, color: 0xFF6600 });
 
-  const fadeAnim = document.createElementNS(svgNS, "animate");
-  fadeAnim.setAttribute("attributeName", "opacity");
-  fadeAnim.setAttribute("from", "1");
-  fadeAnim.setAttribute("to", "0");
-  fadeAnim.setAttribute("dur", "1s");
-  fadeAnim.setAttribute("fill", "freeze");
-
-  ring.appendChild(ringAnim);
-  ring.appendChild(fadeAnim);
-  container.appendChild(ring);
-
-  // 🔥 Fireburst shape
-  const flame = document.createElementNS(svgNS, "path");
-  flame.setAttribute("d", "M50 60 Q48 52 46 50 Q44 48 47 45 Q49 43 50 47 Q51 43 53 45 Q56 48 54 50 Q52 52 50 60 Z");
-  flame.setAttribute("fill", "orange");
-  flame.setAttribute("stroke", "darkred");
-  flame.setAttribute("stroke-width", "0.3");
-  flame.setAttribute("opacity", "0.9");
-
-  const flameFade = document.createElementNS(svgNS, "animate");
-  flameFade.setAttribute("attributeName", "opacity");
-  flameFade.setAttribute("from", "0.9");
-  flameFade.setAttribute("to", "0");
-  flameFade.setAttribute("begin", "1.2s");
-  flameFade.setAttribute("dur", "1.2s");
-  flameFade.setAttribute("fill", "freeze");
-
-  flame.appendChild(flameFade);
-  container.appendChild(flame);
-
-  // 💨 Smoke curls (subtle)
-  for (let i = 0; i < 3; i++) {
-    const curl = document.createElementNS(svgNS, "circle");
-    const cx = 45 + Math.random() * 10;
-    const cy = 50 + Math.random() * 5;
-    const r = 0.5 + Math.random();
-    curl.setAttribute("cx", cx.toFixed(2));
-    curl.setAttribute("cy", cy.toFixed(2));
-    curl.setAttribute("r", r.toString());
-    curl.setAttribute("stroke", "gray");
-    curl.setAttribute("stroke-width", "0.2");
-    curl.setAttribute("fill", "none");
-    curl.setAttribute("opacity", "0.4");
-
-    const curlRise = document.createElementNS(svgNS, "animateTransform");
-    curlRise.setAttribute("attributeName", "transform");
-    curlRise.setAttribute("type", "translate");
-    curlRise.setAttribute("from", "0 0");
-    curlRise.setAttribute("to", `0 -10`);
-    curlRise.setAttribute("dur", "2.5s");
-    curlRise.setAttribute("fill", "freeze");
-
-    const curlFade = document.createElementNS(svgNS, "animate");
-    curlFade.setAttribute("attributeName", "opacity");
-    curlFade.setAttribute("from", "0.4");
-    curlFade.setAttribute("to", "0");
-    curlFade.setAttribute("dur", "2.5s");
-    curlFade.setAttribute("fill", "freeze");
-
-    curl.appendChild(curlRise);
-    curl.appendChild(curlFade);
-    container.appendChild(curl);
+  // 3) spawn a bunch of ember particles
+  const embers = [];
+  for (let i = 0; i < 40; i++) {
+    const g = new PIXI.Graphics()
+      .beginFill(0xFF6600, 0.8)
+      .drawCircle(0, 0, 3 + Math.random() * 2)
+      .endFill();
+    g.filters = [ glow ];
+    // start them near the bottom of the card
+    const rect = document.getElementById('persona-display').getBoundingClientRect();
+    g.x = rect.left + Math.random() * rect.width;
+    g.y = rect.bottom - window.scrollY;
+    // velocity upwards + drift
+    g.vx = (Math.random() - 0.5) * 0.5;
+    g.vy = 1 + Math.random() * 1.5;
+    app.stage.addChild(g);
+    embers.push(g);
   }
 
-  document.getElementById("effect-layer").appendChild(container);
+  // 4) animate: rise, fade, respawn
+  app.ticker.add((dt) => {
+    embers.forEach(e => {
+      e.x -= e.vx * dt;
+      e.y -= e.vy * dt;
+      e.alpha  = Math.max(0, e.alpha - 0.005 * dt);
+      // when it’s gone or off top, re‑spawn at bottom
+      if (e.alpha <= 0 || e.y < -10) {
+        const rect = document.getElementById('persona-display').getBoundingClientRect();
+        e.x     = rect.left + Math.random() * rect.width;
+        e.y     = rect.bottom - window.scrollY;
+        e.alpha = 1;
+        e.vx    = (Math.random() - 0.5) * 0.5;
+        e.vy    = 1 + Math.random() * 1.5;
+      }
+    });
+  });
 
+  // 5) tear down after 4s
   setTimeout(() => {
-    container.remove();
+    app.destroy(true, { children: true });
+    container.removeChild(app.view);
   }, 4000);
 }
+
 
 function spawnDaggerRain() {
   const svgNS = "http://www.w3.org/2000/svg";
@@ -789,7 +754,7 @@ if (persona.title === "The Grand Druidess") {
       case 'wizard-smoke': spawnWizardEffect(); break;
       case 'hacker-glitch': spawnHackerGlitch(); break;
       case 'dagger-rain': spawnDaggerRain(); break;
-      case 'fire-roar': spawnFireRoar(); break;
+      case 'fire-roar': spawnFireRoarPixi(); break;
       case 'necromancer-wisp': spawnNecromancerWispPixi(); break;
       case 'paladin-smite':
         try {
