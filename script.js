@@ -498,70 +498,65 @@ function spawnDaggerRain() {
 // Shadow Chains with real chain‑link sprites (uses your chain-link.png)
 // ─────────────────────────────────────────────────────────────────────────────
 function spawnShadowChainsPixi() {
+  console.log("🔗 spawnShadowChainsPixi() running");
   if (typeof PIXI === 'undefined') return;
 
-  // 1) compute parameters
-  const linkOrigWidth = 48;        // your PNG is 48px wide
-  const scaleFactor   = 0.5;       // how big you want each link
+  // 1) sizing
+  const linkOrigWidth = 48;            // width of your PNG
+  const scaleFactor   = 0.5;           // tweak to taste
   const linkWidth     = linkOrigWidth * scaleFactor;
   const count         = Math.ceil(window.innerWidth / linkWidth) + 2;
   const midY          = window.innerHeight / 2;
 
-  // 2) transparent full‑screen wrapper
-  const wrapper = document.createElement('div');
-  Object.assign(wrapper.style, {
-    position:      'fixed',
-    top:           '0',
-    left:          '0',
-    width:         '100vw',
-    height:        '100vh',
-    pointerEvents: 'none',
-    zIndex:        '9998',
-    background:    'transparent'
-  });
-  document.body.appendChild(wrapper);
+  // 2) use the existing #effect-layer so layering stays under the UI
+  const effectLayer = document.getElementById('effect-layer');
+  effectLayer.style.pointerEvents = 'none';
 
-  // 3) Pixi app
+  // make a PIXI app inside effect-layer
   const app = new PIXI.Application({
-    resizeTo:        wrapper,
-    transparent:     true,
-    antialias:       true,
-    backgroundAlpha: 0
+    width:            window.innerWidth,
+    height:           window.innerHeight,
+    transparent:      true,
+    antialias:        true,
+    backgroundAlpha:  0,
   });
-  app.view.style.background = 'transparent';
-  wrapper.appendChild(app.view);
+  app.view.style.position = 'absolute';
+  app.view.style.top      = '0';
+  app.view.style.left     = '0';
+  app.view.style.zIndex   = '1';       // just above its container
+  effectLayer.appendChild(app.view);
 
-  // 4) create and place each link
-  const texture = PIXI.Texture.from('images/chain-link.png');
+  // 3) load the texture
+  const texture = PIXI.Texture.from('images/chain-link.png'); 
+  // ^ make sure the path / name matches your file exactly
+
+  // 4) create chain‑links in a row, with a sag in the middle
   for (let i = 0; i < count; i++) {
     const t = i / (count - 1);
-    // x goes from -linkWidth to window.innerWidth + linkWidth
     const x = -linkWidth + t * (window.innerWidth + linkWidth * 2);
-    // sag formula: simple parabola dipping by up to 40px in center
-    const sag = 40 * (1 - Math.pow(2 * (t - 0.5), 2));
+    const sag = 40 * (1 - Math.pow(2 * (t - 0.5), 2)); 
     const y   = midY + sag;
 
     const spr = new PIXI.Sprite(texture);
-    spr.anchor.set(0, 0.5);      // left‑center anchor
+    spr.anchor.set(0, 0.5);     // left‑center
     spr.scale.set(scaleFactor);
     spr.x = x;
     spr.y = y;
     app.stage.addChild(spr);
   }
 
-  // 5) fade in with CSS animation
-  wrapper.style.opacity = '0';
-  wrapper.animate([{opacity:0}, {opacity:1}], {
-    duration: 800,
-    fill: 'forwards'
+  // 5) fade it in
+  effectLayer.animate([{opacity:0},{opacity:1}], {
+    duration: 400, fill: 'forwards'
   });
 
-  // 6) clean up after 4s
+  // 6) cleanup after 4s
   setTimeout(() => {
-    app.destroy(true, { children: true });
-    wrapper.remove();
+    app.destroy(true, { children:true });
+    app.view.remove();
   }, 4000);
 }
+
 
 
 
