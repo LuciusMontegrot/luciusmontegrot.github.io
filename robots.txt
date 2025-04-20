@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.whoisluciusmontegrot.com/sitemap.xml
