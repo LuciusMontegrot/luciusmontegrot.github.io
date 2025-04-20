@@ -1145,8 +1145,8 @@ const personaWeights = [
   1, // wizard
   1, // vampire
   1, // mist elf
-  1777, // dungeon master
-  1777, // sea elf
+  1, // dungeon master
+  1, // sea elf
   1, // hacker
   1, // gym-forged ghostwriter
   0.05, // 🧠🔥 GYM-FORGED WRITER (RARE)
