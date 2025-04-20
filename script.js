@@ -778,85 +778,88 @@ function spawnGymWeightsPixi() {
  * Aeliana’s theatrical Pixi effect:
  * Swirling emerald motes that emanate from the card center.
  */
-function spawnAelianaMagicPixi() {
+function spawnAelianaSignaturePixi() {
   if (typeof PIXI === 'undefined') return;
-  console.log("🪶 Aeliana quill animation begins");
 
-  // Prepare card
-  const card = document.getElementById('persona-display');
-  card.style.position = 'relative';
-
-  // Wrapper
-  const wrapper = document.createElement('div');
-  Object.assign(wrapper.style, {
-    position: 'absolute',
-    inset: '0',
-    pointerEvents: 'none',
-    zIndex: '9999'
-  });
-  card.appendChild(wrapper);
-
-  // PIXI setup
+  const container = document.getElementById('effect-layer');
   const app = new PIXI.Application({
-    width: wrapper.clientWidth,
-    height: wrapper.clientHeight,
+    resizeTo: container,
     transparent: true,
-    antialias: true
+    antialias: true,
+    backgroundAlpha: 0
   });
-  wrapper.appendChild(app.view);
+  container.appendChild(app.view);
+  app.view.style.position = 'absolute';
+  app.view.style.top = '0';
+  app.view.style.left = '0';
 
-  const quillTexture = PIXI.Texture.from('images/quill.png');
-  const quill = new PIXI.Sprite(quillTexture);
-  quill.anchor.set(0.5, 1);
-  quill.scale.set(0.15);
-  quill.x = app.screen.width * 0.2;
-  quill.y = app.screen.height * 0.7;
-  app.stage.addChild(quill);
-
-  // Handwriting text
-  const text = new PIXI.Text('', {
-    fontFamily: 'Playfair Display',
-    fontSize: 28,
-    fill: '#66ffcc',
-    align: 'left'
+  // 1) Set up the text
+  const text = new PIXI.Text("Lucius Montegrot", {
+    fontFamily: "Playfair Display, serif",
+    fontSize: 72,
+    fill: "#3bb75e",
+    align: "center",
+    fontWeight: "bold",
+    dropShadow: true,
+    dropShadowColor: "#2d814f",
+    dropShadowBlur: 4,
   });
-  text.x = app.screen.width * 0.2;
-  text.y = app.screen.height * 0.72;
-  text.alpha = 0.9;
+  text.anchor.set(0.5);
+  text.x = app.screen.width / 2;
+  text.y = app.screen.height / 2;
+  text.alpha = 0;
   app.stage.addChild(text);
 
-  const signature = "Lucius Montegrot";
-  let i = 0;
+  // 2) Add the quill sprite
+  const quill = PIXI.Sprite.from('images/quill.png');
+  quill.anchor.set(0.1, 0.5);
+  quill.scale.set(0.3);
+  quill.alpha = 0;
+  app.stage.addChild(quill);
 
-  // Animation loop
+  // 3) Prepare curve points (a graceful S-curve)
+  const path = [];
+  const startX = app.screen.width / 2 - 250;
+  const endX = app.screen.width / 2 + 250;
+  const midY = app.screen.height / 2;
+  const amp = 40;
+
+  for (let t = 0; t <= 1; t += 0.01) {
+    const x = startX + (endX - startX) * t;
+    const y = midY + Math.sin(t * Math.PI * 2) * amp;
+    path.push({ x, y });
+  }
+
+  // 4) Animate everything
+  let frame = 0;
+  const totalFrames = 160;
+
   app.ticker.add(() => {
-    if (i < signature.length) {
-      text.text += signature[i];
-      i++;
+    frame++;
 
-      // Move quill
-      const letterWidth = text.width / text.text.length;
-      quill.x = text.x + letterWidth * i + 5 + Math.random() * 2;
-      quill.y = text.y + 10 + Math.sin(i * 0.5) * 2;
+    const progress = Math.min(1, frame / totalFrames);
+    text.alpha = progress;
+
+    const index = Math.floor(progress * (path.length - 1));
+    const pos = path[index];
+    if (pos) {
+      quill.x = pos.x;
+      quill.y = pos.y;
+      quill.rotation = Math.sin(progress * Math.PI * 2) * 0.3;
+      quill.alpha = 1;
+    }
+
+    if (progress >= 1) {
+      quill.alpha -= 0.02;
     }
   });
 
-  // Fade everything out after signature finishes
   setTimeout(() => {
-    app.ticker.stop();
-    const fade = () => {
-      text.alpha -= 0.01;
-      quill.alpha -= 0.01;
-      if (text.alpha <= 0) {
-        app.destroy(true, { children: true });
-        wrapper.remove();
-      } else {
-        requestAnimationFrame(fade);
-      }
-    };
-    fade();
-  }, 2500 + signature.length * 80);
+    app.destroy(true, { children: true });
+    container.removeChild(app.view);
+  }, 5500);
 }
+
 
 
 
@@ -992,7 +995,7 @@ if (persona.title === "The Grand Druidess") {
   const card = document.getElementById('persona-display');
   card.classList.add('aeliana-sighting');   // 🌟 Add the magical veil
   try {
-    spawnAelianaMagicPixi();                // ✒️ The ethereal quill appears
+    spawnAelianaSignaturePixi();                // ✒️ The ethereal quill appears
   } catch (err) {
     console.error("Error in Aeliana effect:", err);
   }
