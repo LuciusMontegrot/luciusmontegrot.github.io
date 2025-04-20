@@ -494,10 +494,13 @@ function spawnDaggerRain() {
   }, 4000);
 }
 
-function spawnPaladinSmiteBabylon() {
-  if (typeof BABYLON === 'undefined') return;
+// ─────────────────────────────────────────────────────────────────────────────
+// Shadow Chains — Pixi animation
+// ─────────────────────────────────────────────────────────────────────────────
+function spawnShadowChainsPixi() {
+  if (typeof PIXI === 'undefined') return;
 
-  // 1) full‑screen fixed wrapper
+  // 1) Full‑screen wrapper for the canvas
   const wrapper = document.createElement('div');
   Object.assign(wrapper.style, {
     position:      'fixed',
@@ -506,91 +509,95 @@ function spawnPaladinSmiteBabylon() {
     width:         '100vw',
     height:        '100vh',
     pointerEvents: 'none',
-    zIndex:        '9999'
+    zIndex:        '9998'
   });
   document.body.appendChild(wrapper);
 
-  // 2) full‑screen canvas
-  const canvas = document.createElement('canvas');
-  Object.assign(canvas.style, { width: '100%', height: '100%', display: 'block' });
-  wrapper.appendChild(canvas);
-
-  // 3) Babylon engine & transparent scene
-  const engine = new BABYLON.Engine(canvas, true, {
-    preserveDrawingBuffer: true,
-    stencil:              true
+  // 2) Pixi app
+  const app = new PIXI.Application({
+    resizeTo:        wrapper,
+    transparent:     true,
+    antialias:       true,
+    backgroundAlpha: 0
   });
-  const scene = new BABYLON.Scene(engine);
-  // make the clear color transparent
-  scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
+  wrapper.appendChild(app.view);
 
-  // 4) orthographic camera (no perspective distortion)
-  const w = engine.getRenderWidth();
-  const h = engine.getRenderHeight();
-  const camera = new BABYLON.FreeCamera("uiCam",
-    new BABYLON.Vector3(0, 0, -10),
-    scene
-  );
-  camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
-  camera.orthoLeft   = -w/2;
-  camera.orthoRight  =  w/2;
-  camera.orthoTop    =  h/2;
-  camera.orthoBottom = -h/2;
-  camera.setTarget(BABYLON.Vector3.Zero());
+  // helper for cubic Bezier interpolation
+  function cubic(p0, p1, p2, p3, t) {
+    const u = 1 - t;
+    return u*u*u*p0
+         + 3*u*u*t*p1
+         + 3*u*t*t*p2
+         +    t*t*t*p3;
+  }
 
-  // simple ambient light so materials show up
-  new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0,1,0), scene);
+  const center = { x: app.screen.width/2, y: app.screen.height/2 };
 
-  // 5) compute dimensions
-  const ropeThickness = Math.min(w, h) * 0.02;    // 2% of min(screen)
-  const ropeLength    = h * 0.3;                  // 30% of screen height
-  const loopDiameter  = ropeLength * 0.6;         // loop sits below rope
-  const loopRadiusMinor = ropeThickness / 2;
+  // 3) Build 4 chains, one from each edge
+  const starts = [
+    { x: 0,                     y: Math.random()*app.screen.height },
+    { x: app.screen.width,      y: Math.random()*app.screen.height },
+    { x: Math.random()*app.screen.width, y: 0 },
+    { x: Math.random()*app.screen.width, y: app.screen.height }
+  ];
 
-  // 6) create the rope (cylinder)
-  const rope = BABYLON.MeshBuilder.CreateCylinder("rope", {
-    height:   ropeLength,
-    diameter: ropeThickness
-  }, scene);
-  rope.material = new BABYLON.StandardMaterial("ropeMat", scene);
-  rope.material.diffuseColor = new BABYLON.Color3(0.67,0.54,0.27);
-  // position so its top meets y=0
-  rope.position.y = (-ropeLength/2) + loopRadiusMinor;
+  const chains = starts.map(start => {
+    // two random control points that pull toward center
+    const c1 = {
+      x: start.x + (center.x - start.x)*0.3 + (Math.random()-0.5)*100,
+      y: start.y + (center.y - start.y)*0.3 + (Math.random()-0.5)*100
+    };
+    const c2 = {
+      x: start.x + (center.x - start.x)*0.6 + (Math.random()-0.5)*100,
+      y: start.y + (center.y - start.y)*0.6 + (Math.random()-0.5)*100
+    };
+    const segs = [];
+    const total = 20;
+    // prepare 20 little “links”
+    for (let i = 0; i < total; i++) {
+      const g = new PIXI.Graphics()
+        .beginFill(0x111111, 0.8)
+        .drawCircle(0, 0, 6)
+        .endFill();
+      g.alpha = 0;
+      app.stage.addChild(g);
+      segs.push({ g, t0: i/total });
+    }
+    return { start, c1, c2, segs };
+  });
 
-  // 7) create the loop (torus lying in XZ plane)
-  const loop = BABYLON.MeshBuilder.CreateTorus("loop", {
-    diameter:  loopDiameter,
-    thickness: ropeThickness,
-    tessellation: 64
-  }, scene);
-  loop.material = new BABYLON.StandardMaterial("loopMat", scene);
-  loop.material.diffuseColor = new BABYLON.Color3(0.53,0.42,0.20);
-  loop.rotation.x = Math.PI/2;
-  loop.position.y = -loopRadiusMinor;
-
-  // 8) animate via a simple ticker timeline
   let frame = 0;
-  scene.registerBeforeRender(() => {
+  app.ticker.add(() => {
     frame++;
-    if (frame <= 30) {
-      // first 0.5s (30 frames): tighten loop diameter by 50%
-      const p = frame/30;
-      loop.scaling.x = loop.scaling.z = 1 - 0.5 * p;
-    } else if (frame <= 60) {
-      // next 0.5s: fade out both rope & loop
-      const a = 1 - (frame - 30)/30;
-      rope.material.alpha = a;
-      loop.material.alpha = a;
-    } else {
-      // cleanup
-      engine.stopRenderLoop();
-      engine.dispose();
+
+    // animate each chain
+    chains.forEach(chain => {
+      chain.segs.forEach(({ g, t0 }) => {
+        // each segment waits until (frame > t0*60), then travels 30 frames
+        const startF = t0 * 60;
+        const p = (frame - startF) / 30;
+        if (p > 0 && p <= 2) {
+          // travel portion: 0→1 fade in, 1→2 fade out
+          const tPath = Math.min(1, p);
+          const x = cubic(
+            chain.start.x, chain.c1.x, chain.c2.x, center.x, tPath
+          );
+          const y = cubic(
+            chain.start.y, chain.c1.y, chain.c2.y, center.y, tPath
+          );
+          g.x = x;
+          g.y = y;
+          g.alpha = p <= 1 ? p : 2 - p;
+        }
+      });
+    });
+
+    // clean up after 2 seconds (≈120 frames)
+    if (frame > 120) {
+      app.destroy(true, { children: true });
       wrapper.remove();
     }
   });
-
-  // 9) kick off the render loop
-  engine.runRenderLoop(() => scene.render());
 }
 
 
@@ -833,7 +840,7 @@ if (persona.title === "The Grand Druidess") {
       case 'dagger-rain': spawnDaggerRain(); break;
       case 'fire-roar': spawnFireRoar(); break;
       case 'necromancer-wisp': spawnNecromancerWispPixi(); break;
-      case 'paladin-smite': spawnPaladinSmiteBabylon(); break;
+      case 'paladin-smite': spawnShadowChainsPixi(); break;
 
 
 
