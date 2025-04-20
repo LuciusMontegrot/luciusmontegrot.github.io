@@ -793,12 +793,10 @@ function spawnAelianaSignaturePixi() {
   // 1) Create an HTML element for animated text
 // 1) Create an HTML element for animated text
 const signature = document.createElement('div');
-signature.style.fontSize = '7vw'; // scales with screen width
-signature.style.top = '45%';
-signature.style.left = '0';
-signature.style.right = '0';
-signature.style.width = '100vw';
-signature.style.textAlign = 'center';
+signature.style.fontSize = '64px';
+signature.style.top = '50%';
+signature.style.left = '50%';
+signature.style.transform = 'translate(-50%, -50%)';
 signature.style.fontSize = '64px';
 signature.style.fontFamily = '"Parisienne", cursive';
 signature.style.color = '#cc2222';
