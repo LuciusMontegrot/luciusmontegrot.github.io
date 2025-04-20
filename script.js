@@ -780,19 +780,23 @@ function spawnGymWeightsPixi() {
  */
 function spawnAelianaMagicPixi() {
   if (typeof PIXI === 'undefined') return;
+  console.log("🪶 Aeliana quill animation begins");
 
-  // Confine to the card and sit it behind the content
+  // Prepare card
+  const card = document.getElementById('persona-display');
   card.style.position = 'relative';
+
+  // Wrapper
   const wrapper = document.createElement('div');
   Object.assign(wrapper.style, {
     position: 'absolute',
     inset: '0',
     pointerEvents: 'none',
-    zIndex: '-1'
+    zIndex: '9999'
   });
   card.appendChild(wrapper);
 
-  // Create the Pixi app sized to the card
+  // PIXI setup
   const app = new PIXI.Application({
     width: wrapper.clientWidth,
     height: wrapper.clientHeight,
@@ -801,52 +805,59 @@ function spawnAelianaMagicPixi() {
   });
   wrapper.appendChild(app.view);
 
-  const centerX = app.screen.width / 2;
-  const centerY = app.screen.height / 2;
-  const particles = [];
+  const quillTexture = PIXI.Texture.from('images/quill.png');
+  const quill = new PIXI.Sprite(quillTexture);
+  quill.anchor.set(0.5, 1);
+  quill.scale.set(0.15);
+  quill.x = app.screen.width * 0.2;
+  quill.y = app.screen.height * 0.7;
+  app.stage.addChild(quill);
 
-  // Create 40 motes
-  for (let i = 0; i < 40; i++) {
-    const g = new PIXI.Graphics()
-      .beginFill(0x3bb75e, 0.8)
-      .drawCircle(0, 0, 4)
-      .endFill();
-    g.x = centerX;
-    g.y = centerY;
-    // random initial velocity
-    g.vx = (Math.random() - 0.5) * 4;
-    g.vy = (Math.random() - 0.5) * 4;
-    app.stage.addChild(g);
-    particles.push(g);
-  }
+  // Handwriting text
+  const text = new PIXI.Text('', {
+    fontFamily: 'Playfair Display',
+    fontSize: 28,
+    fill: '#66ffcc',
+    align: 'left'
+  });
+  text.x = app.screen.width * 0.2;
+  text.y = app.screen.height * 0.72;
+  text.alpha = 0.9;
+  app.stage.addChild(text);
 
+  const signature = "Lucius Montegrot";
+  let i = 0;
+
+  // Animation loop
   app.ticker.add(() => {
-    particles.forEach(p => {
-      // move
-      p.x += p.vx;
-      p.y += p.vy;
-      // pull back gently to center for swirl
-      p.vx += (centerX - p.x) * 0.005;
-      p.vy += (centerY - p.y) * 0.005;
-      // fade out
-      p.alpha -= 0.01;
-      // respawn when gone
-      if (p.alpha <= 0) {
-        p.x = centerX;
-        p.y = centerY;
-        p.alpha = 1;
-        p.vx = (Math.random() - 0.5) * 4;
-        p.vy = (Math.random() - 0.5) * 4;
-      }
-    });
+    if (i < signature.length) {
+      text.text += signature[i];
+      i++;
+
+      // Move quill
+      const letterWidth = text.width / text.text.length;
+      quill.x = text.x + letterWidth * i + 5 + Math.random() * 2;
+      quill.y = text.y + 10 + Math.sin(i * 0.5) * 2;
+    }
   });
 
-  // Clean up after 5 s
+  // Fade everything out after signature finishes
   setTimeout(() => {
-    app.destroy(true, { children: true });
-    wrapper.remove();
-  }, 5000);
+    app.ticker.stop();
+    const fade = () => {
+      text.alpha -= 0.01;
+      quill.alpha -= 0.01;
+      if (text.alpha <= 0) {
+        app.destroy(true, { children: true });
+        wrapper.remove();
+      } else {
+        requestAnimationFrame(fade);
+      }
+    };
+    fade();
+  }, 2500 + signature.length * 80);
 }
+
 
 
 
