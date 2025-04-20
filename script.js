@@ -989,12 +989,19 @@ if (persona.effect === "muscle-flex2") {
 
 if (persona.title === "The Grand Druidess") {
   console.warn("🌿✨ AELIANA HAS APPEARED! The veil thins. The phoenix watches.");
+  const card = document.getElementById('persona-display');
+  card.classList.add('aeliana-sighting');   // 🌟 Add the magical veil
   try {
-    spawnAelianaMagicPixi();
+    spawnAelianaMagicPixi();                // ✒️ The ethereal quill appears
   } catch (err) {
     console.error("Error in Aeliana effect:", err);
   }
+  // Optional: remove veil after 5 seconds
+  setTimeout(() => {
+    card.classList.remove('aeliana-sighting');
+  }, 5000);
 }
+
 
 
   card.classList.remove('spin');
