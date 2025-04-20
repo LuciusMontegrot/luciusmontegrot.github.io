@@ -748,7 +748,7 @@ function weightedRandomIndex(weights) {
 
 // Weights for each persona, must match order in `personas`
 const personaWeights = [
-  1777, // historian
+  1, // historian
   1, // wizard
   1, // vampire
   1, // mist elf
