@@ -706,14 +706,15 @@ function spawnShadowChainsPixi() {
 
 
 function spawnGymWeightsPixi() {
-  console.log("🏋️ spawnGymWeightsPixi() fired");
+  console.log("💪 spawnGymWeightsPixi() fired");
   if (typeof PIXI === 'undefined') return;
 
   const container = document.getElementById('effect-layer');
+
   const app = new PIXI.Application({
-    resizeTo: container,
-    transparent: true,
-    antialias: true,
+    resizeTo:        container,
+    transparent:     true,
+    antialias:       true,
     backgroundAlpha: 0
   });
   container.appendChild(app.view);
@@ -722,47 +723,64 @@ function spawnGymWeightsPixi() {
   app.view.style.left = '0';
 
   const textures = [
-    PIXI.Texture.from('images/weight1.png'),
-    PIXI.Texture.from('images/weight2.png'),
-    PIXI.Texture.from('images/weight3.png')
+    PIXI.Texture.from("images/weight1.png"),
+    PIXI.Texture.from("images/weight2.png"),
+    PIXI.Texture.from("images/weight3.png")
   ];
 
-  const weights = [];
-  const count = 20;
-  for (let i = 0; i < count; i++) {
-    const texture = textures[Math.floor(Math.random() * textures.length)];
-    const sprite = new PIXI.Sprite(texture);
+  const rainbowTexture = PIXI.Texture.from("images/rainbow-dumbbell.png");
+
+  const dumbbells = [];
+  let ticks = 0;
+
+  function spawnOne() {
+    const isRainbow = Math.random() < 0.02;
+    const sprite = new PIXI.Sprite(isRainbow ? rainbowTexture : textures[Math.floor(Math.random() * textures.length)]);
     sprite.anchor.set(0.5);
-    sprite.scale.set(0.15 + Math.random() * 0.1);
+    sprite.scale.set(0.08 + Math.random() * 0.06);
     sprite.x = Math.random() * app.screen.width;
-    sprite.y = -Math.random() * app.screen.height;
-    sprite.vy = 2 + Math.random() * 3;
-    sprite.vr = (Math.random() - 0.5) * 0.1;
+    sprite.y = -50;
+    sprite.vy = 2 + Math.random() * 2;
+    sprite.vx = (Math.random() - 0.5) * 0.5;
+    sprite.rotationSpeed = (Math.random() - 0.5) * 0.1;
     sprite.bounced = false;
+
+    if (isRainbow) {
+      const glow = new PIXI.filters.GlowFilter({ distance: 15, outerStrength: 2, color: 0xffccff });
+      sprite.filters = [glow];
+    }
+
     app.stage.addChild(sprite);
-    weights.push(sprite);
+    dumbbells.push(sprite);
   }
 
-  const ground = app.screen.height - 20;
-  app.ticker.add(() => {
-    weights.forEach(w => {
-      if (!w.bounced && w.y >= ground) {
-        w.vy = -w.vy * 0.4; // bounce up
-        w.bounced = true;
-      } else {
-        w.vy += 0.5; // gravity
-      }
+  const spawnInterval = setInterval(() => {
+    if (ticks++ < 60) spawnOne();
+    else clearInterval(spawnInterval);
+  }, 100);
 
-      w.y += w.vy;
-      w.rotation += w.vr;
+  app.ticker.add(() => {
+    dumbbells.forEach(s => {
+      s.y += s.vy;
+      s.x += s.vx;
+      s.rotation += s.rotationSpeed;
+
+      // bounce
+      if (s.y > app.screen.height - 20 && !s.bounced) {
+        s.vy *= -0.5;
+        s.bounced = true;
+      } else if (s.bounced) {
+        s.vy += 0.3; // gravity pulls again
+      }
     });
   });
 
   setTimeout(() => {
     app.destroy(true, { children: true });
     container.removeChild(app.view);
-  }, 5000);
+  }, 6000);
 }
+
 
 
 
