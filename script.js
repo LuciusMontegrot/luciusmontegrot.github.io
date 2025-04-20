@@ -476,10 +476,17 @@ function spawnMistElfFlamingSwordPixi() {
 
 function spawnDungeonMasterDicePixi() {
   console.log("🎲 spawnDungeonMasterDicePixi() fired");
+
+  // 🔁 If there's an old canvas, remove it
+  const oldCanvas = document.querySelector('#effect-layer canvas');
+  if (oldCanvas) {
+    console.warn("🎲 Removing old dice canvas before spawning new one.");
+    oldCanvas.remove(); // instead of skipping it
+  }
+
   if (typeof PIXI === 'undefined') return;
 
   const container = document.getElementById('effect-layer');
-
   const app = new PIXI.Application({
     resizeTo: container,
     transparent: true,
@@ -500,27 +507,11 @@ function spawnDungeonMasterDicePixi() {
     'images/d20a.png'
   ];
 
-  const loadPromises = imagePaths.map(path => {
-    return new Promise((resolve, reject) => {
-      const base = PIXI.BaseTexture.from(path);
-      const tex = new PIXI.Texture(base);
+  const loadedTextures = [];
+  let loadCount = 0;
 
-      base.on('loaded', () => resolve(tex));
-      base.on('error', () => {
-        console.warn(`⚠️ Could not load: ${path}`);
-        resolve(null); // still resolve to keep the Promise.all
-      });
-    });
-  });
-
-  Promise.all(loadPromises).then(textures => {
-    const usable = textures.filter(Boolean);
-    if (usable.length === 0) {
-      console.warn("❌ No usable dice textures loaded");
-      app.destroy(true, { children: true });
-      container.removeChild(app.view);
-      return;
-    }
+  function trySpawnDice() {
+    if (loadCount < imagePaths.length) return;
 
     const dice = [];
     const count = 25;
@@ -528,7 +519,7 @@ function spawnDungeonMasterDicePixi() {
     const cy = app.screen.height / 2;
 
     for (let i = 0; i < count; i++) {
-      const texture = usable[Math.floor(Math.random() * usable.length)];
+      const texture = loadedTextures[Math.floor(Math.random() * loadedTextures.length)];
       const sprite = new PIXI.Sprite(texture);
       sprite.anchor.set(0.5);
       sprite.scale.set(0.15 + Math.random() * 0.1);
@@ -552,11 +543,37 @@ function spawnDungeonMasterDicePixi() {
     });
 
     setTimeout(() => {
-      app.destroy(true, { children: true });
-      if (container.contains(app.view)) container.removeChild(app.view);
+      try {
+        app.destroy(true, { children: true });
+        if (app.view && app.view.parentNode) {
+          app.view.parentNode.removeChild(app.view);
+        }
+      } catch (e) {
+        console.warn("⚠️ Dice explosion cleanup skipped: ", e);
+      }
     }, 5000);
+  }
+
+  // Load textures
+  imagePaths.forEach(path => {
+    const base = PIXI.BaseTexture.from(path);
+    const tex = new PIXI.Texture(base);
+
+    base.on('loaded', () => {
+      loadedTextures.push(tex);
+      loadCount++;
+      trySpawnDice();
+    });
+
+    base.on('error', () => {
+      console.warn(`⚠️ Could not load dice image: ${path}`);
+      loadCount++;
+      trySpawnDice();
+    });
   });
 }
+
+
 
 
 
@@ -1131,10 +1148,14 @@ if (persona.title === "The Grand Druidess") {
       case 'dagger-rain': spawnDaggerRain(); break;
       case 'mistelf-glow': spawnMistElfFlamingSwordPixi(); break;
       case 'fire-roar': spawnFireRoarPixi(); break;
-      case 'dm-dice':  try {spawnDungeonMasterDicePixi(); } catch (err) {
-        console.error("Gym weights error:", err);
-        } break; 
-      case 'muscle-flex':
+      case 'dm-dice':
+        try {
+            setTimeout(() => spawnDungeonMasterDicePixi(), 100); // 👈 small delay prevents WebGL issues
+        } catch (err) {
+        console.error("Dice effect error:", err);
+          }
+        break; 
+          case 'muscle-flex':
           try {
         spawnGymWeightsPixi();
         } catch (err) {
