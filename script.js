@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       title: "The Vampire-Adjacent Noble",
       image: "images/vampire.jpg",
-      description: "Lucius Montegrot is rumoured to be a minor baron in a tiny Transylvashlinian province. He is seldom seen during daylight, but his correspondence is extensive, usually delivered by midnight couriers who dissolve into mist if tipped improperly. He claims to be 'only nocturnally inclined' and has a suspicious fondness for red wine served warm.",
+      description: "Lucius Montegrot is rumoured to be a minor baron in a small mansion hidden in the Forests in Vashlin. He is seldom seen during daylight, but his correspondence is extensive, usually delivered by night couriers who dissolve into mist if probed with questions. He claims to be 'simply nocturnally inclined' and has a suspicious fondness for red wine served warm. He has built a few bat roosts around his mansion, 'so that they eat all those pesky insects'",
       effect: "vampire-blood"
     },
     {
