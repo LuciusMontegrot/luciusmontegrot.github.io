@@ -835,7 +835,14 @@ if (persona.title === "The Grand Druidess") {
       case 'dagger-rain': spawnDaggerRain(); break;
       case 'fire-roar': spawnFireRoar(); break;
       case 'necromancer-wisp': spawnNecromancerWispPixi(); break;
-      case 'paladin-smite': spawnShadowChainsPixi(); break;
+      case 'paladin-smite':
+        try {
+          spawnShadowChainsPixi();
+            } catch (err) {
+            console.error("ShadowChains error:", err);
+            }
+              break;
+
 
 
 
