@@ -376,34 +376,39 @@ function spawnMistElfFlamingSwordPixi() {
   const card = document.getElementById('persona-display');
   card.style.position = 'relative';
 
-  // 2) create a wrapper *inside* the card, but behind its content
+  // 2) wrapper behind content
   const wrapper = document.createElement('div');
   Object.assign(wrapper.style, {
     position:      'absolute',
     inset:         '0',
     pointerEvents: 'none',
-    zIndex:        '0',        // <-- behind card children
+    zIndex:        '0',
     background:    'none'
   });
   card.appendChild(wrapper);
 
-  // 3) create a fully‑transparent Pixi canvas
+  // 3) transparent Pixi canvas
   const app = new PIXI.Application({
     width:           wrapper.clientWidth,
     height:          wrapper.clientHeight,
     transparent:     true,
-    backgroundAlpha: 0,         // <-- make it see‑through
+    backgroundAlpha: 0,
     antialias:       true
   });
-  // ensure even the <canvas> element is transparent
   app.view.style.background = 'none';
   wrapper.appendChild(app.view);
 
-  // 4) pick a point near the sword blade
-  const cx = app.screen.width * 0.5;
-  const cy = app.screen.height * 0.6;
+  // 4) define blade endpoints
+  const hilt = { x: app.screen.width * 0.6, y: app.screen.height * 0.5 };
+  const tip  = { x: app.screen.width * 0.3, y: app.screen.height * 0.8 };
+  // normal vector (perp to blade)
+  const dx = tip.x - hilt.x;
+  const dy = tip.y - hilt.y;
+  const len = Math.hypot(dx, dy);
+  const nx = -dy / len;
+  const ny =  dx / len;
 
-  // 5) spawn flame‑like particles
+  // 5) spawn particles
   const particles = [];
   for (let i = 0; i < 30; i++) {
     const p = new PIXI.Graphics()
@@ -415,26 +420,38 @@ function spawnMistElfFlamingSwordPixi() {
     particles.push(p);
   }
 
+  // 6) reset routine
   function reset(p) {
-    p.x     = cx + (Math.random() - 0.5) * 24;
-    p.y     = cy + (Math.random() - 0.5) * 12;
-    p.vx    = (Math.random() - 0.5) * 0.6;
-    p.vy    = - (1 + Math.random() * 2);
+    const t = Math.random();           // where along the blade
+    // base point on blade
+    let x = hilt.x + dx * t;
+    let y = hilt.y + dy * t;
+    // small jitter perpendicular
+    x += (Math.random() - 0.5) * 8;
+    y += (Math.random() - 0.5) * 8;
+    p.x = x;  p.y = y;
+    // velocity roughly away from blade
+    const speed = 1 + Math.random() * 1.5;
+    p.vx = nx * speed + (Math.random() - 0.5) * 0.3;
+    p.vy = ny * speed + (Math.random() - 0.5) * 0.3;
     p.alpha = 1;
     p.scale.set(0.6 + Math.random() * 0.8);
   }
 
-  // 6) animate them
+  // 7) animate
   app.ticker.add(() => {
     particles.forEach(p => {
       p.x     += p.vx;
       p.y     += p.vy;
       p.alpha -= 0.02;
-      if (p.alpha <= 0 || p.y < cy - 100) reset(p);
+      // respawn when faded or moved too far
+      if (p.alpha <= 0 || p.y < -10 || p.y > app.screen.height + 10) {
+        reset(p);
+      }
     });
   });
 
-  // 7) tear everything down after 4s
+  // 8) cleanup
   setTimeout(() => {
     app.destroy(true, { children: true });
     wrapper.remove();
