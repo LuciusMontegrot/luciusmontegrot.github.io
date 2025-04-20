@@ -654,53 +654,51 @@ function spawnDaggerRain() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Shadow Chains with real chain‑link sprites (uses your chain-link.png)
 // ─────────────────────────────────────────────────────────────────────────────
-// --- overwrite your old function with this ---
-
 function spawnShadowChainsPixi() {
+  console.log("⛓️ spawnShadowChainsPixi() fired");
   if (typeof PIXI === 'undefined') return;
 
-  // 1) grab your existing effect-layer
   const container = document.getElementById('effect-layer');
 
-  // 2) make it the Pixi host
   const app = new PIXI.Application({
-    resizeTo:     container,
-    transparent:  true,
-    antialias:    true,
+    resizeTo: container,
+    transparent: true,
+    antialias: true,
     backgroundAlpha: 0
   });
   container.appendChild(app.view);
-  app.view.style.position = 'absolute';  // ensure full‑screen
-  app.view.style.top  = '0';
+  app.view.style.position = 'absolute';
+  app.view.style.top = '0';
   app.view.style.left = '0';
 
-  // 3) load your chain‑link texture
-  const chainTex = PIXI.Texture.from('images/chain-link.png');
+  const baseTexture = PIXI.BaseTexture.from('images/chain-link.png');
+  const chainTex = new PIXI.Texture(baseTexture);
 
-  // 4) create a tiling sprite that spans the whole width, with a fixed height
-  const chain = new PIXI.TilingSprite(
-    chainTex,
-    app.screen.width,
-    chainTex.height
-  );
-  // place it vertically centered on the card
-  // note: effect-layer is behind everything, so y = half of viewport is fine
-  chain.y = app.screen.height / 2 - chainTex.height/2;
-  app.stage.addChild(chain);
+  baseTexture.on('loaded', () => {
+    const chain = new PIXI.TilingSprite(
+      chainTex,
+      app.screen.width,
+      chainTex.height
+    );
 
-  // 5) animate the tileOffset so it looks like the chain is sliding in
-  let direction = -1; // we’ll flip halfway
-  app.ticker.add((dt) => {
-    // move the texture rather than sprites (much faster)
-    chain.tilePosition.x += direction * 1.5 * dt;
+    chain.y = app.screen.height / 2 - chainTex.height / 2;
+    app.stage.addChild(chain);
+
+    let direction = -1;
+    app.ticker.add((dt) => {
+      chain.tilePosition.x += direction * 1.5 * dt;
+    });
+
+    setTimeout(() => { direction = 1; }, 2000);
+    setTimeout(() => {
+      app.destroy(true, { children: true });
+      container.removeChild(app.view);
+    }, 4000);
   });
 
-  // 6) reverse direction at half‑time, then teardown
-  setTimeout(() => { direction = 1; }, 2000);
-  setTimeout(() => {
-    app.destroy(true, { children: true });
-    container.removeChild(app.view);
-  }, 4000);
+  baseTexture.on('error', err => {
+    console.error("⚠️ Chain texture failed to load:", err);
+  });
 }
 
 
