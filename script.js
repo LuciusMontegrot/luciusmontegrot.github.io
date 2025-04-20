@@ -732,9 +732,16 @@ function spawnDaggerRain() {
 // ─────────────────────────────────────────────────────────────────────────────
 function spawnShadowChainsPixi() {
   console.log("⛓️ spawnShadowChainsPixi() fired");
+
   if (typeof PIXI === 'undefined') return;
 
   const container = document.getElementById('effect-layer');
+
+  // Prevent duplicate canvases
+  if (container.querySelector('canvas')) {
+    console.warn("⛓️ Chain canvas already present, skipping spawn.");
+    return;
+  }
 
   const app = new PIXI.Application({
     resizeTo: container,
@@ -742,6 +749,7 @@ function spawnShadowChainsPixi() {
     antialias: true,
     backgroundAlpha: 0
   });
+
   container.appendChild(app.view);
   app.view.style.position = 'absolute';
   app.view.style.top = '0';
@@ -765,10 +773,17 @@ function spawnShadowChainsPixi() {
       chain.tilePosition.x += direction * 1.5 * dt;
     });
 
+    // Reverse direction midway
     setTimeout(() => { direction = 1; }, 2000);
+
+    // Cleanup after 4s
     setTimeout(() => {
-      app.destroy(true, { children: true });
-      container.removeChild(app.view);
+      try {
+        app.destroy(true, { children: true });
+        if (container.contains(app.view)) container.removeChild(app.view);
+      } catch (err) {
+        console.warn("⚠️ Chain cleanup error:", err);
+      }
     }, 4000);
   });
 
