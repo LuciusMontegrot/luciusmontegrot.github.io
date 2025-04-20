@@ -705,6 +705,64 @@ function spawnShadowChainsPixi() {
 
 
 
+function spawnGymWeightsPixi() {
+  console.log("🏋️ spawnGymWeightsPixi() fired");
+  if (typeof PIXI === 'undefined') return;
+
+  const container = document.getElementById('effect-layer');
+  const app = new PIXI.Application({
+    resizeTo: container,
+    transparent: true,
+    antialias: true,
+    backgroundAlpha: 0
+  });
+  container.appendChild(app.view);
+  app.view.style.position = 'absolute';
+  app.view.style.top = '0';
+  app.view.style.left = '0';
+
+  const textures = [
+    PIXI.Texture.from('images/weight1.png'),
+    PIXI.Texture.from('images/weight2.png'),
+    PIXI.Texture.from('images/weight3.png')
+  ];
+
+  const weights = [];
+  const count = 20;
+  for (let i = 0; i < count; i++) {
+    const texture = textures[Math.floor(Math.random() * textures.length)];
+    const sprite = new PIXI.Sprite(texture);
+    sprite.anchor.set(0.5);
+    sprite.scale.set(0.15 + Math.random() * 0.1);
+    sprite.x = Math.random() * app.screen.width;
+    sprite.y = -Math.random() * app.screen.height;
+    sprite.vy = 2 + Math.random() * 3;
+    sprite.vr = (Math.random() - 0.5) * 0.1;
+    sprite.bounced = false;
+    app.stage.addChild(sprite);
+    weights.push(sprite);
+  }
+
+  const ground = app.screen.height - 20;
+  app.ticker.add(() => {
+    weights.forEach(w => {
+      if (!w.bounced && w.y >= ground) {
+        w.vy = -w.vy * 0.4; // bounce up
+        w.bounced = true;
+      } else {
+        w.vy += 0.5; // gravity
+      }
+
+      w.y += w.vy;
+      w.rotation += w.vr;
+    });
+  });
+
+  setTimeout(() => {
+    app.destroy(true, { children: true });
+    container.removeChild(app.view);
+  }, 5000);
+}
 
 
 
@@ -894,13 +952,13 @@ const personaWeights = [
   1, // historian
   1, // wizard
   1, // vampire
-  1777, // mist elf
+  1, // mist elf
   1, // dungeon master
   1, // sea elf
   1, // hacker
-  1, // gym-forged ghostwriter
+  1777, // gym-forged ghostwriter
   0.05, // 🧠🔥 GYM-FORGED WRITER (RARE)
-  1777, // fire priest
+  1, // fire priest
   1, // assassin
   1, // necromancer
   1,  // paladin
@@ -948,6 +1006,14 @@ if (persona.title === "The Grand Druidess") {
       case 'dagger-rain': spawnDaggerRain(); break;
       case 'mistelf-glow': spawnMistElfFlamingSwordPixi(); break;
       case 'fire-roar': spawnFireRoarPixi(); break;
+        case 'muscle-flex':
+          try {
+        spawnGymWeightsPixi();
+        } catch (err) {
+        console.error("Gym weights error:", err);
+        }
+        break;
+
       case 'necromancer-wisp': spawnNecromancerWispPixi(); break;
       case 'paladin-smite':
         try {
@@ -956,6 +1022,7 @@ if (persona.title === "The Grand Druidess") {
             console.error("ShadowChains error:", err);
             }
               break;
+        
         case 'historian-scroll':
         console.log("🖋️ Historian selected – spawning ink blotches…");
            try{ spawnInkBlotches();
