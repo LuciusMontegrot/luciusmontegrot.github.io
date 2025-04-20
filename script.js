@@ -14,7 +14,7 @@ function maybeRedirectToAmazon() {
     const chance = Math.random();
     if (chance < 0.3) { // 30% chance within that window
       sessionStorage.setItem('redirectedToAmazon', 'true');
-      window.open('https://www.amazon.co.uk/Union-Impossible-Part-Twilight-Exiled-ebook/dp/B0F4YM618B/, '_blank');
+     window.open('https://www.amazon.co.uk/Union-Impossible-Part-Twilight-Exiled-ebook/dp/B0F4YM618B/', '_blank');
       console.log('Something...strange stirs on the seventh reroll...');
     }
   }
