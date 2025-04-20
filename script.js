@@ -474,6 +474,66 @@ function spawnMistElfFlamingSwordPixi() {
 
 
 
+function spawnDungeonMasterDicePixi() {
+  console.log("🎲 spawnDungeonMasterDicePixi() fired");
+  if (typeof PIXI === 'undefined') return;
+
+  const container = document.getElementById('effect-layer');
+
+  const app = new PIXI.Application({
+    resizeTo: container,
+    transparent: true,
+    antialias: true,
+    backgroundAlpha: 0
+  });
+  container.appendChild(app.view);
+  app.view.style.position = 'absolute';
+  app.view.style.top = '0';
+  app.view.style.left = '0';
+
+  const textures = [
+    PIXI.Texture.from('images/d20a.jpg'),
+    PIXI.Texture.from('images/d20b.png'),
+    PIXI.Texture.from('images/d20c.jpg'),
+    PIXI.Texture.from('images/d10a.jpg'),
+    PIXI.Texture.from('images/dice4.png'), // ⬅️ Add your generated one too!
+    PIXI.Texture.from('images/dice5.png')
+  ];
+
+  const dice = [];
+  const count = 25;
+  const cx = app.screen.width / 2;
+  const cy = app.screen.height / 2;
+
+  for (let i = 0; i < count; i++) {
+    const texture = textures[Math.floor(Math.random() * textures.length)];
+    const sprite = new PIXI.Sprite(texture);
+    sprite.anchor.set(0.5);
+    sprite.scale.set(0.15 + Math.random() * 0.1);
+    sprite.x = cx;
+    sprite.y = cy;
+    sprite.vx = (Math.random() - 0.5) * 20;
+    sprite.vy = (Math.random() - 0.5) * 20;
+    sprite.rotationSpeed = (Math.random() - 0.5) * 0.3;
+    sprite.alpha = 1;
+    app.stage.addChild(sprite);
+    dice.push(sprite);
+  }
+
+  app.ticker.add((delta) => {
+    dice.forEach(die => {
+      die.x += die.vx * delta;
+      die.y += die.vy * delta;
+      die.rotation += die.rotationSpeed * delta;
+      die.alpha -= 0.01 * delta;
+    });
+  });
+
+  setTimeout(() => {
+    app.destroy(true, { children: true });
+    container.removeChild(app.view);
+  }, 5000);
+}
 
 
 
@@ -1047,7 +1107,10 @@ if (persona.title === "The Grand Druidess") {
       case 'dagger-rain': spawnDaggerRain(); break;
       case 'mistelf-glow': spawnMistElfFlamingSwordPixi(); break;
       case 'fire-roar': spawnFireRoarPixi(); break;
-        case 'muscle-flex':
+      case 'dm-dice':  try {spawnDungeonMasterDicePixi(); } catch (err) {
+        console.error("Gym weights error:", err);
+        } break; 
+      case 'muscle-flex':
           try {
         spawnGymWeightsPixi();
         } catch (err) {
