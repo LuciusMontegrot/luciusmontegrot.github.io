@@ -480,7 +480,6 @@ function spawnDungeonMasterDicePixi() {
 
   const container = document.getElementById('effect-layer');
 
-  // Only create one PIXI app for this effect
   const app = new PIXI.Application({
     resizeTo: container,
     transparent: true,
@@ -488,7 +487,6 @@ function spawnDungeonMasterDicePixi() {
     backgroundAlpha: 0
   });
 
-  // append canvas if not already there
   container.appendChild(app.view);
   app.view.style.position = 'absolute';
   app.view.style.top = '0';
@@ -502,11 +500,27 @@ function spawnDungeonMasterDicePixi() {
     'images/d20a.png'
   ];
 
-  const loadedTextures = [];
-  let loadCount = 0;
+  const loadPromises = imagePaths.map(path => {
+    return new Promise((resolve, reject) => {
+      const base = PIXI.BaseTexture.from(path);
+      const tex = new PIXI.Texture(base);
 
-  function trySpawnDice() {
-    if (loadCount < imagePaths.length) return;
+      base.on('loaded', () => resolve(tex));
+      base.on('error', () => {
+        console.warn(`⚠️ Could not load: ${path}`);
+        resolve(null); // still resolve to keep the Promise.all
+      });
+    });
+  });
+
+  Promise.all(loadPromises).then(textures => {
+    const usable = textures.filter(Boolean);
+    if (usable.length === 0) {
+      console.warn("❌ No usable dice textures loaded");
+      app.destroy(true, { children: true });
+      container.removeChild(app.view);
+      return;
+    }
 
     const dice = [];
     const count = 25;
@@ -514,7 +528,7 @@ function spawnDungeonMasterDicePixi() {
     const cy = app.screen.height / 2;
 
     for (let i = 0; i < count; i++) {
-      const texture = loadedTextures[Math.floor(Math.random() * loadedTextures.length)];
+      const texture = usable[Math.floor(Math.random() * usable.length)];
       const sprite = new PIXI.Sprite(texture);
       sprite.anchor.set(0.5);
       sprite.scale.set(0.15 + Math.random() * 0.1);
@@ -538,31 +552,9 @@ function spawnDungeonMasterDicePixi() {
     });
 
     setTimeout(() => {
-      try {
-        app.destroy(true, { children: true });
-        if (container.contains(app.view)) container.removeChild(app.view);
-      } catch (e) {
-        console.warn("⚠️ Dice explosion cleanup skipped: ", e);
-      }
+      app.destroy(true, { children: true });
+      if (container.contains(app.view)) container.removeChild(app.view);
     }, 5000);
-  }
-
-  // Preload all textures safely
-  imagePaths.forEach(path => {
-    const base = PIXI.BaseTexture.from(path);
-    const tex = new PIXI.Texture(base);
-
-    base.on('loaded', () => {
-      loadedTextures.push(tex);
-      loadCount++;
-      trySpawnDice();
-    });
-
-    base.on('error', () => {
-      console.warn(`⚠️ Could not load dice image: ${path}`);
-      loadCount++;
-      trySpawnDice(); // still try even if one fails
-    });
   });
 }
 
