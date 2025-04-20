@@ -336,33 +336,35 @@ function spawnInkBlotches() {
   const layer = document.getElementById('effect-layer');
   if (!layer) return;
 
-  // how many to sprinkle
-  const count = 5 + Math.floor(Math.random() * 3);
+  // bump this up to 20–30 blotches
+  const count = 20 + Math.floor(Math.random() * 11);
 
   for (let i = 0; i < count; i++) {
     const img = document.createElement('img');
     img.src = blotPaths[Math.floor(Math.random() * blotPaths.length)];
 
-    // random position anywhere on screen
-    img.style.position = 'absolute';
-    img.style.left     = (Math.random() * 100) + 'vw';
-    img.style.top      = (Math.random() * 100) + 'vh';
-    img.style.width    = (50 + Math.random()*100) + 'px';
-    img.style.pointerEvents = 'none';
-    img.style.opacity  = '0';
-    img.style.transform = `rotate(${Math.random()*360}deg) scale(${0.5+Math.random()*0.5})`;
-    img.style.transition = 'opacity 0.5s ease';
+    // totally random across the viewport
+    img.style.position       = 'absolute';
+    img.style.left           = (Math.random() * 100) + 'vw';
+    img.style.top            = (Math.random() * 100) + 'vh';
+    img.style.width          = (40 + Math.random() * 120) + 'px';
+    img.style.pointerEvents  = 'none';
+    img.style.opacity        = '0';
+    img.style.transform      = `rotate(${Math.random()*360}deg) scale(${0.4+Math.random()*0.6})`;
+    img.style.transition     = 'opacity 0.4s ease';
 
     layer.appendChild(img);
 
-    // fade in
-    setTimeout(() => { img.style.opacity = '1'; }, 50);
+    // fade in quickly
+    setTimeout(() => { img.style.opacity = '1'; }, 30);
 
-    // fade out after 2.5s
-    setTimeout(() => { img.style.opacity = '0'; }, 2500);
+    // fade out
+    setTimeout(() => { img.style.opacity = '0'; }, 2000 + Math.random()*1000);
 
-    // remove after 4s
-    setTimeout(() => { layer.removeChild(img); }, 4000);
+    // cleanup
+    setTimeout(() => {
+      if (img.parentNode) layer.removeChild(img);
+    }, 4000 + Math.random()*1000);
   }
 }
 
