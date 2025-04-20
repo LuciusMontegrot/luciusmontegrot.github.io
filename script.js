@@ -497,63 +497,52 @@ function spawnDaggerRain() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Shadow Chains with real chain‑link sprites (uses your chain-link.png)
 // ─────────────────────────────────────────────────────────────────────────────
+// --- overwrite your old function with this ---
+
 function spawnShadowChainsPixi() {
-  console.log("🔗 spawnShadowChainsPixi() running");
   if (typeof PIXI === 'undefined') return;
 
-  // 1) sizing
-  const linkOrigWidth = 48;            // width of your PNG
-  const scaleFactor   = 0.5;           // tweak to taste
-  const linkWidth     = linkOrigWidth * scaleFactor;
-  const count         = Math.ceil(window.innerWidth / linkWidth) + 2;
-  const midY          = window.innerHeight / 2;
+  // 1) grab your existing effect-layer
+  const container = document.getElementById('effect-layer');
 
-  // 2) use the existing #effect-layer so layering stays under the UI
-  const effectLayer = document.getElementById('effect-layer');
-  effectLayer.style.pointerEvents = 'none';
-
-  // make a PIXI app inside effect-layer
+  // 2) make it the Pixi host
   const app = new PIXI.Application({
-    width:            window.innerWidth,
-    height:           window.innerHeight,
-    transparent:      true,
-    antialias:        true,
-    backgroundAlpha:  0,
+    resizeTo:     container,
+    transparent:  true,
+    antialias:    true,
+    backgroundAlpha: 0
   });
-  app.view.style.position = 'absolute';
-  app.view.style.top      = '0';
-  app.view.style.left     = '0';
-  app.view.style.zIndex   = '1';       // just above its container
-  effectLayer.appendChild(app.view);
+  container.appendChild(app.view);
+  app.view.style.position = 'absolute';  // ensure full‑screen
+  app.view.style.top  = '0';
+  app.view.style.left = '0';
 
-  // 3) load the texture
-  const texture = PIXI.Texture.from('images/chain-link.png'); 
-  // ^ make sure the path / name matches your file exactly
+  // 3) load your chain‑link texture
+  const chainTex = PIXI.Texture.from('images/chain-link.png');
 
-  // 4) create chain‑links in a row, with a sag in the middle
-  for (let i = 0; i < count; i++) {
-    const t = i / (count - 1);
-    const x = -linkWidth + t * (window.innerWidth + linkWidth * 2);
-    const sag = 40 * (1 - Math.pow(2 * (t - 0.5), 2)); 
-    const y   = midY + sag;
+  // 4) create a tiling sprite that spans the whole width, with a fixed height
+  const chain = new PIXI.TilingSprite(
+    chainTex,
+    app.screen.width,
+    chainTex.height
+  );
+  // place it vertically centered on the card
+  // note: effect-layer is behind everything, so y = half of viewport is fine
+  chain.y = app.screen.height / 2 - chainTex.height/2;
+  app.stage.addChild(chain);
 
-    const spr = new PIXI.Sprite(texture);
-    spr.anchor.set(0, 0.5);     // left‑center
-    spr.scale.set(scaleFactor);
-    spr.x = x;
-    spr.y = y;
-    app.stage.addChild(spr);
-  }
-
-  // 5) fade it in
-  effectLayer.animate([{opacity:0},{opacity:1}], {
-    duration: 400, fill: 'forwards'
+  // 5) animate the tileOffset so it looks like the chain is sliding in
+  let direction = -1; // we’ll flip halfway
+  app.ticker.add((dt) => {
+    // move the texture rather than sprites (much faster)
+    chain.tilePosition.x += direction * 1.5 * dt;
   });
 
-  // 6) cleanup after 4s
+  // 6) reverse direction at half‑time, then teardown
+  setTimeout(() => { direction = 1; }, 2000);
   setTimeout(() => {
-    app.destroy(true, { children:true });
-    app.view.remove();
+    app.destroy(true, { children: true });
+    container.removeChild(app.view);
   }, 4000);
 }
 
