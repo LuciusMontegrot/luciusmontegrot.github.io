@@ -500,7 +500,7 @@ function spawnPaladinSmitePixi() {
   const card = document.getElementById('persona-display');
   card.style.position = 'relative';
 
-  // 1) Create a wrapper that covers the card
+  // 1) wrapper over the card (behind the card's content)
   const wrapper = document.createElement('div');
   Object.assign(wrapper.style, {
     position:      'absolute',
@@ -509,62 +509,63 @@ function spawnPaladinSmitePixi() {
     bottom:        '0',
     left:          '0',
     pointerEvents: 'none',
-    zIndex:        '1'   // above the card background but below its content
+    zIndex:        '1'
   });
   card.appendChild(wrapper);
 
-  // 2) Pixi application sized to the wrapper
+  // 2) Pixi app sized to the wrapper
   const app = new PIXI.Application({
-    width:       wrapper.clientWidth,
-    height:      wrapper.clientHeight,
-    transparent: true,
-    antialias:   true,
+    width:          wrapper.clientWidth,
+    height:         wrapper.clientHeight,
+    transparent:    true,
+    antialias:      true,
     backgroundAlpha: 0
   });
   wrapper.appendChild(app.view);
   app.view.style.backgroundColor = 'transparent';
 
-  // 3) Draw rope and loop
-  const cx = app.screen.width  / 2;
+  // 3) draw the rope
+  const cx      = app.screen.width / 2;
   const ropeLen = app.screen.height * 0.4;
-  const loopRadius = Math.min(app.screen.width, app.screen.height) * 0.08;
-
-  const rope = new PIXI.Graphics()
+  const rope    = new PIXI.Graphics()
     .lineStyle(4, 0xAAAAAA, 1)
     .moveTo(cx, 0)
     .lineTo(cx, ropeLen);
   app.stage.addChild(rope);
 
+  // 4) draw the loop as an ellipse
+  const loopRadiusX = app.screen.width * 0.08;
+  const loopRadiusY = ropeLen * 0.12;
   const loop = new PIXI.Graphics()
     .lineStyle(4, 0x888888, 1)
-    // draw a circle outline as the noose loop
-    .drawCircle(cx, ropeLen + loopRadius, loopRadius);
+    .drawEllipse(0, 0, loopRadiusX, loopRadiusY);
+  // position its center at the bottom of the rope
+  loop.x = cx;
+  loop.y = ropeLen + loopRadiusY;
   app.stage.addChild(loop);
 
-  // store original values for animation
-  const origY = loop.y;
+  // 5) animate tighten (0.5s) → fade (0.5s) → cleanup
   let frame = 0;
-
-  // 4) Animate: tighten (frames 0–30), then fade (30–60), then cleanup
-  app.ticker.add(() => {
-    frame++;
+  app.ticker.add((delta) => {
+    frame += delta;
     if (frame <= 30) {
-      // tighten: scale Y from 1→0.5, move down
+      // 0–30 frames: tighten loop by scaling Y
       const p = frame / 30;
       loop.scale.y = 1 - 0.5 * p;
-      loop.y       = origY + loopRadius * 0.5 * p;
+      loop.y       = ropeLen + loopRadiusY * (1 + 0.5 * p);
     } else if (frame <= 60) {
-      // fade out
+      // 30–60 frames: fade out
       const a = 1 - (frame - 30) / 30;
       rope.alpha = a;
       loop.alpha = a;
     } else {
-      // done: destroy Pixi and wrapper
+      // done
       app.destroy(true, { children: true });
       wrapper.remove();
     }
   });
 }
+
 
 
 
