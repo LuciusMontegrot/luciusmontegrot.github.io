@@ -327,14 +327,19 @@ wisps.push(g);
 
 
 function spawnFireRoarPixi() {
-  if (typeof PIXI === 'undefined') return;
+  console.log("🔥 spawnFireRoarPixi() fired");
 
-  // 1) host it in your existing #effect-layer
+  if (typeof PIXI === 'undefined') {
+    console.warn("Pixi not loaded!");
+    return;
+  }
+
+  // 1) grab the effects wrapper
   const container = document.getElementById('effect-layer');
   const app = new PIXI.Application({
-    resizeTo:       container,
-    transparent:    true,
-    antialias:      true,
+    resizeTo:        container,
+    transparent:     true,
+    antialias:       true,
     backgroundAlpha: 0
   });
   container.appendChild(app.view);
@@ -342,52 +347,54 @@ function spawnFireRoarPixi() {
   app.view.style.top      = '0';
   app.view.style.left     = '0';
 
-  // 2) create a glow filter for embers
-  const glow = new PIXI.filters.GlowFilter({ distance: 15, outerStrength: 2, innerStrength: 1, color: 0xFF6600 });
+  // 2) glow filter for embers
+  const glow = new PIXI.filters.GlowFilter({
+    distance:    15,
+    outerStrength: 2,
+    innerStrength: 1,
+    color:       0xFF6600
+  });
 
-  // 3) spawn a bunch of ember particles
+  // 3) spawn ember particles
   const embers = [];
+  const cardRect = document.getElementById('persona-display').getBoundingClientRect();
   for (let i = 0; i < 40; i++) {
     const g = new PIXI.Graphics()
       .beginFill(0xFF6600, 0.8)
       .drawCircle(0, 0, 3 + Math.random() * 2)
       .endFill();
-    g.filters = [ glow ];
-    // start them near the bottom of the card
-    const rect = document.getElementById('persona-display').getBoundingClientRect();
-    g.x = rect.left + Math.random() * rect.width;
-    g.y = rect.bottom - window.scrollY;
-    // velocity upwards + drift
+    g.filters = [glow];
+    g.x = cardRect.left + Math.random() * cardRect.width;
+    g.y = cardRect.bottom - window.scrollY;
     g.vx = (Math.random() - 0.5) * 0.5;
     g.vy = 1 + Math.random() * 1.5;
     app.stage.addChild(g);
     embers.push(g);
   }
 
-  // 4) animate: rise, fade, respawn
-  app.ticker.add((dt) => {
+  // 4) animate them upward
+  app.ticker.add((delta) => {
     embers.forEach(e => {
-      e.x -= e.vx * dt;
-      e.y -= e.vy * dt;
-      e.alpha  = Math.max(0, e.alpha - 0.005 * dt);
-      // when it’s gone or off top, re‑spawn at bottom
+      e.x -= e.vx * delta;
+      e.y -= e.vy * delta;
+      e.alpha = Math.max(0, e.alpha - 0.005 * delta);
       if (e.alpha <= 0 || e.y < -10) {
-        const rect = document.getElementById('persona-display').getBoundingClientRect();
-        e.x     = rect.left + Math.random() * rect.width;
-        e.y     = rect.bottom - window.scrollY;
+        e.x = cardRect.left + Math.random() * cardRect.width;
+        e.y = cardRect.bottom - window.scrollY;
         e.alpha = 1;
-        e.vx    = (Math.random() - 0.5) * 0.5;
-        e.vy    = 1 + Math.random() * 1.5;
+        e.vx = (Math.random() - 0.5) * 0.5;
+        e.vy = 1 + Math.random() * 1.5;
       }
     });
   });
 
-  // 5) tear down after 4s
+  // 5) cleanup after 4s
   setTimeout(() => {
     app.destroy(true, { children: true });
     container.removeChild(app.view);
   }, 4000);
 }
+
 
 
 function spawnDaggerRain() {
