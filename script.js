@@ -956,13 +956,13 @@ const personaWeights = [
   1, // dungeon master
   1, // sea elf
   1, // hacker
-  1777, // gym-forged ghostwriter
+  1, // gym-forged ghostwriter
   0.05, // 🧠🔥 GYM-FORGED WRITER (RARE)
   1, // fire priest
   1, // assassin
   1, // necromancer
-  1,  // paladin
-  0.01, // aeliana
+  1777,  // paladin
+  1777, // aeliana
 ];
 
 let idx;
