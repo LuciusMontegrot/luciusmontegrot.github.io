@@ -774,10 +774,6 @@ function spawnGymWeightsPixi() {
 
 
 
-/**
- * Aeliana’s theatrical Pixi effect:
- * Swirling emerald motes that emanate from the card center.
- */
 function spawnAelianaSignaturePixi() {
   if (typeof PIXI === 'undefined') return;
 
@@ -794,23 +790,30 @@ function spawnAelianaSignaturePixi() {
   app.view.style.top = '0';
   app.view.style.left = '0';
 
-  // 1) Set up glowing text in centre of screen
-  const text = new PIXI.Text("Lucius Montegrot", {
-    fontFamily: "Playfair Display, serif",
-    fontSize: 72,
-    fill: "#3bb75e",
-    align: "center",
-    fontWeight: "bold",
-    dropShadow: true,
-    dropShadowColor: "#2d814f",
-    dropShadowBlur: 6,
-    dropShadowDistance: 2,
-  });
-  text.anchor.set(0.5);
-  text.x = app.screen.width / 2;
-  text.y = app.screen.height / 2;
-  text.alpha = 0;
-  app.stage.addChild(text);
+  // 1) Create an HTML element for animated text
+  const signature = document.createElement('div');
+  signature.style.position = 'absolute';
+  signature.style.top = '55%';
+  signature.style.left = '50%';
+  signature.style.transform = 'translate(-50%, -50%)';
+  signature.style.fontSize = '64px';
+  signature.style.fontFamily = '"Playfair Display", serif';
+  signature.style.color = '#3bb75e';
+  signature.style.fontWeight = 'bold';
+  signature.style.textShadow = '0 0 6px #2d814f';
+  signature.style.zIndex = '9999';
+  signature.style.pointerEvents = 'none';
+  signature.textContent = '';
+  container.appendChild(signature);
+
+  // Animate the text letter by letter
+  const name = 'Lucius Montegrot';
+  let i = 0;
+  const interval = setInterval(() => {
+    signature.textContent += name[i];
+    i++;
+    if (i >= name.length) clearInterval(interval);
+  }, 100);
 
   // 2) Add the quill
   const quill = PIXI.Sprite.from('images/quill.png');
@@ -841,8 +844,6 @@ function spawnAelianaSignaturePixi() {
     frame++;
 
     const progress = Math.min(1, frame / totalFrames);
-    text.alpha = progress;
-
     const index = Math.floor(progress * (path.length - 1));
     const pos = path[index];
     if (pos) {
@@ -857,11 +858,14 @@ function spawnAelianaSignaturePixi() {
     }
   });
 
+  // 5) cleanup
   setTimeout(() => {
     app.destroy(true, { children: true });
     container.removeChild(app.view);
+    signature.remove();
   }, 5500);
 }
+
 
 
 
