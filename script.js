@@ -319,6 +319,41 @@ wisps.push(g);
   }, 7000);
 }
 
+/**
+ * Ink‑blotches effect for The Humble Historian
+ */
+function spawnInkBlotches() {
+  const layer = document.getElementById('effect-layer');
+
+  for (let i = 0; i < 25; i++) {
+    const blot = document.createElement('div');
+    const size = 60 + Math.random() * 100;
+
+    Object.assign(blot.style, {
+      position:        'absolute',
+      width:           `${size}px`,
+      height:          `${size}px`,
+      left:            `${Math.random() * (window.innerWidth - size)}px`,
+      top:             `${Math.random() * (window.innerHeight - size)}px`,
+      background:      'radial-gradient(circle at center, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 70%)',
+      transform:       `rotate(${Math.random() * 360}deg)`,
+      pointerEvents:   'none',
+      opacity:         '0',
+      transition:      'opacity 0.4s ease-out'
+    });
+
+    layer.appendChild(blot);
+
+    // fade in
+    requestAnimationFrame(() => blot.style.opacity = '1');
+
+    // fade out & cleanup
+    setTimeout(() => {
+      blot.style.opacity = '0';
+      setTimeout(() => layer.removeChild(blot), 500);
+    }, 1800 + Math.random() * 800);
+  }
+}
 
 
 
@@ -762,7 +797,13 @@ if (persona.title === "The Grand Druidess") {
             console.error("ShadowChains error:", err);
             }
               break;
-
+        case 'historian-scroll':
+        console.log("🖋️ Historian selected – spawning ink blotches…");
+           try{ spawnInkBlotches();
+              } catch (err) {
+              console.error("InkBlotches error:", err);
+              }
+            break;
 
 
 
