@@ -480,7 +480,10 @@ function spawnFireRoarPixi() {
   console.log("🔥 spawnFireRoarPixi() fired");
   if (typeof PIXI === 'undefined') return;
 
+  // 1) target the effect layer
   const container = document.getElementById('effect-layer');
+
+  // 2) create PIXI app
   const app = new PIXI.Application({
     resizeTo:        container,
     transparent:     true,
@@ -492,44 +495,60 @@ function spawnFireRoarPixi() {
   app.view.style.top      = '0';
   app.view.style.left     = '0';
 
-  // spawn ember particles
-  const embers = [];
-  const cardRect = document.getElementById('persona-display').getBoundingClientRect();
-  for (let i = 0; i < 40; i++) {
-    const g = new PIXI.Graphics()
-      .beginFill(0xFF6600, 0.8)
-      .drawCircle(0, 0, 3 + Math.random() * 2)
-      .endFill();
+  // 3) measure the card area
+  const cardEl  = document.getElementById('persona-display');
+  const rect    = cardEl.getBoundingClientRect();
+  const startY  = rect.bottom - window.scrollY;
+  const minX    = rect.left;
+  const maxX    = rect.left + rect.width;
 
-    // soft blur glow
+  // 4) spawn flame‑shaped particles
+  const flames = [];
+  const count  = 80;  // more than before
+  for (let i = 0; i < count; i++) {
+    const g = new PIXI.Graphics();
+
+    // draw a simple triangular “flame”
+    g.beginFill(0xFF9900, 0.9);
+    g.moveTo(0,   0);
+    g.lineTo(-4, 12);
+    g.lineTo( 4, 12);
+    g.closePath();
+    g.endFill();
+
+    // optional soft blur for glow
     const blur = new PIXI.filters.BlurFilter(2);
     g.filters = [ blur ];
 
-    g.x = cardRect.left + Math.random() * cardRect.width;
-    g.y = cardRect.bottom - window.scrollY;
-    g.vx = (Math.random() - 0.5) * 0.5;
-    g.vy = 1 + Math.random() * 1.5;
+    // random start position along bottom of card
+    g.x  = minX + Math.random() * (maxX - minX);
+    g.y  = startY + (Math.random() * 20); // jitter just below
+    g.vx = (Math.random() - 0.5) * 0.3;    // slow sideways wobble
+    g.vy = 1 + Math.random() * 2;          // faster upward drift
+
     app.stage.addChild(g);
-    embers.push(g);
+    flames.push(g);
   }
 
-  // animate them upward
+  // 5) animate
   app.ticker.add((delta) => {
-    embers.forEach(e => {
-      e.x -= e.vx * delta;
-      e.y -= e.vy * delta;
-      e.alpha = Math.max(0, e.alpha - 0.005 * delta);
-      if (e.alpha <= 0 || e.y < -10) {
-        e.x = cardRect.left + Math.random() * cardRect.width;
-        e.y = cardRect.bottom - window.scrollY;
-        e.alpha = 1;
-        e.vx = (Math.random() - 0.5) * 0.5;
-        e.vy = 1 + Math.random() * 1.5;
+    flames.forEach(f => {
+      f.x -= f.vx * delta;
+      f.y -= f.vy * delta;
+      f.alpha -= 0.008 * delta;
+
+      // recycle when faded or off‑top
+      if (f.alpha <= 0 || f.y < rect.top - 20) {
+        f.x     = minX + Math.random() * (maxX - minX);
+        f.y     = startY + (Math.random() * 20);
+        f.alpha = 1;
+        f.vx    = (Math.random() - 0.5) * 0.3;
+        f.vy    = 1 + Math.random() * 2;
       }
     });
   });
 
-  // cleanup after 4s
+  // 6) cleanup
   setTimeout(() => {
     app.destroy(true, { children: true });
     container.removeChild(app.view);
