@@ -487,82 +487,88 @@ function spawnFireRoarPixi() {
   console.log("🔥 spawnFireRoarPixi() fired");
   if (typeof PIXI === 'undefined') return;
 
-  // 1) target the effect‐layer container
+  // 1) grab your effect layer
   const container = document.getElementById('effect-layer');
 
-  // 2) create a full‐screen Pixi app
+  // 2) spin up a full‑screen PIXI app
   const app = new PIXI.Application({
     resizeTo:    container,
     transparent: true,
     antialias:   true
   });
-  container.appendChild(app.view);
   Object.assign(app.view.style, {
     position: 'absolute',
     top:      '0',
     left:     '0',
     pointerEvents: 'none'
   });
+  container.appendChild(app.view);
 
-  // grab screen dims
+  // 3) screen dims
   const W = app.screen.width;
   const H = app.screen.height;
 
-  // 3) spawn a pool of flames
+  // 4) create 250 flame–particles
   const flames = [];
   const COUNT  = 250;
   for (let i = 0; i < COUNT; i++) {
     const g = new PIXI.Graphics()
-      // simple triangular flame
-      .beginFill(0xFF9900, 0.9)
+      // simple triangular “flame”
+      .beginFill(0xFF6600, 0.9)
       .moveTo(0,   0)
       .lineTo(-4, 12)
       .lineTo( 4, 12)
       .closePath()
       .endFill();
 
-    // soft glow
+    // glow
     g.filters = [ new PIXI.filters.BlurFilter(2) ];
 
-    // random start just below bottom, anywhere across width
-    g.x = Math.random() * W;
-    g.y = H + Math.random() * 30;
+    // random size & rotation
+    const scale = 0.5 + Math.random() * 1.5;
+    g.scale.set(scale);
+    g.rotation = (Math.random() - 0.5) * 0.6; // ±~35°
 
-    // give each flame its own speed & fade rate
-    g.vx       = (Math.random() - 0.5) * 0.3;     // slight sideways wobble
-    g.vy       = 1 + Math.random() * 2;           // upward
-    g.fadeRate = 0.005 + Math.random() * 0.015;   // how fast alpha drops
-    g.alpha    = 0.3 + Math.random() * 0.7;       // initial opacity
+    // start anywhere on screen
+    g.x = Math.random() * W;
+    g.y = Math.random() * H;
+
+    // give each its own drift and fade
+    g.vx       = (Math.random() - 0.5) * 0.4;    // slow sideways
+    g.vy       = -(0.2 + Math.random() * 1.2);   // upward drift (negative y)
+    g.fadeRate = 0.005 + Math.random() * 0.02;   // fade speed
+    g.alpha    = 0.3 + Math.random() * 0.7;      // start opacity
 
     app.stage.addChild(g);
     flames.push(g);
   }
 
-  // 4) animation loop
+  // 5) animation: move & fade, then recycle
   app.ticker.add((delta) => {
     for (const f of flames) {
       f.x     += f.vx * delta;
-      f.y     -= f.vy * delta;
+      f.y     += f.vy * delta;
       f.alpha -= f.fadeRate * delta;
 
-      // respawn if gone
-      if (f.alpha <= 0 || f.y < -20) {
+      // if it’s gone, respawn at bottom half
+      if (f.alpha <= 0 || f.y < -30) {
         f.x       = Math.random() * W;
         f.y       = H + Math.random() * 30;
-        f.vx      = (Math.random() - 0.5) * 0.3;
-        f.vy      = 1 + Math.random() * 2;
-        f.fadeRate= 0.005 + Math.random() * 0.015;
+        f.vx      = (Math.random() - 0.5) * 0.4;
+        f.vy      = -(0.2 + Math.random() * 1.2);
+        f.fadeRate= 0.005 + Math.random() * 0.02;
         f.alpha   = 0.3 + Math.random() * 0.7;
       }
     }
   });
 
-  // 5) tear down after 4s
+  // 6) teardown in 4s
   setTimeout(() => {
     app.destroy(true, { children: true });
     if (container.contains(app.view)) container.removeChild(app.view);
   }, 4000);
 }
+
 
 
 
