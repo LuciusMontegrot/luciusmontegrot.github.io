@@ -487,20 +487,23 @@ function spawnFireRoarPixi() {
   console.log("🔥 spawnFireRoarPixi() fired");
   if (typeof PIXI === 'undefined') return;
 
-  // 1) grab your effect layer
+  // 1) target the #effect-layer
   const container = document.getElementById('effect-layer');
 
-  // 2) spin up a full‑screen PIXI app
+  // 2) full‑screen, truly transparent Pixi app
   const app = new PIXI.Application({
-    resizeTo:    container,
-    transparent: true,
-    antialias:   true
+    resizeTo:       container,
+    backgroundColor: 0x000000,
+    backgroundAlpha: 0,
+    transparent:    true,
+    antialias:      true
   });
   Object.assign(app.view.style, {
-    position: 'absolute',
-    top:      '0',
-    left:     '0',
-    pointerEvents: 'none'
+    position:      'absolute',
+    top:           '0',
+    left:          '0',
+    pointerEvents: 'none',
+    background:    'transparent'
   });
   container.appendChild(app.view);
 
@@ -508,65 +511,71 @@ function spawnFireRoarPixi() {
   const W = app.screen.width;
   const H = app.screen.height;
 
-  // 4) create 250 flame–particles
+  // 4) create 250 “flame” particles
   const flames = [];
-  const COUNT  = 250;
-  for (let i = 0; i < COUNT; i++) {
-    const g = new PIXI.Graphics()
-      // simple triangular “flame”
-      .beginFill(0xFF6600, 0.9)
-      .moveTo(0,   0)
-      .lineTo(-4, 12)
-      .lineTo( 4, 12)
-      .closePath()
-      .endFill();
+  for (let i = 0; i < 250; i++) {
+    const g = new PIXI.Graphics();
 
-    // glow
-    g.filters = [ new PIXI.filters.BlurFilter(2) ];
+    // outer orange tongue
+    g.beginFill(0xFF6600, 0.8);
+    g.moveTo(0,  0);
+    g.bezierCurveTo( 4, -12,  8, -20,  0, -30);
+    g.bezierCurveTo(-8, -20, -4, -12,  0,   0);
+    g.endFill();
 
-    // random size & rotation
-    const scale = 0.5 + Math.random() * 1.5;
-    g.scale.set(scale);
-    g.rotation = (Math.random() - 0.5) * 0.6; // ±~35°
+    // inner yellow flicker
+    g.beginFill(0xFFFF66, 0.7);
+    g.moveTo(0,   0);
+    g.bezierCurveTo( 2, -8,  4, -14,  0, -22);
+    g.bezierCurveTo(-4, -14, -2, -8,   0,   0);
+    g.endFill();
 
-    // start anywhere on screen
+    // slight random rotation & scale
+    g.rotation = (Math.random() - 0.5) * 0.6; // ±∼35°
+    const s = 0.5 + Math.random() * 1.2;
+    g.scale.set(s, s * (0.8 + Math.random() * 0.4));
+
+    // random start anywhere on screen
     g.x = Math.random() * W;
-    g.y = Math.random() * H;
+    g.y = H + Math.random() * 50;
 
-    // give each its own drift and fade
-    g.vx       = (Math.random() - 0.5) * 0.4;    // slow sideways
-    g.vy       = -(0.2 + Math.random() * 1.2);   // upward drift (negative y)
-    g.fadeRate = 0.005 + Math.random() * 0.02;   // fade speed
-    g.alpha    = 0.3 + Math.random() * 0.7;      // start opacity
+    // give each particle its own drift/fade
+    g.vx       = (Math.random() - 0.5) * 0.4;    // sideways
+    g.vy       = -(0.5 + Math.random() * 1.5);   // upward
+    g.fadeRate = 0.005 + Math.random() * 0.015;  // fade speed
+    g.alpha    = 0.4 + Math.random() * 0.6;      // start opacity
+
+    // soft glow
+    g.filters = [ new PIXI.filters.BlurFilter(1.5) ];
 
     app.stage.addChild(g);
     flames.push(g);
   }
 
-  // 5) animation: move & fade, then recycle
+  // 5) animate
   app.ticker.add((delta) => {
     for (const f of flames) {
       f.x     += f.vx * delta;
       f.y     += f.vy * delta;
       f.alpha -= f.fadeRate * delta;
 
-      // if it’s gone, respawn at bottom half
+      // recycle when invisible or off‑top
       if (f.alpha <= 0 || f.y < -30) {
         f.x       = Math.random() * W;
         f.y       = H + Math.random() * 30;
         f.vx      = (Math.random() - 0.5) * 0.4;
-        f.vy      = -(0.2 + Math.random() * 1.2);
-        f.fadeRate= 0.005 + Math.random() * 0.02;
-        f.alpha   = 0.3 + Math.random() * 0.7;
+        f.vy      = -(0.5 + Math.random() * 1.5);
+        f.fadeRate= 0.005 + Math.random() * 0.015;
+        f.alpha   = 0.4 + Math.random() * 0.6;
       }
     }
   });
 
-  // 6) teardown in 4s
+  // 6) cleanup after 4s
   setTimeout(() => {
     app.destroy(true, { children: true });
     if (container.contains(app.view)) container.removeChild(app.view);
-  }, 4000);
+  }, 5000);
 }
 
 
