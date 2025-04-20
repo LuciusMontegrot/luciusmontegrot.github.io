@@ -372,40 +372,43 @@ function spawnMistElfFlamingSwordPixi() {
   console.log("✨ spawnMistElfFlamingSwordPixi() fired");
   if (typeof PIXI === 'undefined') return;
 
-  // grab the card
+  // 1) grab & prepare the card
   const card = document.getElementById('persona-display');
   card.style.position = 'relative';
 
-  // wrapper sits on top of the card
+  // 2) create a wrapper *inside* the card, but behind its content
   const wrapper = document.createElement('div');
   Object.assign(wrapper.style, {
     position:      'absolute',
     inset:         '0',
     pointerEvents: 'none',
-    zIndex:        '10000',  // make sure it's above everything
-    background:    'transparent'
+    zIndex:        '0',        // <-- behind card children
+    background:    'none'
   });
   card.appendChild(wrapper);
 
-  // PIXI app
+  // 3) create a fully‑transparent Pixi canvas
   const app = new PIXI.Application({
-    width:       wrapper.clientWidth,
-    height:      wrapper.clientHeight,
-    transparent: true,
-    antialias:   true
+    width:           wrapper.clientWidth,
+    height:          wrapper.clientHeight,
+    transparent:     true,
+    backgroundAlpha: 0,         // <-- make it see‑through
+    antialias:       true
   });
+  // ensure even the <canvas> element is transparent
+  app.view.style.background = 'none';
   wrapper.appendChild(app.view);
 
-  // center‑ish of sword
+  // 4) pick a point near the sword blade
   const cx = app.screen.width * 0.5;
   const cy = app.screen.height * 0.6;
 
-  // spawn particles
+  // 5) spawn flame‑like particles
   const particles = [];
   for (let i = 0; i < 30; i++) {
     const p = new PIXI.Graphics()
       .beginFill(0xFFAA00, 0.8)
-      .drawCircle(0, 0, 3 + Math.random()*3)
+      .drawCircle(0, 0, 3 + Math.random() * 3)
       .endFill();
     reset(p);
     app.stage.addChild(p);
@@ -413,14 +416,15 @@ function spawnMistElfFlamingSwordPixi() {
   }
 
   function reset(p) {
-    p.x     = cx + (Math.random()-0.5)*24;
-    p.y     = cy + (Math.random()-0.5)*12;
-    p.vx    = (Math.random()-0.5)*0.6;
-    p.vy    = - (1 + Math.random()*2);
+    p.x     = cx + (Math.random() - 0.5) * 24;
+    p.y     = cy + (Math.random() - 0.5) * 12;
+    p.vx    = (Math.random() - 0.5) * 0.6;
+    p.vy    = - (1 + Math.random() * 2);
     p.alpha = 1;
-    p.scale.set(0.6 + Math.random()*0.8);
+    p.scale.set(0.6 + Math.random() * 0.8);
   }
 
+  // 6) animate them
   app.ticker.add(() => {
     particles.forEach(p => {
       p.x     += p.vx;
@@ -430,12 +434,13 @@ function spawnMistElfFlamingSwordPixi() {
     });
   });
 
-  // tear down after 4s
+  // 7) tear everything down after 4s
   setTimeout(() => {
     app.destroy(true, { children: true });
     wrapper.remove();
   }, 4000);
 }
+
 
 
 
