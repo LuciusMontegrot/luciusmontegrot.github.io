@@ -496,93 +496,91 @@ function spawnDaggerRain() {
 
 function spawnPaladinSmiteBabylon() {
   if (typeof BABYLON === 'undefined') return;
-  const card = document.getElementById('persona-display');
-  card.style.position = 'relative';
 
-  // 1) Overlay wrapper
+  // 1) full‑screen fixed wrapper
   const wrapper = document.createElement('div');
   Object.assign(wrapper.style, {
-    position:      'absolute',
+    position:      'fixed',
     top:           '0',
     left:          '0',
-    width:         '100%',
-    height:        '100%',
+    width:         '100vw',
+    height:        '100vh',
     pointerEvents: 'none',
-    zIndex:        '1'     // sits above the card background
+    zIndex:        '9999'
   });
-  card.appendChild(wrapper);
+  document.body.appendChild(wrapper);
 
-  // 2) Babylon canvas
+  // 2) full‑screen canvas
   const canvas = document.createElement('canvas');
-  Object.assign(canvas.style, {
-    width:  '100%',
-    height: '100%',
-    display:'block'
-  });
+  Object.assign(canvas.style, { width: '100%', height: '100%', display: 'block' });
   wrapper.appendChild(canvas);
 
-  // 3) Engine & scene
-  const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
-  const scene  = new BABYLON.Scene(engine);
+  // 3) Babylon engine & transparent scene
+  const engine = new BABYLON.Engine(canvas, true, {
+    preserveDrawingBuffer: true,
+    stencil:              true
+  });
+  const scene = new BABYLON.Scene(engine);
+  // make the clear color transparent
+  scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
 
-  // 4) Orthographic camera so no perspective distortion
-  const cam     = new BABYLON.FreeCamera("uiCam", new BABYLON.Vector3(0,0,-10), scene);
-  cam.mode      = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
-  const w       = engine.getRenderWidth()  / 2;
-  const h       = engine.getRenderHeight() / 2;
-  cam.orthoLeft   = -w;
-  cam.orthoRight  =  w;
-  cam.orthoTop    =  h;
-  cam.orthoBottom = -h;
-  cam.setTarget(BABYLON.Vector3.Zero());
+  // 4) orthographic camera (no perspective distortion)
+  const w = engine.getRenderWidth();
+  const h = engine.getRenderHeight();
+  const camera = new BABYLON.FreeCamera("uiCam",
+    new BABYLON.Vector3(0, 0, -10),
+    scene
+  );
+  camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+  camera.orthoLeft   = -w/2;
+  camera.orthoRight  =  w/2;
+  camera.orthoTop    =  h/2;
+  camera.orthoBottom = -h/2;
+  camera.setTarget(BABYLON.Vector3.Zero());
 
-  // 5) Light (just so materials render nicely)
+  // simple ambient light so materials show up
   new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0,1,0), scene);
 
-  // 6) Build the rope (a thin cylinder) and the loop (a torus)
-  const ropeLen   = h * 0.8;      // 80% of card height
-  const ropeThick = w * 0.02;     //  2% of card width
+  // 5) compute dimensions
+  const ropeThickness = Math.min(w, h) * 0.02;    // 2% of min(screen)
+  const ropeLength    = h * 0.3;                  // 30% of screen height
+  const loopDiameter  = ropeLength * 0.6;         // loop sits below rope
+  const loopRadiusMinor = ropeThickness / 2;
 
+  // 6) create the rope (cylinder)
   const rope = BABYLON.MeshBuilder.CreateCylinder("rope", {
-    height:   ropeLen,
-    diameter: ropeThick
+    height:   ropeLength,
+    diameter: ropeThickness
   }, scene);
-  const ropeMat = new BABYLON.StandardMaterial("ropeMat", scene);
-  ropeMat.diffuseColor = new BABYLON.Color3(0.67, 0.54, 0.27); // hemp‑like tan
-  rope.material = ropeMat;
-  // Position so top is at y=0, bottom at y=-ropeLen
-  rope.position.y = -ropeLen/2;
+  rope.material = new BABYLON.StandardMaterial("ropeMat", scene);
+  rope.material.diffuseColor = new BABYLON.Color3(0.67,0.54,0.27);
+  // position so its top meets y=0
+  rope.position.y = (-ropeLength/2) + loopRadiusMinor;
 
-  const loopRadiusMajor = w * 0.15;     // 30% card width diameter
-  const loopRadiusMinor = ropeThick/2;  // matches rope thickness
-
+  // 7) create the loop (torus lying in XZ plane)
   const loop = BABYLON.MeshBuilder.CreateTorus("loop", {
-    diameter:  loopRadiusMajor * 2,
-    thickness: loopRadiusMinor * 2,
+    diameter:  loopDiameter,
+    thickness: ropeThickness,
     tessellation: 64
   }, scene);
-  const loopMat = new BABYLON.StandardMaterial("loopMat", scene);
-  loopMat.diffuseColor = new BABYLON.Color3(0.53, 0.42, 0.20);
-  loop.material = loopMat;
-  // orient ring flat (XZ plane) and sit its top at the bottom of the rope
+  loop.material = new BABYLON.StandardMaterial("loopMat", scene);
+  loop.material.diffuseColor = new BABYLON.Color3(0.53,0.42,0.20);
   loop.rotation.x = Math.PI/2;
-  loop.position.y = -ropeLen - loopRadiusMinor;
+  loop.position.y = -loopRadiusMinor;
 
-  // 7) Animate: tighten over 0.5s, then fade over next 0.5s
-  let tick = 0;
+  // 8) animate via a simple ticker timeline
+  let frame = 0;
   scene.registerBeforeRender(() => {
-    const dt = engine.getDeltaTime() / 16.66; // ~frames at 60fps
-    tick += dt;
-
-    if (tick <= 30) {
-      // 0 → 30: tighten loop diameter by 50%
-      const p = tick / 30;
+    frame++;
+    if (frame <= 30) {
+      // first 0.5s (30 frames): tighten loop diameter by 50%
+      const p = frame/30;
       loop.scaling.x = loop.scaling.z = 1 - 0.5 * p;
-    } else if (tick <= 60) {
-      // 30 → 60: fade out both meshes
-      const p = (tick - 30) / 30;
-      rope.material.alpha = 1 - p;
-      loop.material.alpha = 1 - p;
+    } else if (frame <= 60) {
+      // next 0.5s: fade out both rope & loop
+      const a = 1 - (frame - 30)/30;
+      rope.material.alpha = a;
+      loop.material.alpha = a;
     } else {
       // cleanup
       engine.stopRenderLoop();
@@ -590,8 +588,11 @@ function spawnPaladinSmiteBabylon() {
       wrapper.remove();
     }
   });
+
+  // 9) kick off the render loop
   engine.runRenderLoop(() => scene.render());
 }
+
 
 
 
