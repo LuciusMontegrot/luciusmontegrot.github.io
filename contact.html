@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Send a Scroll to Lucius Montegrot</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background: url('images/parchment-bg.jpg') repeat;
+      font-family: 'Playfair Display', serif;
+      color: #2c1d16;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3em 1em;
+    }
+
+    .scroll-form {
+      background: rgba(255, 250, 230, 0.96);
+      border: 5px double #c2a86d;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(80, 60, 30, 0.2);
+      max-width: 700px;
+      width: 100%;
+      padding: 2em;
+      text-align: center;
+    }
+
+    .scroll-form h1 {
+      font-size: 2.2em;
+      margin-bottom: 0.5em;
+    }
+
+    .scroll-form p {
+      font-style: italic;
+      margin-bottom: 1.5em;
+    }
+
+    .scroll-form textarea {
+      width: 100%;
+      height: 200px;
+      padding: 1em;
+      font-size: 1em;
+      font-family: 'Playfair Display', serif;
+      border: 2px solid #c2a86d;
+      border-radius: 8px;
+      resize: vertical;
+      background: #fff8dc;
+    }
+
+    .scroll-form button {
+      margin-top: 1.5em;
+      padding: 0.8em 2em;
+      font-size: 1.1em;
+      font-family: 'Playfair Display', serif;
+      background-color: #dbc3a3;
+      color: #3c2d20;
+      border: 2px solid #998a7e;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background-color 0.3s ease;
+    }
+
+    .scroll-form button:hover {
+      background-color: #e8d7ba;
+      transform: scale(1.05);
+    }
+
+    .success-message {
+      margin-top: 1em;
+      color: #2d814f;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <form class="scroll-form" id="contactForm">
+    <h1>Send a Scroll</h1>
+    <p>Place your message in a bottle and release it into the ether...</p>
+    <textarea name="message" required placeholder="What secrets, questions, or tales would you share with Lucius Montegrot?"></textarea>
+    <button type="submit">Send Your Message</button>
+    <div class="success-message" id="confirmation" style="display:none;">Your scroll has vanished into the mists...</div>
+  </form>
+
+  <script>
+    document.getElementById('contactForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const message = this.message.value.trim();
+      if (!message) return;
+
+      try {
+        await fetch('https://formsubmit.co/ajax/luciusmontegrot@gmail.com', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ message })
+        });
+
+        document.getElementById('confirmation').style.display = 'block';
+        this.reset();
+      } catch (err) {
+        alert("The winds have failed to carry your scroll. Try again later.");
+      }
+    });
+  </script>
+</body>
+</html>
