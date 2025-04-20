@@ -336,8 +336,8 @@ function spawnInkBlotches() {
   const layer = document.getElementById('effect-layer');
   if (!layer) return;
 
-  // bump this up to 20–30 blotches
-  const count = 20 + Math.floor(Math.random() * 11);
+  // bump this up to 30-40 blotches
+  const count = 30 + Math.floor(Math.random() * 11);
 
   for (let i = 0; i < count; i++) {
     const img = document.createElement('img');
@@ -359,12 +359,12 @@ function spawnInkBlotches() {
     setTimeout(() => { img.style.opacity = '1'; }, 30);
 
     // fade out
-    setTimeout(() => { img.style.opacity = '0'; }, 2000 + Math.random()*1000);
+    setTimeout(() => { img.style.opacity = '0'; }, 2000 + Math.random()*2000);
 
     // cleanup
     setTimeout(() => {
       if (img.parentNode) layer.removeChild(img);
-    }, 4000 + Math.random()*1000);
+    }, 6000 + Math.random()*2000);
   }
 }
 
