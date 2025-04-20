@@ -369,85 +369,102 @@ function spawnInkBlotches() {
 }
 
 function spawnMistElfFlamingSwordPixi() {
+  console.log("✨ spawnMistElfFlamingSwordPixi() fired");
   if (typeof PIXI === 'undefined') return;
 
-  // 1) Grab the card & sword image element
-  const cardEl   = document.getElementById('persona-display');
-  const swordImg = document.getElementById('persona-image'); // assumes this is the sword shot
-  const cardRect = cardEl.getBoundingClientRect();
-  const imgRect  = swordImg.getBoundingClientRect();
+  // 1) grab & prepare the card
+  const card = document.getElementById('persona-display');
+  card.style.position = 'relative';
 
-  // 2) Compute a little tilt (~6°) along the sword’s length
-  const midX    = imgRect.left + imgRect.width / 2;
-  const slope   = Math.tan(6 * Math.PI / 180);  // 6° angle
-
-  // 3) Setup Pixi on the effect‑layer
-  const container = document.getElementById('effect-layer');
-  const app = new PIXI.Application({
-    resizeTo:    container,
-    transparent: true,
-    antialias:   true
+  // 2) wrapper behind content
+  const wrapper = document.createElement('div');
+  Object.assign(wrapper.style, {
+    position:      'absolute',
+    inset:         '0',
+    pointerEvents: 'none',
+    zIndex:        '0',
+    background:    'none'
   });
-  container.appendChild(app.view);
-  app.view.style.position = 'absolute';
-  app.view.style.top      = '0';
-  app.view.style.left     = '0';
+  card.appendChild(wrapper);
 
-  // 4) Spawn “flame” graphics along the sword
+  // 3) transparent Pixi canvas
+  const app = new PIXI.Application({
+    width:           wrapper.clientWidth,
+    height:          wrapper.clientHeight,
+    transparent:     true,
+    backgroundAlpha: 0,
+    antialias:       true
+  });
+  app.view.style.background = 'none';
+  wrapper.appendChild(app.view);
+
+  // 4) approximate blade line in screen coords
+  const hilt = { x: app.screen.width * 0.6, y: app.screen.height * 0.5 };
+  const tip  = { x: app.screen.width * 0.3, y: app.screen.height * 0.8 };
+  const dx = tip.x - hilt.x, dy = tip.y - hilt.y;
+
+  // 5) create a pool of “flame” sprites
   const flames = [];
-  const count  = 50;
-  for (let i = 0; i < count; i++) {
-    const f = new PIXI.Graphics()
-      .beginFill(0xFF5500, 0.8)
-      .moveTo(0, 0)
-      .lineTo(-3, 10)
-      .lineTo(3, 10)
-      .closePath()
-      .endFill();
+  for (let i = 0; i < 30; i++) {
+    const f = new PIXI.Graphics();
 
-    // optional soft blur
-    f.filters = [ new PIXI.filters.BlurFilter(2) ];
+    // outer orange shape
+    f.beginFill(0xFF6600, 0.7);
+    f.drawPolygon([
+       0, -6,
+       4,  2,
+       2,  4,
+       0,  3,
+      -2,  4,
+      -4,  2
+    ]);
+    f.endFill();
 
-    // X anywhere across the sword image
-    f.x = imgRect.left + Math.random() * imgRect.width;
-    // Y at the bottom of the sword image + small random + tilt offset
-    const baseY = imgRect.top + imgRect.height;
-    f.y = baseY
-        + Math.random() * 10
-        + ( (f.x - midX) * slope );
+    // inner yellow flicker
+    f.beginFill(0xFFFF66, 0.8);
+    f.drawPolygon([
+       0, -4,
+       2,  1,
+       0,  3,
+      -2,  1
+    ]);
+    f.endFill();
 
-    // Velocity
-    f.vx = (Math.random() - 0.5) * 0.2;
-    f.vy = 1.5 + Math.random() * 1.5;
-
+    f.alpha = 0;
+    f.scale.set(0.6 + Math.random() * 0.8);
     app.stage.addChild(f);
     flames.push(f);
   }
 
-  // 5) Animate upward along that tilted axis
-  app.ticker.add((delta) => {
-    flames.forEach(f => {
-      f.x -= f.vx * delta;
-      f.y -= f.vy * delta;
-      f.alpha -= 0.005 * delta;
+  // 6) reset one particle onto the blade
+  function reset(f) {
+    const t = Math.random();
+    let x = hilt.x + dx * t + (Math.random() - 0.5) * 6;
+    let y = hilt.y + dy * t + (Math.random() - 0.5) * 6;
+    f.x = x;  f.y = y;
+    // drift straight up (screen coords), with a little wobble
+    f.vx = (Math.random() - 0.5) * 0.4;
+    f.vy = - (1 + Math.random() * 1.5);
+    f.alpha = 1;
+  }
 
-      // recycle when fully faded or off top
-      if (f.alpha <= 0 || f.y < imgRect.top - 20) {
-        f.x     = imgRect.left + Math.random() * imgRect.width;
-        f.y     = baseY
-                + Math.random() * 10
-                + ( (f.x - midX) * slope );
-        f.alpha = 1;
-        f.vx    = (Math.random() - 0.5) * 0.2;
-        f.vy    = 1.5 + Math.random() * 1.5;
-      }
+  // 7) initialise all
+  flames.forEach(reset);
+
+  // 8) animate
+  app.ticker.add(() => {
+    flames.forEach(f => {
+      f.x     += f.vx;
+      f.y     += f.vy;
+      f.alpha -= 0.02;
+      if (f.alpha <= 0 || f.y < -10) reset(f);
     });
   });
 
-  // 6) Clean up after 4s
+  // 9) cleanup after 4s
   setTimeout(() => {
     app.destroy(true, { children: true });
-    container.removeChild(app.view);
+    wrapper.remove();
   }, 5000);
 }
 
