@@ -703,6 +703,7 @@ function spawnShadowChainsPixi() {
 
 
 
+
 function spawnGymWeightsPixi() {
   console.log("🏋️ spawnGymWeightsPixi() fired");
   if (typeof PIXI === 'undefined') return;
