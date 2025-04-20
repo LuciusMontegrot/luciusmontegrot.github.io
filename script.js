@@ -57,13 +57,13 @@ document.addEventListener('DOMContentLoaded', () => {
             {
       title: "The Dwarven Priest of Fire",
       image: "images/firepriest.jpg",
-      description: "Some say Lucius is a Dwarven priest of fire who witnessed first-hand the the events his book narrates. Sometime, he can be found in a tavern in Steelforge and for a goblet of mead, he'll tell you a juicy secret he hasn't recorded in the scrolls...",
+      description: "Some say Lucius is a Dwarven priest of fire who witnessed first-hand the the events his book narrates. At times, he can be found in a tavern in Steelforge and if you offer him a goblet of mead, he may tell you a juicy secret he hasn't recorded in the scrolls...",
       effect: "fire-roar"
     },
             {
       title: "The Dark Elven Assassin",
       image: "images/assassin.jpg",
-      description: "It is rumoured that Lucius Montegrot did not write his book at all. Instead, he murdered the author in a dark alley in Umbra'El and stole the manuscript, then published it under his own name...",
+      description: "It is rumoured that Lucius Montegrot did not write his book at all. Instead, he murdered the author in a dark alley in Umbra'El and stole the manuscript, then published it under a pseudonym of his invention...",
       effect: "dagger-rain"
     },
                 {
