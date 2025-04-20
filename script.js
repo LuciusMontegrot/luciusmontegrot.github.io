@@ -782,6 +782,7 @@ function spawnAelianaSignaturePixi() {
   if (typeof PIXI === 'undefined') return;
 
   const container = document.getElementById('effect-layer');
+
   const app = new PIXI.Application({
     resizeTo: container,
     transparent: true,
@@ -793,7 +794,7 @@ function spawnAelianaSignaturePixi() {
   app.view.style.top = '0';
   app.view.style.left = '0';
 
-  // 1) Set up the text
+  // 1) Set up glowing text in centre of screen
   const text = new PIXI.Text("Lucius Montegrot", {
     fontFamily: "Playfair Display, serif",
     fontSize: 72,
@@ -802,7 +803,8 @@ function spawnAelianaSignaturePixi() {
     fontWeight: "bold",
     dropShadow: true,
     dropShadowColor: "#2d814f",
-    dropShadowBlur: 4,
+    dropShadowBlur: 6,
+    dropShadowDistance: 2,
   });
   text.anchor.set(0.5);
   text.x = app.screen.width / 2;
@@ -810,17 +812,17 @@ function spawnAelianaSignaturePixi() {
   text.alpha = 0;
   app.stage.addChild(text);
 
-  // 2) Add the quill sprite
+  // 2) Add the quill
   const quill = PIXI.Sprite.from('images/quill.png');
-  quill.anchor.set(0.1, 0.5);
+  quill.anchor.set(0.05, 0.5);  // align near tip
   quill.scale.set(0.3);
   quill.alpha = 0;
   app.stage.addChild(quill);
 
-  // 3) Prepare curve points (a graceful S-curve)
+  // 3) Create a smooth, elegant S‑curve across the screen
   const path = [];
-  const startX = app.screen.width / 2 - 250;
-  const endX = app.screen.width / 2 + 250;
+  const startX = app.screen.width * 0.15;
+  const endX = app.screen.width * 0.85;
   const midY = app.screen.height / 2;
   const amp = 40;
 
@@ -830,7 +832,7 @@ function spawnAelianaSignaturePixi() {
     path.push({ x, y });
   }
 
-  // 4) Animate everything
+  // 4) Animate the writing effect
   let frame = 0;
   const totalFrames = 160;
 
@@ -845,7 +847,7 @@ function spawnAelianaSignaturePixi() {
     if (pos) {
       quill.x = pos.x;
       quill.y = pos.y;
-      quill.rotation = Math.sin(progress * Math.PI * 2) * 0.3;
+      quill.rotation = Math.sin(progress * Math.PI * 2) * 0.2;
       quill.alpha = 1;
     }
 
@@ -859,6 +861,7 @@ function spawnAelianaSignaturePixi() {
     container.removeChild(app.view);
   }, 5500);
 }
+
 
 
 
