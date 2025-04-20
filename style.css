@@ -3,7 +3,7 @@
 body {
   margin: 0;
   font-family: 'Playfair Display', serif;
-  background: url('images/parchment-bg.jpg') repeat;
+  background: url('images/parchment-bg.jpg') repeat center center fixed;
   color: #2c1d16;
   overflow-x: hidden;
 }
