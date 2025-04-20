@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       title: "Definitely Not a Wizard",
       image: "images/wizard.jpg",
-      description: "That beard? Fashion choice. The staff? Walking aid. The glowing runes on his sleeves? Laundry accident. The mysterious door in his cellar that hums and sometimes screams in Abyssal? Nope. Nothing to see here.",
+      description: "Although there are some who say Lucius is a wizard, he gracefully deflects the question without flat out denying it. That beard? Fashion choice. The staff? Walking aid. The glowing runes on his sleeves? Laundry accident. The mysterious door in his cellar that hums and sometimes screams in Abyssal? Nope. Nothing to see here.",
       effect: "wizard-smoke"
     },
     {
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       title: "The Disgruntled Dungeon Master",
       image: "images/dungeonmaster3.jpg",
-      description: "Lucius Montegrot is what happens when a Dungeon Master spends thirty years building a world so intricate that the gods themselves are asking for the rulebook. Tired of players licking dungeon walls and seducing mimics, he turned his notes into novels. He still wakes up at night muttering, 'You can't polymorph into a chair, Varius!'",
+      description: "It is rumoured that Lucius Montegrot is what happens when a Dungeon Master spends thirty years building a world so intricate that the gods themselves are asking for the rulebook. Tired of players licking dungeon walls and seducing mimics, he turned his notes into novels. He still wakes up at night muttering, 'You can't polymorph into a chair, Varius!'",
       effect: "dm-dice"
     },
     {
