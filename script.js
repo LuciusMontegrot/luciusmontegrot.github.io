@@ -1,3 +1,25 @@
+// At top of script.js or inside DOMContentLoaded
+if (!sessionStorage.getItem('rerollCount')) {
+  sessionStorage.setItem('rerollCount', '0');
+}
+if (!sessionStorage.getItem('redirectedToAmazon')) {
+  sessionStorage.setItem('redirectedToAmazon', 'false');
+}
+
+function maybeRedirectToAmazon() {
+  const count = parseInt(sessionStorage.getItem('rerollCount')) || 0;
+  const alreadyRedirected = sessionStorage.getItem('redirectedToAmazon') === 'true';
+   // Only between flips 7–11 and only once
+  if (count >= 7 && count <= 11 && !alreadyRedirected) {
+    const chance = Math.random();
+    if (chance < 0.3) { // 30% chance within that window
+      sessionStorage.setItem('redirectedToAmazon', 'true');
+      window.open('https://www.amazon.com/dp/B0D2JY4SZD', '_blank');
+      console.log('Something...strange stirs on the seventh reroll...');
+    }
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const personas = [
     {
@@ -1126,6 +1148,11 @@ function spawnHackerGlitch() {
 }
 
 function showRandomPersona () {
+  let rerollCount = parseInt(sessionStorage.getItem('rerollCount')) || 0;
+  rerollCount++;
+  sessionStorage.setItem('rerollCount', rerollCount.toString());
+  maybeRedirectToAmazon(); // 🧙 Trigger the mystery!
+
   if (isAnimating) return;
   isAnimating = true;
 
