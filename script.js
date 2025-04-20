@@ -592,8 +592,9 @@ function spawnSeaElfCoinRainPixi() {
     coin.scale.set(0.08 + Math.random() * 0.1);
     coin.x = Math.random() * app.screen.width;
     coin.y = -Math.random() * app.screen.height;
-    coin.vy = 1 + Math.random() * 2;
-    coin.vr = (Math.random() - 0.5) * 0.1;
+   coin.vy = 6 + Math.random() * 6;       // Fast fall, like coins flung into the air
+coin.vr = (Math.random() - 0.5) * 0.3; // Quicker spin
+coin.vx = (Math.random() - 0.5) * 1.5;
     coin.alpha = 0.6 + Math.random() * 0.4;
     coins.push(coin);
     app.stage.addChild(coin);
@@ -601,8 +602,9 @@ function spawnSeaElfCoinRainPixi() {
 
   app.ticker.add(() => {
     for (const coin of coins) {
-      coin.y += coin.vy;
-      coin.rotation += coin.vr;
+    coin.x += coin.vx;
+coin.y += coin.vy;
+coin.rotation += coin.vr;
 
       if (coin.y > app.screen.height + 50) {
         coin.y = -50;
