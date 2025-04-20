@@ -376,7 +376,7 @@ function spawnMistElfFlamingSwordPixi() {
   const card = document.getElementById('persona-display');
   card.style.position = 'relative';
 
-  // 2) wrapper DIV behind the card content
+  // 2) wrapper behind content
   const wrapper = document.createElement('div');
   Object.assign(wrapper.style, {
     position:      'absolute',
@@ -387,7 +387,7 @@ function spawnMistElfFlamingSwordPixi() {
   });
   card.appendChild(wrapper);
 
-  // 3) Pixi canvas sized to that wrapper
+  // 3) Pixi canvas
   const app = new PIXI.Application({
     width:           wrapper.clientWidth,
     height:          wrapper.clientHeight,
@@ -398,17 +398,18 @@ function spawnMistElfFlamingSwordPixi() {
   app.view.style.background = 'none';
   wrapper.appendChild(app.view);
 
-  // 4) define your sword’s hilt→tip in PIXI coords (percentages of card)
+  // 4) sword line
   const hilt = { x: app.screen.width * 0.6, y: app.screen.height * 0.5 };
   const tip  = { x: app.screen.width * 0.3, y: app.screen.height * 0.8 };
   const dx = tip.x - hilt.x, dy = tip.y - hilt.y;
 
-  // 5) build a little pool of 30 flames
+  // 5) spawn a larger pool of flames with random start‐alpha & fade rates
   const flames = [];
-  for (let i = 0; i < 30; i++) {
+  const COUNT = 80;
+  for (let i = 0; i < COUNT; i++) {
     const f = new PIXI.Graphics();
 
-    // outer orange
+    // outer orange shape
     f.beginFill(0xFF6600, 0.7);
     f.drawPolygon([
        0, -6,
@@ -420,7 +421,7 @@ function spawnMistElfFlamingSwordPixi() {
     ]);
     f.endFill();
 
-    // inner yellow
+    // inner yellow flicker
     f.beginFill(0xFFFF66, 0.8);
     f.drawPolygon([
        0, -4,
@@ -430,47 +431,47 @@ function spawnMistElfFlamingSwordPixi() {
     ]);
     f.endFill();
 
-    f.alpha = 0;
-    f.scale.set(0.6 + Math.random() * 0.8);
-
-    // pick a random t along [0..1] of the blade line
+    // random initial placement along blade
     const t0 = Math.random();
     f.x = hilt.x + dx * t0;
     f.y = hilt.y + dy * t0;
 
-    // give it a slight sideways drift + upward speed
+    // random drift & fade
     f.vx = (Math.random() - 0.5) * 0.3;
     f.vy = 1 + Math.random() * 1.5;
+    f.fadeRate = 0.005 + Math.random() * 0.02;        // each flame fades at its own speed
+    f.alpha = 0.3 + Math.random() * 0.7;              // random starting opacity
 
     app.stage.addChild(f);
     flames.push(f);
   }
 
-  // 6) ticker: move each flame, fade it, then respawn along the blade
+  // 6) animate
   app.ticker.add((delta) => {
     for (const f of flames) {
       f.x += f.vx * delta;
       f.y -= f.vy * delta;
-      f.alpha = Math.max(0, f.alpha - 0.01 * delta);
-
+      f.alpha = Math.max(0, f.alpha - f.fadeRate * delta);
       if (f.alpha <= 0) {
-        // respawn
+        // respawn at a new random spot on the blade
         const t0 = Math.random();
         f.x = hilt.x + dx * t0;
         f.y = hilt.y + dy * t0;
         f.vx = (Math.random() - 0.5) * 0.3;
         f.vy = 1 + Math.random() * 1.5;
-        f.alpha = 1;
+        f.fadeRate = 0.005 + Math.random() * 0.02;
+        f.alpha = 0.3 + Math.random() * 0.7;
       }
     }
   });
 
-  // 7) clean up after 4s
+  // 7) cleanup
   setTimeout(() => {
     app.destroy(true, { children: true });
     wrapper.remove();
   }, 4000);
 }
+
 
 
 
