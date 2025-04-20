@@ -492,11 +492,10 @@ function spawnFireRoarPixi() {
 
   // 2) full‑screen, truly transparent Pixi app
   const app = new PIXI.Application({
-    resizeTo:       container,
-    backgroundColor: 0x000000,
-    backgroundAlpha: 0,
-    transparent:    true,
-    antialias:      true
+    resizeTo:        container,
+    transparent:     true,
+    antialias:       true,
+    backgroundAlpha: 0
   });
   Object.assign(app.view.style, {
     position:      'absolute',
@@ -511,7 +510,7 @@ function spawnFireRoarPixi() {
   const W = app.screen.width;
   const H = app.screen.height;
 
-  // 4) create 250 “flame” particles
+  // 4) create 250 “flame” particles anywhere on screen
   const flames = [];
   for (let i = 0; i < 250; i++) {
     const g = new PIXI.Graphics();
@@ -530,43 +529,43 @@ function spawnFireRoarPixi() {
     g.bezierCurveTo(-4, -14, -2, -8,   0,   0);
     g.endFill();
 
-    // slight random rotation & scale
-    g.rotation = (Math.random() - 0.5) * 0.6; // ±∼35°
+    // random rotation & scale
+    g.rotation = (Math.random() - 0.5) * 0.6;
     const s = 0.5 + Math.random() * 1.2;
     g.scale.set(s, s * (0.8 + Math.random() * 0.4));
 
-    // random start anywhere on screen
+    // **spawn anywhere**  
     g.x = Math.random() * W;
-    g.y = H + Math.random() * 50;
+    g.y = Math.random() * H;
 
-    // give each particle its own drift/fade
-    g.vx       = (Math.random() - 0.5) * 0.4;    // sideways
-    g.vy       = -(0.5 + Math.random() * 1.5);   // upward
-    g.fadeRate = 0.005 + Math.random() * 0.015;  // fade speed
-    g.alpha    = 0.4 + Math.random() * 0.6;      // start opacity
+    // individual drift/fade
+    g.vx       = (Math.random() - 0.5) * 0.4;
+    g.vy       = -(0.5 + Math.random() * 1.5);
+    g.fadeRate = 0.005 + Math.random() * 0.015;
+    g.alpha    = 0.4 + Math.random() * 0.6;
 
-    // soft glow
+    // glow
     g.filters = [ new PIXI.filters.BlurFilter(1.5) ];
 
     app.stage.addChild(g);
     flames.push(g);
   }
 
-  // 5) animate
+  // 5) animate: float up from wherever they are, fade, then respawn anywhere
   app.ticker.add((delta) => {
     for (const f of flames) {
       f.x     += f.vx * delta;
       f.y     += f.vy * delta;
       f.alpha -= f.fadeRate * delta;
 
-      // recycle when invisible or off‑top
+      // when gone or off top, respawn randomly
       if (f.alpha <= 0 || f.y < -30) {
-        f.x       = Math.random() * W;
-        f.y       = H + Math.random() * 30;
-        f.vx      = (Math.random() - 0.5) * 0.4;
-        f.vy      = -(0.5 + Math.random() * 1.5);
-        f.fadeRate= 0.005 + Math.random() * 0.015;
-        f.alpha   = 0.4 + Math.random() * 0.6;
+        f.x = Math.random() * W;
+        f.y = Math.random() * H;
+        f.vx       = (Math.random() - 0.5) * 0.4;
+        f.vy       = -(0.5 + Math.random() * 1.5);
+        f.fadeRate = 0.005 + Math.random() * 0.015;
+        f.alpha    = 0.4 + Math.random() * 0.6;
       }
     }
   });
