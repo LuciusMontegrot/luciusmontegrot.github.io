@@ -323,37 +323,59 @@ wisps.push(g);
  * Ink‑blotches effect for The Humble Historian
  */
 function spawnInkBlotches() {
-  const layer = document.getElementById('effect-layer');
+  const svgNS = "http://www.w3.org/2000/svg";
+  const layer = document.getElementById("effect-layer");
+  // create one SVG container per batch
+  const svg = document.createElementNS(svgNS, "svg");
+  svg.setAttribute("width", "100%");
+  svg.setAttribute("height", "100%");
+  svg.style.position = "absolute";
+  svg.style.top = "0";
+  svg.style.left = "0";
+  svg.style.pointerEvents = "none";
+  layer.appendChild(svg);
 
-  for (let i = 0; i < 25; i++) {
-    const blot = document.createElement('div');
-    const size = 60 + Math.random() * 100;
+  const numBlots = 5 + Math.floor(Math.random() * 3);  // 5–7 stains
+  for (let i = 0; i < numBlots; i++) {
+    // randomized center somewhere near the card
+    const cx = window.innerWidth * (0.3 + Math.random() * 0.4);
+    const cy = window.innerHeight * (0.3 + Math.random() * 0.4);
+    const radius = 30 + Math.random() * 50;             // 30–80px
+    const points = 8 + Math.floor(Math.random() * 5);   // 8–12 points
 
-    Object.assign(blot.style, {
-      position:        'absolute',
-      width:           `${size}px`,
-      height:          `${size}px`,
-      left:            `${Math.random() * (window.innerWidth - size)}px`,
-      top:             `${Math.random() * (window.innerHeight - size)}px`,
-      background:      'radial-gradient(circle at center, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 70%)',
-      transform:       `rotate(${Math.random() * 360}deg)`,
-      pointerEvents:   'none',
-      opacity:         '0',
-      transition:      'opacity 0.4s ease-out'
-    });
+    // build a jagged circle path
+    let d = "";
+    for (let j = 0; j < points; j++) {
+      const angle = (j / points) * Math.PI * 2;
+      // jitter radius ±30%
+      const r = radius * (0.7 + Math.random() * 0.6);
+      const x = cx + Math.cos(angle) * r;
+      const y = cy + Math.sin(angle) * r;
+      d += (j === 0 ? "M" : "L") + x.toFixed(1) + " " + y.toFixed(1) + " ";
+    }
+    d += "Z";
 
-    layer.appendChild(blot);
+    const path = document.createElementNS(svgNS, "path");
+    path.setAttribute("d", d);
+    path.setAttribute("fill", "#111");                   // deep ink color
+    path.setAttribute("opacity", (0.4 + Math.random() * 0.3).toFixed(2)); // 0.4–0.7
+    svg.appendChild(path);
 
-    // fade in
-    requestAnimationFrame(() => blot.style.opacity = '1');
-
-    // fade out & cleanup
-    setTimeout(() => {
-      blot.style.opacity = '0';
-      setTimeout(() => layer.removeChild(blot), 500);
-    }, 1800 + Math.random() * 800);
+    // optional: have it drip or fade out
+    const fade = document.createElementNS(svgNS, "animate");
+    fade.setAttribute("attributeName", "opacity");
+    fade.setAttribute("from", path.getAttribute("opacity"));
+    fade.setAttribute("to", "0");
+    fade.setAttribute("dur", "3s");
+    fade.setAttribute("begin", `${Math.random() * 1}s`);
+    fade.setAttribute("fill", "freeze");
+    path.appendChild(fade);
   }
+
+  // remove the entire SVG after 4s
+  setTimeout(() => svg.remove(), 4000);
 }
+
 
 
 
