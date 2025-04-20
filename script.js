@@ -877,7 +877,7 @@ const personaWeights = [
   1, // hacker
   1, // gym-forged ghostwriter
   0.05, // 🧠🔥 GYM-FORGED WRITER (RARE)
-  1, // fire priest
+  1777, // fire priest
   1, // assassin
   1, // necromancer
   1,  // paladin
