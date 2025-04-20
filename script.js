@@ -494,77 +494,105 @@ function spawnDaggerRain() {
   }, 4000);
 }
 
-function spawnPaladinSmitePixi() {
-  if (typeof PIXI === 'undefined') return;  // guard
-
+function spawnPaladinSmiteBabylon() {
+  if (typeof BABYLON === 'undefined') return;
   const card = document.getElementById('persona-display');
   card.style.position = 'relative';
 
-  // 1) wrapper over the card (behind the card's content)
+  // 1) Overlay wrapper
   const wrapper = document.createElement('div');
   Object.assign(wrapper.style, {
     position:      'absolute',
     top:           '0',
-    right:         '0',
-    bottom:        '0',
     left:          '0',
+    width:         '100%',
+    height:        '100%',
     pointerEvents: 'none',
-    zIndex:        '1'
+    zIndex:        '1'     // sits above the card background
   });
   card.appendChild(wrapper);
 
-  // 2) Pixi app sized to the wrapper
-  const app = new PIXI.Application({
-    width:          wrapper.clientWidth,
-    height:         wrapper.clientHeight,
-    transparent:    true,
-    antialias:      true,
-    backgroundAlpha: 0
+  // 2) Babylon canvas
+  const canvas = document.createElement('canvas');
+  Object.assign(canvas.style, {
+    width:  '100%',
+    height: '100%',
+    display:'block'
   });
-  wrapper.appendChild(app.view);
-  app.view.style.backgroundColor = 'transparent';
+  wrapper.appendChild(canvas);
 
-  // 3) draw the rope
-  const cx      = app.screen.width / 2;
-  const ropeLen = app.screen.height * 0.4;
-  const rope    = new PIXI.Graphics()
-    .lineStyle(4, 0xAAAAAA, 1)
-    .moveTo(cx, 0)
-    .lineTo(cx, ropeLen);
-  app.stage.addChild(rope);
+  // 3) Engine & scene
+  const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+  const scene  = new BABYLON.Scene(engine);
 
-  // 4) draw the loop as an ellipse
-  const loopRadiusX = app.screen.width * 0.08;
-  const loopRadiusY = ropeLen * 0.12;
-  const loop = new PIXI.Graphics()
-    .lineStyle(4, 0x888888, 1)
-    .drawEllipse(0, 0, loopRadiusX, loopRadiusY);
-  // position its center at the bottom of the rope
-  loop.x = cx;
-  loop.y = ropeLen + loopRadiusY;
-  app.stage.addChild(loop);
+  // 4) Orthographic camera so no perspective distortion
+  const cam     = new BABYLON.FreeCamera("uiCam", new BABYLON.Vector3(0,0,-10), scene);
+  cam.mode      = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+  const w       = engine.getRenderWidth()  / 2;
+  const h       = engine.getRenderHeight() / 2;
+  cam.orthoLeft   = -w;
+  cam.orthoRight  =  w;
+  cam.orthoTop    =  h;
+  cam.orthoBottom = -h;
+  cam.setTarget(BABYLON.Vector3.Zero());
 
-  // 5) animate tighten (0.5s) → fade (0.5s) → cleanup
-  let frame = 0;
-  app.ticker.add((delta) => {
-    frame += delta;
-    if (frame <= 30) {
-      // 0–30 frames: tighten loop by scaling Y
-      const p = frame / 30;
-      loop.scale.y = 1 - 0.5 * p;
-      loop.y       = ropeLen + loopRadiusY * (1 + 0.5 * p);
-    } else if (frame <= 60) {
-      // 30–60 frames: fade out
-      const a = 1 - (frame - 30) / 30;
-      rope.alpha = a;
-      loop.alpha = a;
+  // 5) Light (just so materials render nicely)
+  new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0,1,0), scene);
+
+  // 6) Build the rope (a thin cylinder) and the loop (a torus)
+  const ropeLen   = h * 0.8;      // 80% of card height
+  const ropeThick = w * 0.02;     //  2% of card width
+
+  const rope = BABYLON.MeshBuilder.CreateCylinder("rope", {
+    height:   ropeLen,
+    diameter: ropeThick
+  }, scene);
+  const ropeMat = new BABYLON.StandardMaterial("ropeMat", scene);
+  ropeMat.diffuseColor = new BABYLON.Color3(0.67, 0.54, 0.27); // hemp‑like tan
+  rope.material = ropeMat;
+  // Position so top is at y=0, bottom at y=-ropeLen
+  rope.position.y = -ropeLen/2;
+
+  const loopRadiusMajor = w * 0.15;     // 30% card width diameter
+  const loopRadiusMinor = ropeThick/2;  // matches rope thickness
+
+  const loop = BABYLON.MeshBuilder.CreateTorus("loop", {
+    diameter:  loopRadiusMajor * 2,
+    thickness: loopRadiusMinor * 2,
+    tessellation: 64
+  }, scene);
+  const loopMat = new BABYLON.StandardMaterial("loopMat", scene);
+  loopMat.diffuseColor = new BABYLON.Color3(0.53, 0.42, 0.20);
+  loop.material = loopMat;
+  // orient ring flat (XZ plane) and sit its top at the bottom of the rope
+  loop.rotation.x = Math.PI/2;
+  loop.position.y = -ropeLen - loopRadiusMinor;
+
+  // 7) Animate: tighten over 0.5s, then fade over next 0.5s
+  let tick = 0;
+  scene.registerBeforeRender(() => {
+    const dt = engine.getDeltaTime() / 16.66; // ~frames at 60fps
+    tick += dt;
+
+    if (tick <= 30) {
+      // 0 → 30: tighten loop diameter by 50%
+      const p = tick / 30;
+      loop.scaling.x = loop.scaling.z = 1 - 0.5 * p;
+    } else if (tick <= 60) {
+      // 30 → 60: fade out both meshes
+      const p = (tick - 30) / 30;
+      rope.material.alpha = 1 - p;
+      loop.material.alpha = 1 - p;
     } else {
-      // done
-      app.destroy(true, { children: true });
+      // cleanup
+      engine.stopRenderLoop();
+      engine.dispose();
       wrapper.remove();
     }
   });
+  engine.runRenderLoop(() => scene.render());
 }
+
 
 
 
@@ -804,7 +832,7 @@ if (persona.title === "The Grand Druidess") {
       case 'dagger-rain': spawnDaggerRain(); break;
       case 'fire-roar': spawnFireRoar(); break;
       case 'necromancer-wisp': spawnNecromancerWispPixi(); break;
-      case 'paladin-smite': spawnPaladinSmitePixi(); break;
+      case 'paladin-smite': spawnPaladinSmiteBabylon(); break;
 
 
 
