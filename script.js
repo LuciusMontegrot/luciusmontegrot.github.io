@@ -500,12 +500,10 @@ function spawnDaggerRain() {
 function spawnShadowChainsPixi() {
   if (typeof PIXI === 'undefined') return;
 
-  // 1) figure out where your card sits
-  const cardEl = document.getElementById('persona-display');
-  const rect   = cardEl.getBoundingClientRect();
-  const midY   = rect.top + rect.height / 2;
-  const leftX  = rect.left + 20;
-  const rightX = rect.right - 20;
+  // 1) compute chain line
+  const midY = window.innerHeight / 2;                // vertical center
+  const linkWidth = 48 * 0.5;                         // your sprite is 48px wide, scaled 0.5
+  const totalLinks = Math.ceil(window.innerWidth / linkWidth) + 2;
 
   // 2) full‑screen transparent wrapper
   const wrapper = document.createElement('div');
@@ -517,48 +515,52 @@ function spawnShadowChainsPixi() {
     height:        '100vh',
     pointerEvents: 'none',
     zIndex:        '9998',
-    background:    'transparent'      // make sure wrapper is transparent
+    background:    'transparent'
   });
   document.body.appendChild(wrapper);
 
-  // 3) Pixi app with explicit transparency
+  // 3) Pixi app with transparent bg
   const app = new PIXI.Application({
     resizeTo:       wrapper,
     transparent:    true,
-    backgroundAlpha: 0,                // critical: fully transparent
+    backgroundAlpha: 0,
     antialias:      true
   });
-  // ensure canvas itself is transparent
   app.view.style.background = 'transparent';
   wrapper.appendChild(app.view);
 
-  // 4) create two chain sprites
+  // 4) place each link along a slight sag curve
   const tex = PIXI.Texture.from('images/chain-link.png');
-  [
-    { x0: -50,       x1: leftX  },
-    { x0: window.innerWidth+50, x1: rightX }
-  ].forEach(({x0, x1}) => {
+  for (let i = 0; i < totalLinks; i++) {
+    const t = i / (totalLinks - 1);
+    // x from just off left (‑linkWidth) to just off right (+linkWidth)
+    const x = -linkWidth + t * (window.innerWidth + linkWidth * 2);
+    // sag: a parabola peaking downward in centre
+    const sag = 40 * (1 - Math.pow(2 * (t - 0.5), 2));
+    const y   = midY + sag;
+
     const spr = new PIXI.Sprite(tex);
     spr.anchor.set(0.5);
-    spr.x = x0;
-    spr.y = midY;
-    spr.alpha = 0;
+    spr.x = x;
+    spr.y = y;
     spr.scale.set(0.5);
     app.stage.addChild(spr);
+  }
 
-    // slide in + fade in
-    app.ticker.add(() => {
-      spr.x += (x1 - spr.x) * 0.05;
-      if (spr.alpha < 1) spr.alpha = Math.min(1, spr.alpha + 0.02);
-    });
+  // 5) fade in the whole chain
+  wrapper.style.opacity = '0';
+  wrapper.animate([{ opacity: 0 }, { opacity: 1 }], {
+    duration: 800,
+    fill:     'forwards'
   });
 
-  // 5) tear it all down after 3s
+  // 6) tear it down after 4s
   setTimeout(() => {
     app.destroy(true, { children: true });
     wrapper.remove();
   }, 4000);
 }
+
 
 
 
