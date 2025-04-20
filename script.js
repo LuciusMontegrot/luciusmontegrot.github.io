@@ -368,6 +368,69 @@ function spawnInkBlotches() {
   }
 }
 
+function spawnMistElfFlamingSwordPixi() {
+  if (typeof PIXI === 'undefined') return;
+
+  // 1) pin behind the card
+  const card = document.getElementById('persona-display');
+  card.style.position = 'relative';
+  const wrapper = document.createElement('div');
+  Object.assign(wrapper.style, {
+    position:      'absolute',
+    inset:         '0',
+    pointerEvents: 'none',
+    zIndex:        '-1'
+  });
+  card.appendChild(wrapper);
+
+  // 2) Pixi app sized to the card
+  const app = new PIXI.Application({
+    width:       wrapper.clientWidth,
+    height:      wrapper.clientHeight,
+    transparent: true,
+    antialias:   true
+  });
+  wrapper.appendChild(app.view);
+
+  // 3) flame particles around sword
+  const cx = app.screen.width  * 0.5;    // sword roughly center‑x
+  const cy = app.screen.height * 0.6;    // a bit below center‑y
+  const particles = [];
+  for (let i = 0; i < 25; i++) {
+    const p = new PIXI.Graphics()
+      .beginFill(0xFFAA00, 0.6)
+      .drawCircle(0, 0, 4 + Math.random()*4)
+      .endFill();
+    reset(p);
+    app.stage.addChild(p);
+    particles.push(p);
+  }
+
+  function reset(p) {
+    p.x     = cx + (Math.random()-0.5)*20;
+    p.y     = cy + (Math.random()-0.5)*10;
+    p.vx    = (Math.random()-0.5)*0.5;
+    p.vy    = - (1 + Math.random()*1.5);
+    p.alpha = 1;
+    p.scale.set(0.5 + Math.random()*0.8);
+  }
+
+  // 4) animate: flicker & rise
+  app.ticker.add(() => {
+    particles.forEach(p => {
+      p.x     += p.vx;
+      p.y     += p.vy;
+      p.alpha -= 0.02;
+      if (p.alpha <= 0 || p.y < cy - 80) reset(p);
+    });
+  });
+
+  // 5) cleanup
+  setTimeout(() => {
+    app.destroy(true, { children: true });
+    wrapper.remove();
+  }, 4000);
+}
 
 
 
@@ -803,6 +866,7 @@ if (persona.title === "The Grand Druidess") {
       case 'wizard-smoke': spawnWizardEffect(); break;
       case 'hacker-glitch': spawnHackerGlitch(); break;
       case 'dagger-rain': spawnDaggerRain(); break;
+      case 'mistelf-glow': spawnMistElfFlamingSwordPixi(); break;
       case 'fire-roar': spawnFireRoarPixi(); break;
       case 'necromancer-wisp': spawnNecromancerWispPixi(); break;
       case 'paladin-smite':
