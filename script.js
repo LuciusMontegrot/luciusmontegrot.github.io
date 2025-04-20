@@ -500,11 +500,12 @@ function spawnDaggerRain() {
 function spawnShadowChainsPixi() {
   if (typeof PIXI === 'undefined') return;
 
-  // 1) Grab the card’s on‑screen rectangle
+  // 1) Card midpoint
   const cardEl = document.getElementById('persona-display');
   const rect   = cardEl.getBoundingClientRect();
-  const midX   = rect.left + rect.width  / 2;
-  const midY   = rect.top  + rect.height / 2;
+  const midY   = rect.top + rect.height/2;
+  const leftX  = rect.left;
+  const rightX = rect.right;
 
   // 2) Full‑screen wrapper
   const wrapper = document.createElement('div');
@@ -519,7 +520,7 @@ function spawnShadowChainsPixi() {
   });
   document.body.appendChild(wrapper);
 
-  // 3) Pixi App
+  // 3) Pixi app
   const app = new PIXI.Application({
     resizeTo:        wrapper,
     transparent:     true,
@@ -538,43 +539,25 @@ function spawnShadowChainsPixi() {
     return 3*u*u*(p1-p0) + 6*u*t*(p2-p1) + 3*t*t*(p3-p2);
   }
 
-  // 4) Define four chains: each has a start (off‑screen) 
-  //    and an end (midpoint of a card edge)
-  const starts = [
-    { // from left
-      start: { x: -50,              y: midY },
-      end:   { x: rect.left,        y: midY }
-    },
-    { // from right
-      start: { x: window.innerWidth+50, y: midY },
-      end:   { x: rect.right,       y: midY }
-    },
-    { // from top
-      start: { x: midX,             y: -50 },
-      end:   { x: midX,             y: rect.top }
-    },
-    { // from bottom
-      start: { x: midX,             y: window.innerHeight+50 },
-      end:   { x: midX,             y: rect.bottom }
-    }
-  ];
+  const texture   = PIXI.Texture.from('images/chain-link.png');
+  const totalLinks = 12;     // fewer links
+  const travel     = 80;     // frames each link travels
+  const delayMax   = 160;    // max stagger
 
-  const texture = PIXI.Texture.from('images/chain-link.png');
-  const totalLinks = 24;
-
-  // build each chain’s control points + sprite array
-  const chains = starts.map(cfg => {
+  // 4) Two chains: from left edge and right edge toward card sides
+  const chains = [
+    { start:{ x: -50, y: midY }, end:{ x: leftX,  y: midY } },
+    { start:{ x: app.screen.width+50, y: midY }, end:{ x: rightX, y: midY } }
+  ].map(cfg => {
     const { start, end } = cfg;
-    // control points 30% & 60% along the way, jittered
     const c1 = {
-      x: start.x + (end.x - start.x)*0.3 + (Math.random()-0.5)*100,
-      y: start.y + (end.y - start.y)*0.3 + (Math.random()-0.5)*100
+      x: start.x + (end.x - start.x)*0.3 + (Math.random()-0.5)*60,
+      y: start.y + (end.y - start.y)*0.3 + (Math.random()-0.5)*60
     };
     const c2 = {
-      x: start.x + (end.x - start.x)*0.6 + (Math.random()-0.5)*100,
-      y: start.y + (end.y - start.y)*0.6 + (Math.random()-0.5)*100
+      x: start.x + (end.x - start.x)*0.6 + (Math.random()-0.5)*60,
+      y: start.y + (end.y - start.y)*0.6 + (Math.random()-0.5)*60
     };
-    // make the sprites
     const links = [];
     for (let i = 0; i < totalLinks; i++) {
       const spr = new PIXI.Sprite(texture);
@@ -592,34 +575,24 @@ function spawnShadowChainsPixi() {
     frame++;
     chains.forEach(chain => {
       chain.links.forEach(({ sprite, offset }) => {
-        // each link waits until its turn (offset*80 frames) then moves 40 frames total
-        const enter = offset * 80;
-        const p    = (frame - enter) / 40;
-        if (p > 0 && p <= 2) {
-          // path t from 0→1
-          const tPath = Math.min(1, p);
-          // position on curve
-          sprite.x = cubic(chain.start.x, chain.c1.x, chain.c2.x, chain.end.x, tPath);
-          sprite.y = cubic(chain.start.y, chain.c1.y, chain.c2.y, chain.end.y, tPath);
-          // rotate to tangent
-          const dx = cubicDeriv(chain.start.x, chain.c1.x, chain.c2.x, chain.end.x, tPath);
-          const dy = cubicDeriv(chain.start.y, chain.c1.y, chain.c2.y, chain.end.y, tPath);
-          sprite.rotation = Math.atan2(dy, dx);
-          // fade in/out
-          sprite.alpha = p <= 1 ? p : (2 - p);
-        } else {
-          sprite.alpha = 0;
-        }
-      });
-    });
+        const enter  = offset * delayMax;      // stagger across 160 frames
+        const tNorm  = (frame - enter) / travel;
+        if (tNorm > 0 && tNorm <= 2) {
+          const tPath = Math.min(1, tNorm);
+          // position
+          sprite.x = cubic(
+            chain.start.x, chain.c1.x, chain.c2.x, chain.end.x, tPath
+          );
+          sprite.y = cubic(
+            chain.start.y, chain.c1.y, chain.c2.y, chain.end.y, tPath
+          );
+          // rotation
+          const dx = cubicDeriv(
+            chain.start.x, chain.c1.x, chain.c2.x, chain.end.x, tPath
+          );
+          const dy = cubicDeriv(
+            chain.start.y, chain.c1.y, chain.c2.y, chain
 
-    // cleanup after ~2.5s
-    if (frame > 200) {
-      app.destroy(true, { children: true });
-      wrapper.remove();
-    }
-  });
-}
 
 
 
