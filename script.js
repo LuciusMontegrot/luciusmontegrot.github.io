@@ -790,10 +790,9 @@ function spawnAelianaSignaturePixi() {
   app.view.style.top = '0';
   app.view.style.left = '0';
 
-  // 1) Create an HTML element for animated text
 // 1) Create an HTML element for animated text
 const signature = document.createElement('div');
-signature.style.fontSize = '64px';
+signature.style.position = 'fixed'; // This is required for full-screen positioning
 signature.style.top = '50%';
 signature.style.left = '50%';
 signature.style.transform = 'translate(-50%, -50%)';
@@ -801,18 +800,20 @@ signature.style.fontSize = '64px';
 signature.style.fontFamily = '"Parisienne", cursive';
 signature.style.color = '#cc2222';
 signature.style.textShadow = '0 0 6px #800000';
-signature.style.textShadow = '0 0 6px #2d814f';
 signature.style.zIndex = '99999';
 signature.style.pointerEvents = 'none';
 signature.style.opacity = '0';
 signature.textContent = '';
-document.body.appendChild(signature); // ⬅️ attach to the body instead
+document.body.appendChild(signature);
+
 
  const name = 'Lucius Montegrot';
 let i = 0;
+signature.style.transition = 'opacity 0.5s ease';
+setTimeout(() => { signature.style.opacity = '1'; }, 100);
+
 const interval = setInterval(() => {
   signature.textContent += name[i];
-  signature.style.opacity = '1';
   i++;
   if (i >= name.length) {
     clearInterval(interval);
@@ -824,6 +825,7 @@ const interval = setInterval(() => {
     }, 1800);
   }
 }, 100);
+
 
   // 2) Add the quill
   const quill = PIXI.Sprite.from('images/quill.png');
