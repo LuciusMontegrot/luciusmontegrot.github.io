@@ -1146,44 +1146,42 @@ function spawnHackerGlitch() {
     container.remove();
   }, 4000);
 }
+function weightedRandomIndex(weights) {
+  const total = weights.reduce((a, b) => a + b, 0);
+  let r = Math.random() * total;
+  for (let i = 0; i < weights.length; i++) {
+    r -= weights[i];
+    if (r <= 0) return i;
+  }
+  return weights.length - 1;
+}
 
 function showRandomPersona () {
+  if (isAnimating) return;
+  isAnimating = true;
+
   let rerollCount = parseInt(sessionStorage.getItem('rerollCount')) || 0;
   rerollCount++;
   sessionStorage.setItem('rerollCount', rerollCount.toString());
   maybeRedirectToAmazon(); // 🧙 Trigger the mystery!
 
-  if (isAnimating) return;
-  isAnimating = true;
-
   try {
-    function weightedRandomIndex(weights) {
-      const total = weights.reduce((a, b) => a + b, 0);
-      let r = Math.random() * total;
-      for (let i = 0; i < weights.length; i++) {
-        r -= weights[i];
-        if (r <= 0) return i;
-      }
-      return weights.length - 1;
-    }
-
     const personaWeights = [
-  1,      // historian
-  1,      // wizard
-  1,      // vampire
-  1,      // mist elf
-  1,      // dungeon master
-  1,      // sea elf
-  1,      // hacker
-  1,      // gym-forged ghostwriter
-  0.05,   // 🧠🔥 GYM-FORGED WRITER (RARE)
-  1,      // fire priest
-  1,      // assassin
-  1,      // necromancer
-  1,      // paladin
-  0.01    // Aeliana – Rarest!
-];
-
+      1,      // historian
+      1,      // wizard
+      1,      // vampire
+      1,      // mist elf
+      1,      // dungeon master
+      1,      // sea elf
+      1,      // hacker
+      1,      // gym-forged ghostwriter
+      0.05,   // 🧠🔥 GYM-FORGED WRITER (RARE)
+      1,      // fire priest
+      1,      // assassin
+      1,      // necromancer
+      1,      // paladin
+      0.01    // Aeliana – Rarest!
+    ];
 
     let idx;
     do { idx = weightedRandomIndex(personaWeights); }
@@ -1211,7 +1209,7 @@ function showRandomPersona () {
     }
 
     card.classList.remove('spin');
-    void card.offsetWidth;
+    void card.offsetWidth; // reflow trick
     card.classList.add('spin', 'flipping');
 
     setTimeout(() => {
@@ -1270,7 +1268,6 @@ function showRandomPersona () {
 
       card.classList.remove('flipping');
     }, 900);
-
   } catch (err) {
     console.error("❌ Error in showRandomPersona():", err);
   } finally {
