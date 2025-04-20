@@ -500,7 +500,13 @@ function spawnDaggerRain() {
 function spawnShadowChainsPixi() {
   if (typeof PIXI === 'undefined') return;
 
-  // 1) full‑screen wrapper
+  // 1) Grab the card’s on‑screen rectangle
+  const cardEl = document.getElementById('persona-display');
+  const rect   = cardEl.getBoundingClientRect();
+  const midX   = rect.left + rect.width  / 2;
+  const midY   = rect.top  + rect.height / 2;
+
+  // 2) Full‑screen wrapper
   const wrapper = document.createElement('div');
   Object.assign(wrapper.style, {
     position:      'fixed',
@@ -513,7 +519,7 @@ function spawnShadowChainsPixi() {
   });
   document.body.appendChild(wrapper);
 
-  // 2) Pixi app
+  // 3) Pixi App
   const app = new PIXI.Application({
     resizeTo:        wrapper,
     transparent:     true,
@@ -522,7 +528,7 @@ function spawnShadowChainsPixi() {
   });
   wrapper.appendChild(app.view);
 
-  // Bézier helper & its derivative
+  // Bézier helpers
   function cubic(p0,p1,p2,p3,t) {
     const u = 1 - t;
     return u*u*u*p0 + 3*u*u*t*p1 + 3*u*t*t*p2 + t*t*t*p3;
@@ -532,67 +538,83 @@ function spawnShadowChainsPixi() {
     return 3*u*u*(p1-p0) + 6*u*t*(p2-p1) + 3*t*t*(p3-p2);
   }
 
-  const center = { x: app.screen.width/2, y: app.screen.height/2 };
-  const texture = PIXI.Texture.from('images/chain-link.png');
-  const totalLinks = 16;  // fewer, so each link is large enough
-
-  // 3) Define the four incoming chains
+  // 4) Define four chains: each has a start (off‑screen) 
+  //    and an end (midpoint of a card edge)
   const starts = [
-    { x: 0,                    y: Math.random()*app.screen.height },
-    { x: app.screen.width,     y: Math.random()*app.screen.height },
-    { x: Math.random()*app.screen.width, y: 0 },
-    { x: Math.random()*app.screen.width, y: app.screen.height }
+    { // from left
+      start: { x: -50,              y: midY },
+      end:   { x: rect.left,        y: midY }
+    },
+    { // from right
+      start: { x: window.innerWidth+50, y: midY },
+      end:   { x: rect.right,       y: midY }
+    },
+    { // from top
+      start: { x: midX,             y: -50 },
+      end:   { x: midX,             y: rect.top }
+    },
+    { // from bottom
+      start: { x: midX,             y: window.innerHeight+50 },
+      end:   { x: midX,             y: rect.bottom }
+    }
   ];
 
-  const chains = starts.map(start => {
+  const texture = PIXI.Texture.from('images/chain-link.png');
+  const totalLinks = 24;
+
+  // build each chain’s control points + sprite array
+  const chains = starts.map(cfg => {
+    const { start, end } = cfg;
+    // control points 30% & 60% along the way, jittered
     const c1 = {
-      x: start.x + (center.x - start.x)*0.3 + (Math.random()-0.5)*80,
-      y: start.y + (center.y - start.y)*0.3 + (Math.random()-0.5)*80
+      x: start.x + (end.x - start.x)*0.3 + (Math.random()-0.5)*100,
+      y: start.y + (end.y - start.y)*0.3 + (Math.random()-0.5)*100
     };
     const c2 = {
-      x: start.x + (center.x - start.x)*0.6 + (Math.random()-0.5)*80,
-      y: start.y + (center.y - start.y)*0.6 + (Math.random()-0.5)*80
+      x: start.x + (end.x - start.x)*0.6 + (Math.random()-0.5)*100,
+      y: start.y + (end.y - start.y)*0.6 + (Math.random()-0.5)*100
     };
+    // make the sprites
     const links = [];
     for (let i = 0; i < totalLinks; i++) {
       const spr = new PIXI.Sprite(texture);
       spr.anchor.set(0.5);
       spr.alpha = 0;
       app.stage.addChild(spr);
-      links.push({ sprite: spr, t0: i/totalLinks });
+      links.push({ sprite: spr, offset: i/totalLinks });
     }
-    return { start, c1, c2, links };
+    return { start, c1, c2, end, links };
   });
 
-  // 4) Animate
+  // 5) Animate
   let frame = 0;
   app.ticker.add(() => {
     frame++;
     chains.forEach(chain => {
-      chain.links.forEach(({ sprite, t0 }) => {
-        const enterFrame = t0 * 50;
-        const progress = (frame - enterFrame) / 25; // 25 frames travel
-        if (progress > 0 && progress <= 2) {
-          // position on Bézier
-          const tPath = Math.min(1, progress);
-          const x = cubic(chain.start.x, chain.c1.x, chain.c2.x, center.x, tPath);
-          const y = cubic(chain.start.y, chain.c1.y, chain.c2.y, center.y, tPath);
-          sprite.x = x;
-          sprite.y = y;
+      chain.links.forEach(({ sprite, offset }) => {
+        // each link waits until its turn (offset*80 frames) then moves 40 frames total
+        const enter = offset * 80;
+        const p    = (frame - enter) / 40;
+        if (p > 0 && p <= 2) {
+          // path t from 0→1
+          const tPath = Math.min(1, p);
+          // position on curve
+          sprite.x = cubic(chain.start.x, chain.c1.x, chain.c2.x, chain.end.x, tPath);
+          sprite.y = cubic(chain.start.y, chain.c1.y, chain.c2.y, chain.end.y, tPath);
           // rotate to tangent
-          const dx = cubicDeriv(chain.start.x, chain.c1.x, chain.c2.x, center.x, tPath);
-          const dy = cubicDeriv(chain.start.y, chain.c1.y, chain.c2.y, center.y, tPath);
+          const dx = cubicDeriv(chain.start.x, chain.c1.x, chain.c2.x, chain.end.x, tPath);
+          const dy = cubicDeriv(chain.start.y, chain.c1.y, chain.c2.y, chain.end.y, tPath);
           sprite.rotation = Math.atan2(dy, dx);
           // fade in/out
-          sprite.alpha = progress <= 1 ? progress : 2 - progress;
+          sprite.alpha = p <= 1 ? p : (2 - p);
         } else {
           sprite.alpha = 0;
         }
       });
     });
 
-    // teardown after ~2s
-    if (frame > 100) {
+    // cleanup after ~2.5s
+    if (frame > 200) {
       app.destroy(true, { children: true });
       wrapper.remove();
     }
