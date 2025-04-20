@@ -551,6 +551,71 @@ function spawnDungeonMasterDicePixi() {
 
 
 
+function spawnSeaElfCoinRainPixi() {
+  console.log("💰 spawnSeaElfCoinRainPixi() fired");
+  if (document.querySelector('#effect-layer canvas.coin-rain')) {
+    console.warn("💰 Coin rain already active, skipping spawn.");
+    return;
+  }
+  if (typeof PIXI === 'undefined') return;
+
+  const container = document.getElementById('effect-layer');
+  const app = new PIXI.Application({
+    resizeTo: container,
+    transparent: true,
+    antialias: true,
+    backgroundAlpha: 0
+  });
+
+  app.view.classList.add('coin-rain'); // so we can detect it above
+  container.appendChild(app.view);
+  app.view.style.position = 'absolute';
+  app.view.style.top = '0';
+  app.view.style.left = '0';
+
+  const textures = [
+    PIXI.Texture.from('images/coin1.png'),
+    PIXI.Texture.from('images/coin2.png'),
+    PIXI.Texture.from('images/coin3.png'),
+    PIXI.Texture.from('images/coin4.png'),
+    PIXI.Texture.from('images/coin5.png'),
+    PIXI.Texture.from('images/coin6.png'),
+  ];
+
+  const coins = [];
+  const count = 25;
+
+  for (let i = 0; i < count; i++) {
+    const tex = textures[Math.floor(Math.random() * textures.length)];
+    const coin = new PIXI.Sprite(tex);
+    coin.anchor.set(0.5);
+    coin.scale.set(0.08 + Math.random() * 0.1);
+    coin.x = Math.random() * app.screen.width;
+    coin.y = -Math.random() * app.screen.height;
+    coin.vy = 1 + Math.random() * 2;
+    coin.vr = (Math.random() - 0.5) * 0.1;
+    coin.alpha = 0.6 + Math.random() * 0.4;
+    coins.push(coin);
+    app.stage.addChild(coin);
+  }
+
+  app.ticker.add(() => {
+    for (const coin of coins) {
+      coin.y += coin.vy;
+      coin.rotation += coin.vr;
+
+      if (coin.y > app.screen.height + 50) {
+        coin.y = -50;
+        coin.x = Math.random() * app.screen.width;
+      }
+    }
+  });
+
+  setTimeout(() => {
+    app.destroy(true, { children: true });
+    if (container.contains(app.view)) container.removeChild(app.view);
+  }, 6000);
+}
 
 
 
@@ -1170,6 +1235,13 @@ if (persona.title === "The Grand Druidess") {
               }
             break;
 
+case 'seaelf-splash':
+  try {
+    spawnSeaElfCoinRainPixi();
+  } catch (err) {
+    console.error("💰 CoinRain error:", err);
+  }
+  break;
 
 
       default: effectLayer.classList.add(persona.effect);
