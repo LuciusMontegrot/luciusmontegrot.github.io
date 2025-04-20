@@ -499,15 +499,12 @@ function spawnDaggerRain() {
 // ─────────────────────────────────────────────────────────────────────────────
 function spawnShadowChainsPixi() {
   if (typeof PIXI === 'undefined') return;
-
-  // 1) Card midpoint
   const cardEl = document.getElementById('persona-display');
-  const rect   = cardEl.getBoundingClientRect();
-  const midY   = rect.top + rect.height/2;
-  const leftX  = rect.left;
-  const rightX = rect.right;
-
-  // 2) Full‑screen wrapper
+  const rect = cardEl.getBoundingClientRect();
+  const midY = rect.top + rect.height / 2;
+  const leftStart = -50;
+  const rightStart = window.innerWidth + 50;
+  // 1) wrapper
   const wrapper = document.createElement('div');
   Object.assign(wrapper.style, {
     position:      'fixed',
@@ -516,83 +513,44 @@ function spawnShadowChainsPixi() {
     width:         '100vw',
     height:        '100vh',
     pointerEvents: 'none',
-    zIndex:        '9998'
+    zIndex:        '9998',
   });
   document.body.appendChild(wrapper);
-
-  // 3) Pixi app
+  // 2) PIXI app
   const app = new PIXI.Application({
-    resizeTo:        wrapper,
-    transparent:     true,
-    antialias:       true,
-    backgroundAlpha: 0
+    resizeTo:    wrapper,
+    transparent: true,
+    antialias:   true
   });
   wrapper.appendChild(app.view);
-
-  // Bézier helpers
-  function cubic(p0,p1,p2,p3,t) {
-    const u = 1 - t;
-    return u*u*u*p0 + 3*u*u*t*p1 + 3*u*t*t*p2 + t*t*t*p3;
-  }
-  function cubicDeriv(p0,p1,p2,p3,t) {
-    const u = 1 - t;
-    return 3*u*u*(p1-p0) + 6*u*t*(p2-p1) + 3*t*t*(p3-p2);
-  }
-
-  const texture   = PIXI.Texture.from('images/chain-link.png');
-  const totalLinks = 12;     // fewer links
-  const travel     = 80;     // frames each link travels
-  const delayMax   = 160;    // max stagger
-
-  // 4) Two chains: from left edge and right edge toward card sides
-  const chains = [
-    { start:{ x: -50, y: midY }, end:{ x: leftX,  y: midY } },
-    { start:{ x: app.screen.width+50, y: midY }, end:{ x: rightX, y: midY } }
-  ].map(cfg => {
-    const { start, end } = cfg;
-    const c1 = {
-      x: start.x + (end.x - start.x)*0.3 + (Math.random()-0.5)*60,
-      y: start.y + (end.y - start.y)*0.3 + (Math.random()-0.5)*60
-    };
-    const c2 = {
-      x: start.x + (end.x - start.x)*0.6 + (Math.random()-0.5)*60,
-      y: start.y + (end.y - start.y)*0.6 + (Math.random()-0.5)*60
-    };
-    const links = [];
-    for (let i = 0; i < totalLinks; i++) {
-      const spr = new PIXI.Sprite(texture);
-      spr.anchor.set(0.5);
-      spr.alpha = 0;
-      app.stage.addChild(spr);
-      links.push({ sprite: spr, offset: i/totalLinks });
-    }
-    return { start, c1, c2, end, links };
+  // 3) two chain sprites
+  const tex = PIXI.Texture.from('images/chain-link.png');
+  const sides = [
+    { x0: leftStart,  x1: rect.left + 20 },
+    { x0: rightStart, x1: rect.right - 20 }
+  ];
+  sides.forEach(({ x0, x1 }) => {
+    const spr = new PIXI.Sprite(tex);
+    spr.anchor.set(0.5);
+    spr.x = x0;
+    spr.y = midY;
+    spr.alpha = 0;
+    spr.scale.set(0.5);
+    app.stage.addChild(spr);
+    // animate toward card
+    app.ticker.add(() => {
+      // slide in
+      spr.x += (x1 - spr.x) * 0.05;
+      // fade in until fully opaque
+      if (spr.alpha < 1) spr.alpha = Math.min(1, spr.alpha + 0.02);
+    });
   });
-
-  // 5) Animate
-  let frame = 0;
-  app.ticker.add(() => {
-    frame++;
-    chains.forEach(chain => {
-      chain.links.forEach(({ sprite, offset }) => {
-        const enter  = offset * delayMax;      // stagger across 160 frames
-        const tNorm  = (frame - enter) / travel;
-        if (tNorm > 0 && tNorm <= 2) {
-          const tPath = Math.min(1, tNorm);
-          // position
-          sprite.x = cubic(
-            chain.start.x, chain.c1.x, chain.c2.x, chain.end.x, tPath
-          );
-          sprite.y = cubic(
-            chain.start.y, chain.c1.y, chain.c2.y, chain.end.y, tPath
-          );
-          // rotation
-          const dx = cubicDeriv(
-            chain.start.x, chain.c1.x, chain.c2.x, chain.end.x, tPath
-          );
-          const dy = cubicDeriv(
-            chain.start.y, chain.c1.y, chain.c2.y, chain
-
+  // 4) teardown after 3s
+  setTimeout(() => {
+    app.destroy(true, { children: true });
+    wrapper.remove();
+  }, 3000);
+}
 
 
 
