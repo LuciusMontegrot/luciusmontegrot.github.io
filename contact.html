@@ -1,4 +1,3 @@
-<!-- contact.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,8 +7,12 @@
   <link rel="stylesheet" href="style.css" />
   <style>
     body {
-      background: url('images/parchment-bg.png') repeat;
+      background: url('images/parchment-bg.jpg') repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 0;
     }
+
     .scroll-form {
       max-width: 600px;
       margin: 5em auto;
@@ -20,14 +23,17 @@
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
       font-family: 'Playfair Display', serif;
     }
+
     .scroll-form h2 {
       text-align: center;
       margin-bottom: 1em;
     }
+
     .scroll-form label {
       display: block;
       margin-top: 1em;
     }
+
     .scroll-form input,
     .scroll-form textarea {
       width: 100%;
@@ -38,6 +44,7 @@
       font-size: 1em;
       font-family: inherit;
     }
+
     .scroll-form button {
       margin-top: 2em;
       display: block;
@@ -49,14 +56,38 @@
       border-radius: 10px;
       cursor: pointer;
     }
+
     .scroll-form button:hover {
+      background-color: #e8d7ba;
+    }
+
+    .back-button {
+      position: fixed;
+      top: 1.5em;
+      left: 1.5em;
+      padding: 0.6em 1em;
+      background-color: #dbc3a3;
+      border: 2px solid #a0825e;
+      border-radius: 8px;
+      font-family: 'Playfair Display', serif;
+      font-size: 1em;
+      text-decoration: none;
+      color: #3c2b1b;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+      z-index: 9999;
+    }
+
+    .back-button:hover {
       background-color: #e8d7ba;
     }
   </style>
 </head>
 <body>
+  <a href="index.html" class="back-button">← Return</a>
+
   <form class="scroll-form" id="contact-form">
     <h2>Place your scroll in a bottle</h2>
+
     <label for="name">Your Name</label>
     <input type="text" id="name" name="name" required />
 
@@ -92,6 +123,7 @@
         const result = await response.json();
         if (result.success === 'true') {
           alert('Your scroll has been sent into the ether.');
+          document.getElementById('contact-form').reset();
         } else {
           alert('Something went wrong. Try again later.');
         }
