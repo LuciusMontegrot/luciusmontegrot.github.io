@@ -814,6 +814,7 @@ function spawnAelianaSignaturePixi() {
 
   // 2) Add the quill
   const quill = PIXI.Sprite.from('images/quill.png');
+  quill.tint = 0xCC2222;  // a deep crimson red
   quill.anchor.set(0.05, 0.5);  // align near tip
   quill.scale.set(0.3);
   quill.alpha = 0;
