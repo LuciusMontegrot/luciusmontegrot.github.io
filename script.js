@@ -495,71 +495,77 @@ function spawnDaggerRain() {
 }
 
 function spawnPaladinSmitePixi() {
-  console.warn("🌑 spawnPaladinSmitePixi() fired");
-  if (typeof PIXI === 'undefined') return;
+  if (typeof PIXI === 'undefined') return;  // guard
 
-  // catch any error so it can't freeze showRandomPersona
-  try {
-    // 1) Confine it to the card, behind other card content
-    card.style.position = 'relative';
-    const wrapper = document.createElement('div');
-    Object.assign(wrapper.style, {
-      position:      'absolute',
-      top:           '0',
-      right:         '0',
-      bottom:        '0',
-      left:          '0',
-      pointerEvents: 'none',
-      zIndex:        '1'    // above card background (card itself is z-index:2)
-    });
-    card.appendChild(wrapper);
+  const card = document.getElementById('persona-display');
+  card.style.position = 'relative';
 
-    // 2) Pixi app sized to the card
-    const app = new PIXI.Application({
-      width:       wrapper.clientWidth,
-      height:      wrapper.clientHeight,
-      transparent: true,
-      antialias:   true
-    });
-    wrapper.appendChild(app.view);
+  // 1) Create a wrapper that covers the card
+  const wrapper = document.createElement('div');
+  Object.assign(wrapper.style, {
+    position:      'absolute',
+    top:           '0',
+    right:         '0',
+    bottom:        '0',
+    left:          '0',
+    pointerEvents: 'none',
+    zIndex:        '1'   // above the card background but below its content
+  });
+  card.appendChild(wrapper);
 
-    // 3) draw rope & noose
-    const cx = app.screen.width / 2;
-    const cy = app.screen.height / 4;
-    const rope = new PIXI.Graphics()
-      .lineStyle(4, 0xAAAAAA)
-      .moveTo(cx, 0)
-      .lineTo(cx, cy);
-    app.stage.addChild(rope);
+  // 2) Pixi application sized to the wrapper
+  const app = new PIXI.Application({
+    width:       wrapper.clientWidth,
+    height:      wrapper.clientHeight,
+    transparent: true,
+    antialias:   true,
+    backgroundAlpha: 0
+  });
+  wrapper.appendChild(app.view);
+  app.view.style.backgroundColor = 'transparent';
 
-    const noose = new PIXI.Graphics()
-      .lineStyle(4, 0x888888)
-      .moveTo(cx, cy)
-      .arcTo(cx + 20, cy + 20, cx, cy + 40, 20)
-      .arcTo(cx - 20, cy + 20, cx, cy, 20);
-    app.stage.addChild(noose);
+  // 3) Draw rope and loop
+  const cx = app.screen.width  / 2;
+  const ropeLen = app.screen.height * 0.4;
+  const loopRadius = Math.min(app.screen.width, app.screen.height) * 0.08;
 
-    // 4) animate tighten + fade
-    let t = 0;
-    app.ticker.add((delta) => {
-      t += delta;
-      if (t < 30) {                        // ~0.5s at 60fps
-        const p = t/30;
-        noose.scale.y = 1 - 0.5 * p;
-        noose.y       = cy + 10 * p;
-      } else if (t < 60) {                 // next ~0.5s fade
-        const a = 1 - (t-30)/30;
-        rope.alpha   = a;
-        noose.alpha  = a;
-      } else {
-        app.destroy(true, { children: true });
-        wrapper.remove();
-      }
-    });
-  } catch (err) {
-    console.error("Error in spawnPaladinSmitePixi:", err);
-  }
+  const rope = new PIXI.Graphics()
+    .lineStyle(4, 0xAAAAAA, 1)
+    .moveTo(cx, 0)
+    .lineTo(cx, ropeLen);
+  app.stage.addChild(rope);
+
+  const loop = new PIXI.Graphics()
+    .lineStyle(4, 0x888888, 1)
+    // draw a circle outline as the noose loop
+    .drawCircle(cx, ropeLen + loopRadius, loopRadius);
+  app.stage.addChild(loop);
+
+  // store original values for animation
+  const origY = loop.y;
+  let frame = 0;
+
+  // 4) Animate: tighten (frames 0–30), then fade (30–60), then cleanup
+  app.ticker.add(() => {
+    frame++;
+    if (frame <= 30) {
+      // tighten: scale Y from 1→0.5, move down
+      const p = frame / 30;
+      loop.scale.y = 1 - 0.5 * p;
+      loop.y       = origY + loopRadius * 0.5 * p;
+    } else if (frame <= 60) {
+      // fade out
+      const a = 1 - (frame - 30) / 30;
+      rope.alpha = a;
+      loop.alpha = a;
+    } else {
+      // done: destroy Pixi and wrapper
+      app.destroy(true, { children: true });
+      wrapper.remove();
+    }
+  });
 }
+
 
 
 
