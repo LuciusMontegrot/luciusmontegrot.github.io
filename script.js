@@ -814,7 +814,7 @@ const personaWeights = [
   1, // historian
   1, // wizard
   1, // vampire
-  1, // mist elf
+  1777, // mist elf
   1, // dungeon master
   1, // sea elf
   1, // hacker
