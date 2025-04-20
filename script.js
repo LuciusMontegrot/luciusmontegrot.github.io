@@ -323,32 +323,43 @@ wisps.push(g);
  * Ink‑blotches effect for The Humble Historian
  */
 function spawnInkBlotches() {
-  const svgNS = "http://www.w3.org/2000/svg";
+  console.log("🖋 spawnInkBlotches() called");
   const layer = document.getElementById("effect-layer");
-  // create one SVG container per batch
+  if (!layer) {
+    console.error("🖋 effect-layer not found!");
+    return;
+  }
+
+  const svgNS = "http://www.w3.org/2000/svg";
+  // 1) Create an SVG to hold everything
   const svg = document.createElementNS(svgNS, "svg");
   svg.setAttribute("width", "100%");
   svg.setAttribute("height", "100%");
   svg.style.position = "absolute";
-  svg.style.top = "0";
-  svg.style.left = "0";
+  svg.style.top = 0;
+  svg.style.left = 0;
   svg.style.pointerEvents = "none";
   layer.appendChild(svg);
 
-  const numBlots = 5 + Math.floor(Math.random() * 3);  // 5–7 stains
-  for (let i = 0; i < numBlots; i++) {
-    // randomized center somewhere near the card
-    const cx = window.innerWidth * (0.3 + Math.random() * 0.4);
-    const cy = window.innerHeight * (0.3 + Math.random() * 0.4);
-    const radius = 30 + Math.random() * 50;             // 30–80px
-    const points = 8 + Math.floor(Math.random() * 5);   // 8–12 points
+  // 2) Grab the card bounds so we place blotches on it
+  const cardRect = document
+    .getElementById("persona-display")
+    .getBoundingClientRect();
 
-    // build a jagged circle path
+  // 3) Draw 5–7 random blotches
+  const blotCount = 5 + Math.floor(Math.random() * 3);
+  for (let i = 0; i < blotCount; i++) {
+    // pick a random point *inside* the card
+    const cx = cardRect.left + Math.random() * cardRect.width;
+    const cy = cardRect.top + Math.random() * cardRect.height;
+    const radius = 20 + Math.random() * 40;      // 20–60px
+    const points = 8 + Math.floor(Math.random() * 5); // 8–12 vertices
+
+    // build a jagged circle
     let d = "";
     for (let j = 0; j < points; j++) {
       const angle = (j / points) * Math.PI * 2;
-      // jitter radius ±30%
-      const r = radius * (0.7 + Math.random() * 0.6);
+      const r = radius * (0.6 + Math.random() * 0.8); // jitter radius ±40%
       const x = cx + Math.cos(angle) * r;
       const y = cy + Math.sin(angle) * r;
       d += (j === 0 ? "M" : "L") + x.toFixed(1) + " " + y.toFixed(1) + " ";
@@ -357,23 +368,27 @@ function spawnInkBlotches() {
 
     const path = document.createElementNS(svgNS, "path");
     path.setAttribute("d", d);
-    path.setAttribute("fill", "#111");                   // deep ink color
-    path.setAttribute("opacity", (0.4 + Math.random() * 0.3).toFixed(2)); // 0.4–0.7
+    path.setAttribute("fill", "#000");                  // pure black ink
+    path.setAttribute("opacity", "0.6");
     svg.appendChild(path);
+    console.log(`🖋 blot at ${cx.toFixed(1)},${cy.toFixed(1)}`);
 
-    // optional: have it drip or fade out
+    // 4) Fade it out over 3s, start within the first second
     const fade = document.createElementNS(svgNS, "animate");
     fade.setAttribute("attributeName", "opacity");
-    fade.setAttribute("from", path.getAttribute("opacity"));
+    fade.setAttribute("from", "0.6");
     fade.setAttribute("to", "0");
     fade.setAttribute("dur", "3s");
-    fade.setAttribute("begin", `${Math.random() * 1}s`);
+    fade.setAttribute("begin", `${Math.random().toFixed(2)}s`);
     fade.setAttribute("fill", "freeze");
     path.appendChild(fade);
   }
 
-  // remove the entire SVG after 4s
-  setTimeout(() => svg.remove(), 4000);
+  // 5) Clean up after 4s
+  setTimeout(() => {
+    svg.remove();
+    console.log("🖋 spawnInkBlotches() cleaned up");
+  }, 4000);
 }
 
 
