@@ -328,13 +328,8 @@ wisps.push(g);
 
 function spawnFireRoarPixi() {
   console.log("🔥 spawnFireRoarPixi() fired");
+  if (typeof PIXI === 'undefined') return;
 
-  if (typeof PIXI === 'undefined') {
-    console.warn("Pixi not loaded!");
-    return;
-  }
-
-  // 1) grab the effects wrapper
   const container = document.getElementById('effect-layer');
   const app = new PIXI.Application({
     resizeTo:        container,
@@ -347,15 +342,7 @@ function spawnFireRoarPixi() {
   app.view.style.top      = '0';
   app.view.style.left     = '0';
 
-  // 2) glow filter for embers
-  const glow = new PIXI.filters.GlowFilter({
-    distance:    15,
-    outerStrength: 2,
-    innerStrength: 1,
-    color:       0xFF6600
-  });
-
-  // 3) spawn ember particles
+  // spawn ember particles
   const embers = [];
   const cardRect = document.getElementById('persona-display').getBoundingClientRect();
   for (let i = 0; i < 40; i++) {
@@ -363,7 +350,11 @@ function spawnFireRoarPixi() {
       .beginFill(0xFF6600, 0.8)
       .drawCircle(0, 0, 3 + Math.random() * 2)
       .endFill();
-    g.filters = [glow];
+
+    // soft blur glow
+    const blur = new PIXI.filters.BlurFilter(2);
+    g.filters = [ blur ];
+
     g.x = cardRect.left + Math.random() * cardRect.width;
     g.y = cardRect.bottom - window.scrollY;
     g.vx = (Math.random() - 0.5) * 0.5;
@@ -372,7 +363,7 @@ function spawnFireRoarPixi() {
     embers.push(g);
   }
 
-  // 4) animate them upward
+  // animate them upward
   app.ticker.add((delta) => {
     embers.forEach(e => {
       e.x -= e.vx * delta;
@@ -388,12 +379,13 @@ function spawnFireRoarPixi() {
     });
   });
 
-  // 5) cleanup after 4s
+  // cleanup after 4s
   setTimeout(() => {
     app.destroy(true, { children: true });
     container.removeChild(app.view);
   }, 4000);
 }
+
 
 
 
