@@ -487,80 +487,83 @@ function spawnFireRoarPixi() {
   console.log("🔥 spawnFireRoarPixi() fired");
   if (typeof PIXI === 'undefined') return;
 
-  // 1) target the effect layer
+  // 1) target the effect‐layer container
   const container = document.getElementById('effect-layer');
 
-  // 2) create PIXI app
+  // 2) create a full‐screen Pixi app
   const app = new PIXI.Application({
-    resizeTo:        container,
-    transparent:     true,
-    antialias:       true,
-    backgroundAlpha: 0
+    resizeTo:    container,
+    transparent: true,
+    antialias:   true
   });
   container.appendChild(app.view);
-  app.view.style.position = 'absolute';
-  app.view.style.top      = '0';
-  app.view.style.left     = '0';
+  Object.assign(app.view.style, {
+    position: 'absolute',
+    top:      '0',
+    left:     '0',
+    pointerEvents: 'none'
+  });
 
-  // 3) measure the card area
-  const cardEl  = document.getElementById('persona-display');
-  const rect    = cardEl.getBoundingClientRect();
-  const startY  = rect.bottom - window.scrollY;
-  const minX    = rect.left;
-  const maxX    = rect.left + rect.width;
+  // grab screen dims
+  const W = app.screen.width;
+  const H = app.screen.height;
 
-  // 4) spawn flame‑shaped particles
+  // 3) spawn a pool of flames
   const flames = [];
-  const count  = 80;  // more than before
-  for (let i = 0; i < count; i++) {
-    const g = new PIXI.Graphics();
+  const COUNT  = 250;
+  for (let i = 0; i < COUNT; i++) {
+    const g = new PIXI.Graphics()
+      // simple triangular flame
+      .beginFill(0xFF9900, 0.9)
+      .moveTo(0,   0)
+      .lineTo(-4, 12)
+      .lineTo( 4, 12)
+      .closePath()
+      .endFill();
 
-    // draw a simple triangular “flame”
-    g.beginFill(0xFF9900, 0.9);
-    g.moveTo(0,   0);
-    g.lineTo(-4, 12);
-    g.lineTo( 4, 12);
-    g.closePath();
-    g.endFill();
+    // soft glow
+    g.filters = [ new PIXI.filters.BlurFilter(2) ];
 
-    // optional soft blur for glow
-    const blur = new PIXI.filters.BlurFilter(2);
-    g.filters = [ blur ];
+    // random start just below bottom, anywhere across width
+    g.x = Math.random() * W;
+    g.y = H + Math.random() * 30;
 
-    // random start position along bottom of card
-    g.x  = minX + Math.random() * (maxX - minX);
-    g.y  = startY + (Math.random() * 20); // jitter just below
-    g.vx = (Math.random() - 0.5) * 0.3;    // slow sideways wobble
-    g.vy = 1 + Math.random() * 2;          // faster upward drift
+    // give each flame its own speed & fade rate
+    g.vx       = (Math.random() - 0.5) * 0.3;     // slight sideways wobble
+    g.vy       = 1 + Math.random() * 2;           // upward
+    g.fadeRate = 0.005 + Math.random() * 0.015;   // how fast alpha drops
+    g.alpha    = 0.3 + Math.random() * 0.7;       // initial opacity
 
     app.stage.addChild(g);
     flames.push(g);
   }
 
-  // 5) animate
+  // 4) animation loop
   app.ticker.add((delta) => {
-    flames.forEach(f => {
-      f.x -= f.vx * delta;
-      f.y -= f.vy * delta;
-      f.alpha -= 0.008 * delta;
+    for (const f of flames) {
+      f.x     += f.vx * delta;
+      f.y     -= f.vy * delta;
+      f.alpha -= f.fadeRate * delta;
 
-      // recycle when faded or off‑top
-      if (f.alpha <= 0 || f.y < rect.top - 20) {
-        f.x     = minX + Math.random() * (maxX - minX);
-        f.y     = startY + (Math.random() * 20);
-        f.alpha = 1;
-        f.vx    = (Math.random() - 0.5) * 0.3;
-        f.vy    = 1 + Math.random() * 2;
+      // respawn if gone
+      if (f.alpha <= 0 || f.y < -20) {
+        f.x       = Math.random() * W;
+        f.y       = H + Math.random() * 30;
+        f.vx      = (Math.random() - 0.5) * 0.3;
+        f.vy      = 1 + Math.random() * 2;
+        f.fadeRate= 0.005 + Math.random() * 0.015;
+        f.alpha   = 0.3 + Math.random() * 0.7;
       }
-    });
+    }
   });
 
-  // 6) cleanup
+  // 5) tear down after 4s
   setTimeout(() => {
     app.destroy(true, { children: true });
-    container.removeChild(app.view);
+    if (container.contains(app.view)) container.removeChild(app.view);
   }, 4000);
 }
+
 
 
 
