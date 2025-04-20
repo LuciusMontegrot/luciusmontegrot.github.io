@@ -477,16 +477,15 @@ function spawnMistElfFlamingSwordPixi() {
 function spawnDungeonMasterDicePixi() {
   console.log("🎲 spawnDungeonMasterDicePixi() fired");
 
-  // 🔁 If there's an old canvas, remove it
-  const oldCanvas = document.querySelector('#effect-layer canvas');
-  if (oldCanvas) {
-    console.warn("🎲 Removing old dice canvas before spawning new one.");
-    oldCanvas.remove(); // instead of skipping it
+  if (document.querySelector('#effect-layer canvas')) {
+    console.warn("🎲 Dice canvas already present, skipping spawn.");
+    return;
   }
 
   if (typeof PIXI === 'undefined') return;
 
   const container = document.getElementById('effect-layer');
+
   const app = new PIXI.Application({
     resizeTo: container,
     transparent: true,
@@ -507,71 +506,47 @@ function spawnDungeonMasterDicePixi() {
     'images/d20a.png'
   ];
 
-  const loadedTextures = [];
-  let loadCount = 0;
+  const textures = imagePaths.map(path => PIXI.Texture.from(path));
 
-  function trySpawnDice() {
-    if (loadCount < imagePaths.length) return;
+  const dice = [];
+  const count = 25;
+  const cx = app.screen.width / 2;
+  const cy = app.screen.height / 2;
 
-    const dice = [];
-    const count = 25;
-    const cx = app.screen.width / 2;
-    const cy = app.screen.height / 2;
-
-    for (let i = 0; i < count; i++) {
-      const texture = loadedTextures[Math.floor(Math.random() * loadedTextures.length)];
-      const sprite = new PIXI.Sprite(texture);
-      sprite.anchor.set(0.5);
-      sprite.scale.set(0.15 + Math.random() * 0.1);
-      sprite.x = cx;
-      sprite.y = cy;
-      sprite.vx = (Math.random() - 0.5) * 20;
-      sprite.vy = (Math.random() - 0.5) * 20;
-      sprite.rotationSpeed = (Math.random() - 0.5) * 0.3;
-      sprite.alpha = 1;
-      app.stage.addChild(sprite);
-      dice.push(sprite);
-    }
-
-    app.ticker.add((delta) => {
-      dice.forEach(die => {
-        die.x += die.vx * delta;
-        die.y += die.vy * delta;
-        die.rotation += die.rotationSpeed * delta;
-        die.alpha -= 0.01 * delta;
-      });
-    });
-
-    setTimeout(() => {
-      try {
-        app.destroy(true, { children: true });
-        if (app.view && app.view.parentNode) {
-          app.view.parentNode.removeChild(app.view);
-        }
-      } catch (e) {
-        console.warn("⚠️ Dice explosion cleanup skipped: ", e);
-      }
-    }, 5000);
+  for (let i = 0; i < count; i++) {
+    const texture = textures[Math.floor(Math.random() * textures.length)];
+    const sprite = new PIXI.Sprite(texture);
+    sprite.anchor.set(0.5);
+    sprite.scale.set(0.15 + Math.random() * 0.1);
+    sprite.x = cx;
+    sprite.y = cy;
+    sprite.vx = (Math.random() - 0.5) * 20;
+    sprite.vy = (Math.random() - 0.5) * 20;
+    sprite.rotationSpeed = (Math.random() - 0.5) * 0.3;
+    sprite.alpha = 1;
+    app.stage.addChild(sprite);
+    dice.push(sprite);
   }
 
-  // Load textures
-  imagePaths.forEach(path => {
-    const base = PIXI.BaseTexture.from(path);
-    const tex = new PIXI.Texture(base);
-
-    base.on('loaded', () => {
-      loadedTextures.push(tex);
-      loadCount++;
-      trySpawnDice();
-    });
-
-    base.on('error', () => {
-      console.warn(`⚠️ Could not load dice image: ${path}`);
-      loadCount++;
-      trySpawnDice();
+  app.ticker.add((delta) => {
+    dice.forEach(die => {
+      die.x += die.vx * delta;
+      die.y += die.vy * delta;
+      die.rotation += die.rotationSpeed * delta;
+      die.alpha -= 0.01 * delta;
     });
   });
+
+  setTimeout(() => {
+    try {
+      app.destroy(true, { children: true });
+      if (container.contains(app.view)) container.removeChild(app.view);
+    } catch (e) {
+      console.warn("⚠️ Dice explosion cleanup skipped: ", e);
+    }
+  }, 5000);
 }
+
 
 
 
