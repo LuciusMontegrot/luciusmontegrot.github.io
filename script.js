@@ -817,17 +817,15 @@ function spawnDaggerRain() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Shadow Chains with real chain‑link sprites (uses your chain-link.png)
+// Shadow Chains with real chain‑link sprites (uses chain-link.png)
 // ─────────────────────────────────────────────────────────────────────────────
 function spawnShadowChainsPixi() {
-  console.log("⛓️ spawnShadowChainsPixi() fired");
-
   if (typeof PIXI === 'undefined') return;
 
   const container = document.getElementById('effect-layer');
 
-  // Prevent duplicate canvases
-  if (container.querySelector('canvas')) {
+  // only skip if *our* chain‐effect canvas is still in DOM
+  if (container.querySelector('canvas.chain-effect')) {
     console.warn("⛓️ Chain canvas already present, skipping spawn.");
     return;
   }
@@ -839,6 +837,8 @@ function spawnShadowChainsPixi() {
     backgroundAlpha: 0
   });
 
+  // tag it so our guard can find it specifically
+  app.view.classList.add('chain-effect');
   container.appendChild(app.view);
   app.view.style.position = 'absolute';
   app.view.style.top = '0';
@@ -848,38 +848,27 @@ function spawnShadowChainsPixi() {
   const chainTex = new PIXI.Texture(baseTexture);
 
   baseTexture.on('loaded', () => {
-    const chain = new PIXI.TilingSprite(
-      chainTex,
-      app.screen.width,
-      chainTex.height
-    );
-
-    chain.y = app.screen.height / 2 - chainTex.height / 2;
+    const chain = new PIXI.TilingSprite(chainTex, app.screen.width, chainTex.height);
+    chain.y = app.screen.height/2 - chainTex.height/2;
     app.stage.addChild(chain);
 
     let direction = -1;
-    app.ticker.add((dt) => {
-      chain.tilePosition.x += direction * 1.5 * dt;
-    });
+    app.ticker.add(dt => chain.tilePosition.x += direction * 1.5 * dt);
 
-    // Reverse direction midway
-    setTimeout(() => { direction = 1; }, 2000);
-
-    // Cleanup after 4s
+    setTimeout(() => direction = 1, 2000);
     setTimeout(() => {
       try {
         app.destroy(true, { children: true });
-        if (container.contains(app.view)) container.removeChild(app.view);
+        container.removeChild(app.view);
       } catch (err) {
         console.warn("⚠️ Chain cleanup error:", err);
       }
     }, 4000);
   });
 
-  baseTexture.on('error', err => {
-    console.error("⚠️ Chain texture failed to load:", err);
-  });
+  baseTexture.on('error', err => console.error("⚠️ Chain texture failed to load:", err));
 }
+
 
 
 
