@@ -498,16 +498,17 @@ function spawnMistElfFlamingSwordPixi() {
 
 function spawnDungeonMasterDicePixi() {
   console.log("🎲 spawnDungeonMasterDicePixi() fired");
-
-  if (document.querySelector('#effect-layer canvas')) {
-    console.warn("🎲 Dice canvas already present, skipping spawn.");
-    return;
-  }
-
   if (typeof PIXI === 'undefined') return;
 
   const container = document.getElementById('effect-layer');
 
+  // Only skip if *our* dice canvas is still there
+  if (container.querySelector('canvas.dice-explosion')) {
+    console.warn("🎲 Dice canvas already present, skipping spawn.");
+    return;
+  }
+
+  // Create a fresh Pixi app...
   const app = new PIXI.Application({
     resizeTo: container,
     transparent: true,
@@ -515,6 +516,8 @@ function spawnDungeonMasterDicePixi() {
     backgroundAlpha: 0
   });
 
+  // Tag it for our guard
+  app.view.classList.add('dice-explosion');
   container.appendChild(app.view);
   app.view.style.position = 'absolute';
   app.view.style.top = '0';
@@ -559,10 +562,10 @@ function spawnDungeonMasterDicePixi() {
     });
   });
 
-  setTimeout(() => {
+ setTimeout(() => {
     try {
       app.destroy(true, { children: true });
-      if (container.contains(app.view)) container.removeChild(app.view);
+      container.removeChild(app.view);
     } catch (e) {
       console.warn("⚠️ Dice explosion cleanup skipped: ", e);
     }
