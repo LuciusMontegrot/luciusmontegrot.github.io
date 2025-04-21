@@ -7,18 +7,28 @@ if (!sessionStorage.getItem('redirectedToAmazon')) {
 }
 
 function maybeRedirectToAmazon() {
-  const count = parseInt(sessionStorage.getItem('rerollCount')) || 0;
-  const alreadyRedirected = sessionStorage.getItem('redirectedToAmazon') === 'true';
-   // Only between flips 7–11 and only once
-  if (count >= 7 && count <= 11 && !alreadyRedirected) {
+  const rawCount = sessionStorage.getItem('rerollCount');
+  console.log("[amazon] raw rerollCount:", rawCount);
+  const count = parseInt(rawCount, 10) || 0;
+  const already = sessionStorage.getItem('redirectedToAmazon');
+  console.log(
+    `[amazon] parsed count=${count}, alreadyRedirected=${already}`
+  );
+
+  if (count >= 7 && count <= 11 && already !== 'true') {
     const chance = Math.random();
-    if (chance < 0.3) { // 30% chance within that window
-      sessionStorage.setItem('redirectedToAmazon', 'true');
-     window.open('https://www.amazon.co.uk/Union-Impossible-Part-Twilight-Exiled-ebook/dp/B0F4YM618B/', '_blank');
-      console.log('Something...strange stirs on the seventh reroll...');
+    console.log("[amazon] in window‑open window – chance=", chance);
+    if (chance < 0.3) {
+      sessionStorage.setItem("redirectedToAmazon", "true");
+      window.open(
+        "https://www.amazon.co.uk/Union-Impossible-Part-Twilight-Exiled-ebook/dp/B0F4YM618B/",
+        "_blank"
+      );
+      console.log("[amazon] OPENED popup!");
     }
   }
 }
+
 
 document.addEventListener('DOMContentLoaded', () => {
   const personas = [
