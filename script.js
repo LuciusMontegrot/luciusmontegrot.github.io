@@ -1274,3 +1274,5 @@ function showRandomPersona () {
     setTimeout(() => { isAnimating = false; }, 1800);
   }
 }
+button.addEventListener('click', showRandomPersona);
+  }); 
