@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     },
                 {
       title: "The Gnomish Necromancer",
-      image: "images/necromancer.jpg",
+      image: "images/necromancer2.jpg",
       description: "Some say Lucius is a Gnomish Necromancer in service to the Equalizer goddess of Death. Like many gnomish necromancers, he spends his time mastering the secrets of death so as to keep it at bay and heal the sick and wounded in Steelforge's hospitals.",
       effect: "necromancer-wisp"
     },
