@@ -35,79 +35,79 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       title: "The Humble Historian",
       image: "images/historian.jpg",
-      description: "Lucius Montegrot is merely the humble scribe of the events he claims to have witnessed in a vision, probably induced by too much Elven wine and pipe herb. He insists that any resemblances to real persons, gods, or liches is purely coincidental and that he’s never even heard of a phoenix the size of a cathedral roof.",
+      description: "Lucius Montegrot is merely the humble scribe of the events he claims to have witnessed in a vision, probably induced by too much Elven wine and pipe herb. They insist that any resemblances to real persons, gods, or liches is purely coincidental and that they've never even heard of a phoenix the size of a cathedral roof.",
       effect: "historian-scroll"
     },
     {
       title: "Definitely Not a Wizard",
       image: "images/wizard.jpg",
-      description: "Although there are some who say Lucius is a wizard, he gracefully deflects the question without flat out denying it. That beard? Fashion choice. The staff? Walking aid. The glowing runes on his sleeves? Laundry accident. The mysterious door in his cellar that hums and sometimes screams in Abyssal? Nope. Nothing to see here.",
+      description: "Although there are some who say Lucius is a wizard, they gracefully deflect the question without flat out denying it. That beard? Fashion choice. The staff? Walking aid. The glowing runes on their sleeves? Laundry accident. The mysterious door in their cellar that hums and sometimes screams in Abyssal? Nope. Nothing to see here.",
       effect: "wizard-smoke"
     },
     {
       title: "The Vampire-Adjacent Noble",
       image: "images/vampire.jpg",
-      description: "Lucius Montegrot is rumoured to be a minor baron in a small mansion hidden in the Forests in Vashlin. He is seldom seen during daylight, but his correspondence is extensive, usually delivered by night couriers who dissolve into mist if probed with questions. He claims to be 'simply nocturnally inclined' and has a suspicious fondness for red wine served warm. He has built a few bat roosts around his mansion, 'so that they eat all those pesky insects'",
+      description: "Lucius Montegrot is rumoured to be a minor noble in a small mansion hidden in the Forests in Vashlin. They are seldom seen during daylight, but their correspondence is extensive, usually delivered by night couriers who dissolve into mist if probed with questions. They claim to be 'simply nocturnally inclined' and have a suspicious fondness for red wine served warm. They have built a few bat roosts around his mansion, 'so that they eat all those pesky insects'",
       effect: "vampire-blood"
     },
     {
       title: "The Mist-Elven Exile",
       image: "images/mistelf2.jpg",
-      description: "It is whispered that Lucius is the only Mist Elf to have fled the demiplane of Mist and retained his flaming sword. His illusions are so convincing, he once sold a dream to a dragon. He spends his days disguised as a mortal author, but his prose smells faintly of starlight and betrayal.",
+      description: "It is whispered that Lucius is the only Mist Elf to have fled the demiplane of Mist and retained their flaming sword. Their illusions are so convincing, they once sold a dream to a dragon. They spend their days disguised as a mortal author, but their prose smells faintly of starlight and betrayal.",
       effect: "mistelf-glow"
     },
     {
       title: "The Disgruntled Dungeon Master",
       image: "images/dungeonmaster3.jpg",
-      description: "It is rumoured that Lucius Montegrot is what happens when a Dungeon Master spends thirty years building a world so intricate that the gods themselves are asking for the rulebook. Tired of players licking dungeon walls and seducing mimics, he turned his notes into novels. He still wakes up at night muttering, 'You can't polymorph into a chair, Varius!'",
+      description: "It is rumoured that Lucius Montegrot is what happens when a Dungeon Master spends thirty years building a world so intricate that the gods themselves are asking for the rulebook. Tired of players licking dungeon walls and seducing mimics, they turned their notes into novels. They still wake up at night muttering, 'You can't polymorph into a chair, Varius!'",
       effect: "dm-dice"
     },
     {
       title: "The Sea Elven Smuggler",
       image: "images/seaelf.jpg",
-      description: "They say Lucius Montegrot is a Sea Elf, though there is no record of his birth and he once confused a dolphin for a shark. Nevertheless, he’s been spotted slipping through misty coves at midnight, selling contraband scrolls and illegal potions to pirates, witches, and the occasional bureaucrat. He speaks seven dialects of Elvish, five of which he made up. Do not let him near your alchemy supplies.",
+      description: "They say Lucius Montegrot is a Sea Elf, though there is no record of their birth and they once confused a dolphin for a shark. Nevertheless, they've been spotted slipping through misty coves at midnight, selling contraband scrolls and illegal potions to pirates, witches, and the occasional bureaucrat. They speak seven dialects of Elvish, five of which they made up. Do not let them near your alchemy supplies.",
       effect: "seaelf-splash"
     },
     {
       title: "The Mysterious Hacker",
       image: "images/hacker.jpg",
-      description: "It is said Lucius Montegrot is a hacker with his hair half pink and half green. No one knows when he joined GitHub, only that his repositories compile themselves and his README files update during thunderstorms. He writes code in dead languages, forks his own thoughts, and claims to be debugging reality itself. Rumour has it he’s trying to restore the soul of the phoenix, one painstaking line of code after another, into a hidden branch named /ascend. If your screen flickers at midnight, it’s not coincidence. It’s Lucius. <i>They even say he coded this website himself...</i>",
+      description: "It is said Lucius Montegrot is a hacker with their hair half pink and half green. No one knows when they joined GitHub, only that their repositories compile themselves and their README files update during thunderstorms. They write code in dead languages, fork their own thoughts, and claim to be debugging reality itself. Rumour has it they're trying to restore the soul of the phoenix, one painstaking line of code after another, into a hidden branch named /ascend. If your screen flickers at midnight with an image of a phoenix, it’s not coincidence. It’s Lucius. <i>They even say Lucius coded this website themselves...</i>",
       effect: "hacker-glitch"
     },
     {
       title: "The Gym-Forged Ghostwriter",
       image: "images/bodybuilder.jpg",
-      description: "Some say Lucius cannot even read and write. They say he is obsessed with physical strength and wrote an entire book dictating one single prompt into some yet unknown artificial intelligence. Those who speak with him say he communicates mostly in grunts, so it is a wonder how he did it.",
+      description: "Some say Lucius cannot even read and write. They say they are obsessed with physical strength and wrote an entire book dictating one single prompt into some yet unknown artificial intelligence. Those who speak with them say they communicate mostly in grunts, so it is a wonder how they did it.",
       effect: "muscle-flex"
     },
         {
       title: "The Gym-Forged Writer",
       image: "images/bodybuilder2.jpg",
-      description: "Some say Lucius cannot even read and write. They say he is obsessed with physical strength and wrote an entire book dictating one single prompt into some yet unknown artificial intelligence. Those who speak with him say he communicates mostly in grunts, so it is a wonder how he did it. Oops. Did we just accidentally show you his REAL picture? No. We didn't, and if we did, it was an accident. This isn't Lucius Montegrot. This picture isn't real. Nothing to see here.",
+      description: "Some say Lucius cannot even read and write. They say they are obsessed with physical strength and wrote an entire book dictating one single prompt into some yet unknown artificial intelligence. Oops. Did we just accidentally show you their REAL picture? No. We didn't, and if we did, it was an accident. This isn't Lucius Montegrot. This picture isn't real. Nothing to see here.",
       effect: "muscle-flex2"
     },
             {
       title: "The Dwarven Priest of Fire",
       image: "images/firepriest.jpg",
-      description: "Some say Lucius is a Dwarven priest of fire who witnessed first-hand the the events his book narrates. At times, he can be found in a tavern in Steelforge and if you offer him a goblet of mead, he may tell you a juicy secret he hasn't recorded in the scrolls...",
+      description: "Some say Lucius is a Dwarven priest of fire who witnessed first-hand the the events their book narrates. At times, they can be found in a tavern in Steelforge and if you offer them a goblet of mead, they may tell you a juicy secret they haven't recorded in the scrolls...",
       effect: "fire-roar"
     },
             {
       title: "The Dark Elven Assassin",
       image: "images/assassin.jpg",
-      description: "It is rumoured that Lucius Montegrot did not write his book at all. Instead, he murdered the author in a dark alley in Umbra'El and stole the manuscript, then published it under a pseudonym of his invention...",
+      description: "It is rumoured that Lucius Montegrot did not write their book at all. Instead, they murdered the author in a dark alley in Umbra'El and stole the manuscript, then published it under a pseudonym of their invention...",
       effect: "dagger-rain"
     },
                 {
       title: "The Gnomish Necromancer",
       image: "images/necromancer2.jpg",
-      description: "Some say Lucius is a Gnomish Necromancer in service to the Equalizer goddess of Death. Like many gnomish necromancers, he spends his time mastering the secrets of death so as to keep it at bay and heal the sick and wounded in Steelforge's hospitals.",
+      description: "Some say Lucius is a Gnomish Necromancer in service to the Equalizer goddess of Death. Like many gnomish necromancers, they spend their time mastering the secrets of death so as to keep it at bay and heal the sick and wounded in Steelforge's hospitals.",
       effect: "necromancer-wisp"
     },
     {
       title: "The Peacemaker's Paladin",
       image: "images/paladin.jpg",
-      description: "They whisper that Lucius Montegrot once took holy vows before an altar the Peacemaker. Clad in onyx plate and wielding a maul the size of a tombstone, he roams the Varthian Empire's paved roads delivering “peace” one shattered victim at a time. His justice is as swift as a thunderclap and as final as the gallows‑knot that dangles from his belt. Some claim there is no man beneath the helm at all — only a spirit of cold, unblinking judgment. Others insist you can hear soft humming inside the armor, as though the Peacemaker himself were singing through Lucius’s ribs. Either way, if the black‑steel paladin blocks your path, pray your sins are few… and your neck unworthy of his rope.",
+      description: "They whisper that Lucius Montegrot once took holy vows before an altar the Peacemaker. Clad in onyx plate and wielding a maul the size of a tombstone, they roam the Varthian Empire's paved roads delivering “peace” one shattered victim at a time. Their justice is as swift as a thunderclap and as final as the gallows‑knot that dangles from his belt. Some claim there is no man beneath the helm at all — only a spirit of cold, unblinking judgment. Others insist you can hear soft humming inside the armour, as though the Peacemaker himself were singing through Lucius’s ribs. Either way, if the black‑steel paladin blocks your path, pray your sins are few… and your neck unworthy of their rope.",
       effect: "paladin-smite"
     },
       {
