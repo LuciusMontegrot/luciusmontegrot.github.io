@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       title: "The Humble Historian",
       image: "images/historian.jpg",
-      description: "Lucius Montegrot is merely the humble scribe of the events he claims to have witnessed in a vision, probably induced by too much Elven wine and pipe herb. They insist that any resemblances to real persons, gods, or liches is purely coincidental and that they've never even heard of a phoenix the size of a cathedral roof.",
+      description: "Lucius Montegrot is merely the humble scribe of the events they claim to have witnessed in a vision, probably induced by too much Elven wine and pipe herb. They insist that any resemblances to real persons, gods, or liches is purely coincidental and that they've never even heard of a phoenix the size of a cathedral roof.",
       effect: "historian-scroll"
     },
     {
