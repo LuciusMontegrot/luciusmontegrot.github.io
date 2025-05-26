@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 {
       title: "The Gnomish Necromancer",
       image: "images/necromancer2.jpg",
-      description: "Some say Lucius is a Gnomish Necromancer in service to the Equalizer goddess of Death. Like many gnomish necromancers, they spend their time mastering the secrets of death so as to keep it at bay and heal the sick and wounded in Steelforge's hospitals.",
+      description: "There are some — given to idle speculation or perhaps privy to truths not easily spoken aloud — who whisper that Lucius Montegrot is none other than a Gnomish Necromancer of singular repute, bound by sacred oath to the Equalizer, that serene and inscrutable Lady who reigneth over Death with even hand and quiet mercy. In the infirmaries of Steelforge, it is said, they labour ceaselessly amidst incense and incantation, not to traffic in ghastly dominion nor to summon forth horrors from the silent beyond, but rather to unravel with reverent care the hidden strands of mortality itself, so that, by mastering its mysteries, they might hold its reach at bay and breathe succour into the lungs of the ailing, the stricken, and the near-forsaken. Thus do they stand, not as conjurers of dread, but as healers cloaked in midnight robes, whose arcane rites serve not destruction, but life preserved against the twilight.",
       effect: "necromancer-wisp"
     },
     {
