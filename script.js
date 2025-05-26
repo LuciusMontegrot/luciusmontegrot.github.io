@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
       {
       title: "The Grand Druidess",
       image: "images/aeliana.jpg",
-      description: "They say Lucius Montegrot is a name, nothing more. Perhaps a mask. Perhaps a quill held by a Druidess who dared not speak her truth aloud. Perhaps a mother trying to reach her daughter by turning their world into a story. But that’s just a rumour. And rumours are nothing but whispers in the wind, aren’t they?",
+      description: "They say Lucius Montegrot is a name, nothing more. Perhaps a mask. Perhaps a quill held by a Druidess who dared not speak her truth aloud. Perhaps a mother trying to reach her daughter by turning her world into a story. But that’s just a rumour. And rumours are nothing but whispers in the wind, aren’t they?",
       effect: "aeliana-sighting"
     }
   ];
