@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       title: "The Peacemaker's Paladin",
       image: "images/paladin.jpg",
-      description: "They whisper that Lucius Montegrot once took holy vows before an altar the Peacemaker. Clad in onyx plate and wielding a maul the size of a tombstone, they roam the Varthian Empire's paved roads delivering “peace” one shattered victim at a time. Their justice is as swift as a thunderclap and as final as the gallows‑knot that dangles from his belt. Some claim there is no man beneath the helm at all — only a spirit of cold, unblinking judgment. Others insist you can hear soft humming inside the armour, as though the Peacemaker himself were singing through Lucius’s ribs. Either way, if the black‑steel paladin blocks your path, pray your sins are few… and your neck unworthy of their rope.",
+      description: "They whisper that Lucius Montegrot once took holy vows before an altar the Peacemaker. Clad in onyx plate and wielding a maul the size of a tombstone, they roam the Varthian Empire's paved roads delivering “peace” one shattered victim at a time. Their justice is as swift as a thunderclap and as final as the gallows‑knot that dangles from his belt. Some claim there is no one beneath the helm at all — only a spirit of cold, unblinking judgment. Others insist you can hear soft humming inside the armour, as though the Peacemaker himself were singing through Lucius’s ribs. Either way, if the black‑steel paladin blocks your path, pray your sins are few… and your neck unworthy of their rope.",
       effect: "paladin-smite"
     },
       {
