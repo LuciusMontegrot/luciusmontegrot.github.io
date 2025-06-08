@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 {
       title: "The Merry Gentleman's Marketer",
       image: "images/marketer.jpg",
-      description: "It is rumoured that Lucius Montegrot is a clever marketer inspired by the Merry Gentleman himself. They say random copies of their book appear in bookstores unbidden, and that stickers of the QR code above appear in unobtrusive places on other fantasy books. Please, DO NOT FOLLOW IN THEIR FOOTSTEPS. DO NOT plant copies of their book. DO NOT right-click this qr code, DO NOT print it, DO NOT place this QR code on the 3rd cover of unsuspecting books. The Peacemaker would NOT APPROVE!",
+      description: "It is rumoured that Lucius Montegrot is a clever marketer, taking inspiration directly from the Merry Gentleman—perhaps even an avatar of the Gentleman Himself. Random copies of their book allegedly appear mysteriously on bookstore shelves, and peculiar QR-code stickers seem to quietly appear on other fantasy novels in entirely unobtrusive places. Please, DO NOT FOLLOW IN THESE MISCHIEVOUS FOOTSTEPS. Absolutely DO NOT plant copies of their book. DO NOT right-click this QR code, DO NOT print it, and under NO circumstances discreetly affix it to the third cover of unsuspecting books. After all, the Peacemaker would definitely NOT APPROVE!",
       effect: "qrcode-rain"
     },
                 {
