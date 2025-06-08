@@ -807,6 +807,16 @@ function spawnQRCodeExplosionPixi () {
     sprites.push(s);
     app.stage.addChild(s);
   }
+  
+  /* ─ ticker: move & spin the mini QRs ─ */
+  app.ticker.add(delta => {
+    sprites.forEach(sp => {
+      sp.x        += sp.vx * delta;
+      sp.y        += sp.vy * delta;
+      sp.rotation += sp.rotationSpeed * delta;
+      sp.alpha    -= 0.008 * delta;   // gentle fade as they fly
+    });
+  });
 
  setTimeout(() => {
     app.destroy(true, { children: true });
