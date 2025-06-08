@@ -99,6 +99,12 @@ document.addEventListener('DOMContentLoaded', () => {
       effect: "dagger-rain"
     },
                 {
+      title: "The Merry Gentleman's Marketer",
+      image: "images/marketer.jpg",
+      description: "It is rumoured that Lucius Montegrot is a clever marketer inspired by the Merry Gentleman himself. They say random copies of their book appear in bookstores unbidden, and that they plant stickers of the QR code above in unobtrusive places on other fantasy books. Please, DO NOT FOLLOW IN THEIR FOOTSTEPS. DO NOT plant copies of their book. DO NOT place this QR code on the 3rd cover of unsuspecting books. That would be entirely INAPPROPRIATE",
+      effect: "qrcode-rain"
+    },
+                {
       title: "The Gnomish Necromancer",
       image: "images/necromancer2.jpg",
       description: "There are some — given to idle speculation or perhaps privy to truths not easily spoken aloud — who whisper that Lucius Montegrot is none other than a Gnomish Necromancer of singular repute, bound by sacred oath to the Equalizer, that serene and inscrutable Lady who reigneth over Death with even hand and quiet mercy. In the infirmaries of Steelforge, it is said, they labour ceaselessly amidst incense and incantation, not to traffic in ghastly dominion nor to summon forth horrors from the silent beyond, but rather to unravel with reverent care the hidden strands of mortality itself, so that, by mastering its mysteries, they might hold its reach at bay and breathe succour into the lungs of the ailing, the stricken, and the near-forsaken. Thus do they stand, not as conjurers of dread, but as healers cloaked in midnight robes, whose arcane rites serve not destruction, but life preserved against the twilight.",
@@ -756,7 +762,51 @@ function spawnFireRoarPixi() {
 }
 
 
+function spawnQRCodeExplosionPixi () {
+  console.log("📦 spawnQRCodeExplosionPixi() fired");
 
+  const layer = document.getElementById('effect-layer');
+  if (layer.querySelector('canvas.qr-burst')) {
+    console.warn("📦 QR burst already active, skipping.");
+    return;
+  }
+  if (typeof PIXI === 'undefined') return;
+
+  /* ╭─ PIXI stage, transparent full-screen canvas ─╮ */
+  const app = new PIXI.Application({
+    resizeTo:        layer,
+    transparent:     true,
+    antialias:       true,
+    backgroundAlpha: 0
+  });
+  app.view.classList.add('qr-burst');
+  Object.assign(app.view.style, {
+    position:      'absolute',
+    inset:         '0',
+    pointerEvents: 'none'
+  });
+  layer.appendChild(app.view);
+
+  /* ╭─ mini QR sprites that fly outwards ─╮ */
+  const texSmall = PIXI.Texture.from('images/qrcode-mini.png');   // ← your 148 × 148 PNG
+  const sprites  = [];
+  const COUNT    = 26;            // tweak to taste
+  const cx       = app.screen.width  / 2;
+  const cy       = app.screen.height / 2;
+
+  for (let i = 0; i < COUNT; i++) {
+    const s  = new PIXI.Sprite(texSmall);
+    s.anchor.set(0.5);
+    s.scale.set(0.12 + Math.random()*0.08);
+    s.x  = cx;
+    s.y  = cy;
+    s.vx = (Math.random() - 0.5) * 22;   // initial impulse
+    s.vy = (Math.random() - 0.5) * 22;
+    s.rotationSpeed = (Math.random() - 0.5) * 0.3;
+    s.alpha = 1;
+    sprites.push(s);
+    app.stage.addChild(s);
+  }
 
 
 
@@ -1180,6 +1230,7 @@ function showRandomPersona () {
       0.05,   // 🧠🔥 GYM-FORGED WRITER (RARE)
       1,      // fire priest
       1,      // assassin
+      1,      // marketer
       1,      // necromancer
       1,      // paladin
       0.01    // Aeliana – Rarest!
