@@ -808,7 +808,11 @@ function spawnQRCodeExplosionPixi () {
     app.stage.addChild(s);
   }
 
-
+ setTimeout(() => {
+    app.destroy(true, { children: true });
+    layer.contains(app.view) && layer.removeChild(app.view);
+  }, 6000);
+}   // ← THIS closes spawnQRCodeExplosionPixi()
 
 function spawnDaggerRain() {
   const svgNS = "http://www.w3.org/2000/svg";
@@ -1307,6 +1311,9 @@ function showRandomPersona () {
           } catch (err) {
             console.error("InkBlotches error:", err);
           }
+          break;
+          case 'qrcode-rain':
+          try { spawnQRCodeExplosionPixi(); } catch (err) { console.error("QR burst error:", err); }
           break;
         case 'seaelf-splash':
           try {
