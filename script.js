@@ -103,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
       effect: "dagger-rain"
     },
                 {
+      id: "marketer",
       title: "The Merry Gentleman's Marketer",
       image: "images/marketer.jpg",
       description: "It is rumoured that Lucius Montegrot is a cunning marketer, inspired directly by the Merry Gentleman. Some whisper, perhaps even an avatar of the Gentleman Himself. Copies of their book allegedly teleport themselves onto bookstore shelves when no one's looking, and curious QR-code stickers seem to gently infiltrate other fantasy novels in entirely innocent, utterly unobtrusive places. Please, DO NOT FOLLOW IN THESE MISCHIEVOUS FOOTSTEPS. Absolutely DO NOT plant copies of their book. Definitely DO NOT politely request Author's copies from Lucius to assist with such trickery. DO NOT right-click this QR code, DO NOT save it, DO NOT print it, and under absolutely NO circumstances discreetly attach it to the unsuspecting third covers of innocent fantasy books. After all, the Peacemaker would assuredly, emphatically, and categorically NOT APPROVE!",
@@ -123,10 +124,16 @@ document.addEventListener('DOMContentLoaded', () => {
       {
       title: "The Grand Druidess",
       image: "images/aeliana.jpg",
-      description: "They say Lucius Montegrot is a name, nothing more. Perhaps a mask. Perhaps a quill held by a Druidess who dared not speak her truth aloud. Perhaps a mother trying to reach her daughter by turning her world into a story. Perhaps she chose Lucius as a pen name to shield her real identity. But that’s just a rumour. And rumours are nothing but whispers in the wind, aren’t they?",
+      description: "Lucius Montegrot is a name, nothing more. Perhaps a mask. Perhaps a quill held by a Druidess who dared not speak her truth aloud. Perhaps a mother trying to reach her daughter by turning her world into a story. Perhaps she chose Lucius as a pen name to shield her real identity. But that’s just a rumour. And rumours are nothing but whispers in the wind, aren’t they?",
       effect: "aeliana-sighting"
     }
   ];
+  
+// Where is the Marketer in the array?
+const MARKETER_INDEX = personas.findIndex(p => p.id === "marketer");
+if (MARKETER_INDEX === -1) {
+  console.error("Marketer persona not found — check the id!");
+}
 
   const imageEl = document.getElementById('persona-image');
   const titleEl = document.getElementById('persona-title');
@@ -1253,31 +1260,30 @@ function showRandomPersona () {
       1,      // paladin
       0.02    // Aeliana – Rarest!
     ];
-// Index of the Marketer within the personas array
-const marketerIndex = personas.findIndex(
-  p => p.title === "The Merry Gentleman's Marketer"
-);
 
-// Has the Marketer already appeared in this tab?
+/* ─── choose idx ────────────────────────────────────────── */
+
+// Never changes, computed once in DOMContentLoaded
+const marketerIndex = MARKETER_INDEX;
 const marketerShown = sessionStorage.getItem('marketerShown') === 'true';
 
 let idx;
 
-// Force the Marketer on the 5th click if still unseen
-if (!marketerShown && rerollCount >= 5) {
+if (!marketerShown && rerollCount >= 5 && marketerIndex !== -1) {
+  // ❶ Guarantee the Marketer on (or after) the 5th roll
   idx = marketerIndex;
 } else {
-  // Normal weighted pick — but avoid immediate repeats
+  // ❷ Normal weighted pick, avoiding immediate repeats
   do {
     idx = weightedRandomIndex(personaWeights);
   } while (idx === lastIndex);
 }
-lastIndex = idx;
+lastIndex = idx;                      // remember for “no repeat”
 
+// Grab the final persona only once idx is settled
+const persona = personas[idx];
 
-    const persona = personas[idx];
-
-    // Marketer has now appeared — remember it for this page-session
+/* ─── bookkeeping ──────────────────────────────────────── */
 if (idx === marketerIndex) {
   sessionStorage.setItem('marketerShown', 'true');
 }
@@ -1285,11 +1291,11 @@ if (idx === marketerIndex) {
 
     
     if (persona.effect === "muscle-flex2") {
-      console.warn("🔥 RARE: Lucius (possibly real) revealed.");
+      console.warn("🔥 RARE: Lucius (possibly real!) revealed.");
     }
 
     if (persona.title === "The Grand Druidess") {
-      console.warn("🌿✨ AELIANA HAS APPEARED! The veil thins. The phoenix watches.");
+      console.warn("🌿✨ LUCIUS MONTEGROT HAS APPEARED! The veil thins. The phoenix watches.");
       const card = document.getElementById('persona-display');
       card.classList.add('aeliana-sighting');
       try {
