@@ -5,6 +5,10 @@ if (!sessionStorage.getItem('rerollCount')) {
 if (!sessionStorage.getItem('redirectedToAmazon')) {
   sessionStorage.setItem('redirectedToAmazon', 'false');
 }
+// Keep track of whether we've already displayed the Marketer persona
+if (!sessionStorage.getItem('marketerShown')) {
+  sessionStorage.setItem('marketerShown', 'false');
+}
 
 function maybeRedirectToAmazon() {
   const rawCount = sessionStorage.getItem('rerollCount');
@@ -14,6 +18,10 @@ function maybeRedirectToAmazon() {
   console.log(
     `[amazon] parsed count=${count}, alreadyRedirected=${already}`
   );
+const marketerIndex  = personas.findIndex(p =>
+  p.title === "The Merry Gentleman's Marketer"
+);
+const marketerShown  = sessionStorage.getItem('marketerShown') === 'true';
 
   if (count >= 7 && count <= 11 && already !== 'true') {
     const chance = Math.random();
@@ -1250,13 +1258,29 @@ function showRandomPersona () {
       0.01    // Aeliana – Rarest!
     ];
 
-    let idx;
-    do { idx = weightedRandomIndex(personaWeights); }
-    while (idx === lastIndex);
-    lastIndex = idx;
+let idx;
+
+// Force the Marketer on the 5th click if still unseen
+if (!marketerShown && rerollCount >= 5) {
+  idx = marketerIndex;
+} else {
+  // Normal weighted pick — but avoid immediate repeats
+  do {
+    idx = weightedRandomIndex(personaWeights);
+  } while (idx === lastIndex);
+}
+lastIndex = idx;
+
 
     const persona = personas[idx];
 
+    // Marketer has now appeared — remember it for this page-session
+if (idx === marketerIndex) {
+  sessionStorage.setItem('marketerShown', 'true');
+}
+
+
+    
     if (persona.effect === "muscle-flex2") {
       console.warn("🔥 RARE: Lucius (possibly real) revealed.");
     }
