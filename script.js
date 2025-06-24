@@ -18,10 +18,6 @@ function maybeRedirectToAmazon() {
   console.log(
     `[amazon] parsed count=${count}, alreadyRedirected=${already}`
   );
-const marketerIndex  = personas.findIndex(p =>
-  p.title === "The Merry Gentleman's Marketer"
-);
-const marketerShown  = sessionStorage.getItem('marketerShown') === 'true';
 
   if (count >= 7 && count <= 11 && already !== 'true') {
     const chance = Math.random();
@@ -1255,8 +1251,15 @@ function showRandomPersona () {
       1,      // marketer
       1,      // necromancer
       1,      // paladin
-      0.01    // Aeliana – Rarest!
+      0.02    // Aeliana – Rarest!
     ];
+// Index of the Marketer within the personas array
+const marketerIndex = personas.findIndex(
+  p => p.title === "The Merry Gentleman's Marketer"
+);
+
+// Has the Marketer already appeared in this tab?
+const marketerShown = sessionStorage.getItem('marketerShown') === 'true';
 
 let idx;
 
