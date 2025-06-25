@@ -1,14 +1,3 @@
-// At top of script.js or inside DOMContentLoaded
-if (!sessionStorage.getItem('rerollCount')) {
-  sessionStorage.setItem('rerollCount', '0');
-}
-if (!sessionStorage.getItem('redirectedToAmazon')) {
-  sessionStorage.setItem('redirectedToAmazon', 'false');
-}
-// Keep track of whether we've already displayed the Marketer persona
-if (!sessionStorage.getItem('marketerShown')) {
-  sessionStorage.setItem('marketerShown', 'false');
-}
 
 function maybeRedirectToAmazon() {
   const rawCount = sessionStorage.getItem('rerollCount');
@@ -19,7 +8,7 @@ function maybeRedirectToAmazon() {
     `[amazon] parsed count=${count}, alreadyRedirected=${already}`
   );
 
-  if (count >= 7 && count <= 11 && already !== 'true') {
+  if (count >= 7 && count <= 13 && already !== 'true') {
     const chance = Math.random();
     console.log("[amazon] in window‑open window – chance=", chance);
     if (chance < 0.3) {
@@ -35,6 +24,9 @@ function maybeRedirectToAmazon() {
 
 
 document.addEventListener('DOMContentLoaded', () => {
+   sessionStorage.setItem('rerollCount',       '0');    // how many times the button was pressed
+  sessionStorage.setItem('marketerShown',     'false');// whether we’ve displayed the Marketer yet
+  sessionStorage.setItem('redirectedToAmazon','false');// whether we already fired the popup
   const personas = [
     {
       title: "The Humble Historian",
