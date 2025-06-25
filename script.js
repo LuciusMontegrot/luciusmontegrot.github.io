@@ -14,7 +14,7 @@ function maybeRedirectToAmazon() {
     if (chance < 0.3) {
       sessionStorage.setItem("redirectedToAmazon", "true");
       window.open(
-        "https://www.amazon.co.uk/Union-Impossible-Part-Twilight-Exiled-ebook/dp/B0F4YM618B/",
+        "https://mybook.to/theunionimpossible",
         "_blank"
       );
       console.log("[amazon] OPENED popup!");
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 {
       id: "marketer",
       title: "The Merry Gentleman's Marketer",
-      image: "images/marketer.jpg",
+      image: "images/marketer2.jpg",
       description: "It is rumoured that Lucius Montegrot is a cunning marketer, inspired directly by the Merry Gentleman. Some whisper, perhaps even an avatar of the Gentleman Himself. Copies of their book allegedly teleport themselves onto bookstore shelves when no one's looking, and curious QR-code stickers seem to gently infiltrate other fantasy novels in entirely innocent, utterly unobtrusive places. Please, DO NOT FOLLOW IN THESE MISCHIEVOUS FOOTSTEPS. Absolutely DO NOT plant copies of their book. Definitely DO NOT politely request Author's copies from Lucius to assist with such trickery. DO NOT right-click this QR code, DO NOT save it, DO NOT print it, and under absolutely NO circumstances discreetly attach it to the unsuspecting third covers of innocent fantasy books. After all, the Peacemaker would assuredly, emphatically, and categorically NOT APPROVE!",
       effect: "qrcode-rain"
     },
