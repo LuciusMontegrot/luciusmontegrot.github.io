@@ -115,9 +115,9 @@ document.addEventListener('DOMContentLoaded', () => {
     },
       {
       title: "The Grand Druidess",
-      image: "images/aeliana.jpg",
+      image: "images/LuciusMontegrot.jpg",
       description: "Lucius Montegrot is a name, nothing more. Perhaps a mask. Perhaps a quill held by a Druidess who dared not speak her truth aloud. Perhaps a mother trying to reach her daughter by turning her world into a story. Perhaps she chose Lucius as a pen name to shield her real identity. But that’s just a rumour. And rumours are nothing but whispers in the wind, aren’t they?",
-      effect: "aeliana-sighting"
+      effect: "lucius-sighting"
     }
   ];
   
@@ -1250,7 +1250,7 @@ function showRandomPersona () {
       1,      // marketer
       1,      // necromancer
       1,      // paladin
-      0.02    // Aeliana – Rarest!
+      1000    // Aeliana – Rarest!
     ];
 
 /* ─── choose idx ────────────────────────────────────────── */
@@ -1289,14 +1289,14 @@ if (idx === marketerIndex) {
     if (persona.title === "The Grand Druidess") {
       console.warn("🌿✨ LUCIUS MONTEGROT HAS APPEARED! The veil thins. The phoenix watches.");
       const card = document.getElementById('persona-display');
-      card.classList.add('aeliana-sighting');
+      card.classList.add('lucius-sighting');
       try {
         spawnAelianaSignaturePixi();
       } catch (err) {
         console.error("Error in Aeliana effect:", err);
       }
       setTimeout(() => {
-        card.classList.remove('aeliana-sighting');
+        card.classList.remove('lucius-sighting');
       }, 5000);
     }
 
