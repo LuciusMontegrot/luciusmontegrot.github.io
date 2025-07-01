@@ -1250,7 +1250,7 @@ function showRandomPersona () {
       1,      // marketer
       1,      // necromancer
       1,      // paladin
-      1000    // Aeliana – Rarest!
+      0.02,    // Aeliana – Rarest!
     ];
 
 /* ─── choose idx ────────────────────────────────────────── */
