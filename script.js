@@ -1244,13 +1244,13 @@ function showRandomPersona () {
       1,      // sea elf
       1,      // hacker
       1,      // gym-forged ghostwriter
-      0.05,   // 🧠🔥 GYM-FORGED WRITER (RARE)
+      0.026,   // 🧠🔥 GYM-FORGED WRITER (RARE)
       1,      // fire priest
       1,      // assassin
       1,      // marketer
       1,      // necromancer
       1,      // paladin
-      0.02,    // Aeliana – Rarest!
+      0.013,    // Aeliana – Rarest!
     ];
 
 /* ─── choose idx ────────────────────────────────────────── */
